@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'base/top'
+
+  get 'base/setting'
+
   resources :projects
   resources :developers
   # The priority is based upon order of creation: first created -> highest priority.
