@@ -46,8 +46,6 @@ group :development, :test do
   gem 'simplecov'
   gem 'simplecov-rcov'
   gem 'factory_girl_rails'
-  gem 'capybara'
-  gem 'capybara-webkit'
   gem 'launchy'
   gem 'poltergeist'
   gem 'database_cleaner'
