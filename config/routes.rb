@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'comp/index'
+
+  get 'portfolio/index'
+
   get 'base/top'
 
   get 'base/setting'
@@ -9,7 +13,7 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'developers#index'
+  root 'base#top'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

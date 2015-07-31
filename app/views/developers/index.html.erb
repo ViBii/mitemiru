@@ -1,17 +1,17 @@
 <div class="page-header">
   <%= link_to new_developer_path, class: 'btn btn-primary' do %>
     <span class="glyphicon glyphicon-plus"></span>
-    New Developer
+    新規開発者追加
   <% end %>
-  <h1>Listing developers</h1>
+  <h1>開発者一覧</h1>
 </div>
 
 <div class="table-responsive">
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
-            <th>Name</th>
-            <th></th>
+        <th>名前</th>
+        <th></th>
         <th></th>
         <th></th>
       </tr>
@@ -19,8 +19,8 @@
 
     <tbody>
       <%= content_tag_for(:tr, @developers) do |developer| %>
-            <td><%= developer.name %></td>
-            <td><%= link_to 'Show', developer %></td>
+        <td><%= developer.name %></td>
+        <td><%= link_to 'Show', developer %></td>
         <td><%= link_to 'Edit', edit_developer_path(developer) %></td>
         <td><%= link_to 'Destroy', developer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
