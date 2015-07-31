@@ -1,17 +1,17 @@
 <div class="page-header">
   <%= link_to developers_path, class: 'btn btn-default' do %>
     <span class="glyphicon glyphicon-list-alt"></span>
-    Back
+    戻る
   <% end %>
   <%= link_to edit_developer_path(@developer), class: 'btn btn-primary' do %>
     <span class="glyphicon glyphicon-pencil"></span>
-    Edit
+    編集
   <% end %>
-  <h1>Show developer</h1>
+  <h1>開発者詳細</h1>
 </div>
 
 <dl class="dl-horizontal">
-  <dt>Name:</dt>
+  <dt>名前:</dt>
   <dd><%= @developer.name %></dd>
 
 </dl>

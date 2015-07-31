@@ -1,17 +1,17 @@
 <div class="page-header">
   <%= link_to projects_path, class: 'btn btn-default' do %>
     <span class="glyphicon glyphicon-list-alt"></span>
-    Back
+    戻る
   <% end %>
   <%= link_to edit_project_path(@project), class: 'btn btn-primary' do %>
     <span class="glyphicon glyphicon-pencil"></span>
-    Edit
+    編集
   <% end %>
-  <h1>Show project</h1>
+  <h1>プロジェクト詳細</h1>
 </div>
 
 <dl class="dl-horizontal">
-  <dt>Name:</dt>
+  <dt>名前:</dt>
   <dd><%= @project.name %></dd>
 
 </dl>

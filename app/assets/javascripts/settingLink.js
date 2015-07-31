@@ -1,3 +1,6 @@
+$(window).load(function() {
+  $('.flexslider').flexslider();
+});
 //var jump = function(path){
 //  link = location.host + path;
 //  location.href = link.toString();

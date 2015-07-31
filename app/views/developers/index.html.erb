@@ -20,9 +20,9 @@
     <tbody>
       <%= content_tag_for(:tr, @developers) do |developer| %>
         <td><%= developer.name %></td>
-        <td><%= link_to 'Show', developer %></td>
-        <td><%= link_to 'Edit', edit_developer_path(developer) %></td>
-        <td><%= link_to 'Destroy', developer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to '詳細', developer %></td>
+        <td><%= link_to '編集', edit_developer_path(developer) %></td>
+        <td><%= link_to '削除', developer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>
   </table>
