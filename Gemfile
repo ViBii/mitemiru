@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Rails
 gem 'rails', '4.2.3'
 # DB
-gem 'sqlite3'
+gem 'mysql2'
 # SCSS
 gem 'sass-rails', '~> 5.0'
 # Uglifier
