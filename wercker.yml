@@ -1,8 +1,10 @@
-box: wercker/ubuntu12.04-ruby2.0.0
+box: wercker/rvm
 services:
     - wercker/postgresql
 build:
     steps:
+      - rvm-use:
+        version: 2.2.0
       - bundle-install
       - rails-database-yml:
           service: postgresql
