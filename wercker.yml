@@ -1,17 +1,20 @@
 box: wercker/ubuntu12.04-ruby2.0.0
- services:
- build:
-     steps:
-       - bundle-install
-       - script:
-           name: echo ruby information
-           code: |
-               echo “ruby version $(ruby –version) running!”
-               echo “from location $(which ruby)”
-               echo -p “gem list: $(gem list)”
-       - script:
-           name: Set up db
-           code: RAILS_ENV=test bundle exec rake db:schema:load
-       - script:
-           name: Run RSpec
-           code: bundle exec rspec
+services:
+    - wercker/postgresql
+build:
+    steps:
+      - bundle-install
+      - rails-database-yml:
+          service: postgresql
+      - script:
+          name: echo ruby information
+          code: |
+              echo "ruby version $(ruby --version) running!"
+              echo "from location $(which ruby)"
+              echo -p "gem list: $(gem list)"
+      - script:
+          name: Set up db
+          code: RAILS_ENV=test bundle exec rake db:schema:load
+      - script:
+          name: Run RSpec
+          code: bundle exec rspec
