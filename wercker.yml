@@ -1,13 +1,9 @@
-box: wercker/rvm
+box: ruby:2.2.2
 services:
     - wercker/postgresql
 build:
     steps:
-      - rvm-use:
-        version: 2.2.0
       - bundle-install
-      - rails-database-yml:
-          service: postgresql
       - script:
           name: echo ruby information
           code: |
