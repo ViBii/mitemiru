@@ -1,11 +1,8 @@
-box: wercker/ruby
+box: yaginuuu/box
  services:
-     - wercker/postgresql
  build:
      steps:
        - bundle-install
-       - rails-database-yml:
-           service: postgresql
        - script:
            name: echo ruby information
            code: |
