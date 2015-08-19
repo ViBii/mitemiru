@@ -2,6 +2,8 @@ box: ruby:2.2.2
 services:
 build:
     steps:
+      - rails-database-yml:
+        service: mysql
       - bundle-install
       - script:
           name: echo ruby information
@@ -11,7 +13,8 @@ build:
               echo -p "gem list: $(gem list)"
       - script:
           name: Set up db
-          code: RAILS_ENV=test bundle exec rake db:schema:load
+          code: |
+              RAILS_ENV=test bin/rake db:schema:load
       - script:
           name: Run RSpec
           code: bundle exec rspec
