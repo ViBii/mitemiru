@@ -1,6 +1,5 @@
 box: ruby:2.2.2
 services:
-    - wercker/postgresql
 build:
     steps:
       - bundle-install
