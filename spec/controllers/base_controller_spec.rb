@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe BaseController, type: :controller do
-
+=begin
   describe "GET #top" do
     it "returns http success" do
       get :top
@@ -15,5 +15,5 @@ RSpec.describe BaseController, type: :controller do
       expect(response).to have_http_status(:success)
     end
   end
-
+=end
 end
