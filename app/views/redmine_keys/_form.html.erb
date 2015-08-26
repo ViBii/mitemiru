@@ -13,32 +13,32 @@
   <% end %>
 
   <div class="form-group">
-    <%= f.label "URL", class: "col-sm-2 control-label" %>
+    <%= f.label :url, "URL", class: "col-sm-2 control-label" %>
     <div class="col-sm-10">
       <%= f.text_field :url, class: "form-control" %>
     </div>
   </div>
   <div class="form-group">
-    <%= f.label "ログイン名", class: "col-sm-2 control-label" %>
+    <%= f.label :login_name, "ログイン名", class: "col-sm-2 control-label" %>
     <div class="col-sm-10">
       <%= f.text_field :login_name, class: "form-control" %>
     </div>
   </div>
   <div class="form-group">
-    <%= f.label "パスワード", class: "col-sm-2 control-label" %>
+    <%= f.label :password_digest, "パスワード", class: "col-sm-2 control-label" %>
     <div class="col-sm-10">
       <%= f.text_field :password_digest, class: "form-control" %>
     </div>
   </div>
   <div class="form-group">
-    <%= f.label "APIキー", class: "col-sm-2 control-label" %>
+    <%= f.label :api_key, "APIキー", class: "col-sm-2 control-label" %>
     <div class="col-sm-10">
       <%= f.text_field :api_key, class: "form-control" %>
     </div>
   </div>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <%= f.submit "作成", class: "btn btn-primary" %>
+      <%= f.submit "登録", class: "btn btn-primary" %>
     </div>
   </div>
 <% end %>
