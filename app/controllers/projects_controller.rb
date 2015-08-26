@@ -15,6 +15,7 @@ class ProjectsController < ApplicationController
   # GET /projects/new
   def new
     @project = Project.new
+    @version_repository = VersionRepository.new
   end
 
   # GET /projects/1/edit
@@ -25,9 +26,10 @@ class ProjectsController < ApplicationController
   # POST /projects.json
   def create
     @project = Project.new(project_params)
+    @version_repository = VersionRepository.new(version_repository_params)
 
     respond_to do |format|
-      if @project.save
+      if @project.save #&& @version_repository
         format.html { redirect_to @project, notice: 'Project was successfully created.' }
         format.json { render :show, status: :created, location: @project }
       else
@@ -67,8 +69,21 @@ class ProjectsController < ApplicationController
       @project = Project.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
-      params.require(:project).permit(:name)
+      params.require(:project).permit(
+        :name,
+        :version_repository_id,
+        :ticket_repository_id,
+        :project_start_date,
+        :project_end_date,
+      )
+    end
+
+    def version_repository_params
+      params.require(:version_repository).permit(
+        :name,
+        :version_repository_path,
+        :version_repository_path_cache
+      )
     end
 end
