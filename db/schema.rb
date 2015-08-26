@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150727143108) do
+ActiveRecord::Schema.define(version: 20150826074528) do
+
+  create_table "assign_logs", force: :cascade do |t|
+    t.integer  "developer_id",      limit: 4
+    t.integer  "project_id",        limit: 4
+    t.time     "assign_start_date"
+    t.time     "assign_end_date"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
 
   create_table "developers", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -20,6 +29,35 @@ ActiveRecord::Schema.define(version: 20150727143108) do
   end
 
   create_table "projects", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "redmine_keys", force: :cascade do |t|
+    t.integer  "ticket_repositoty_id", limit: 4
+    t.integer  "user_id",              limit: 4
+    t.string   "api_key",              limit: 255
+    t.string   "url",                  limit: 255
+    t.string   "login_name",           limit: 255
+    t.string   "password_digest",      limit: 255
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
+
+  create_table "ticket_repositories", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "version_repositories", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
