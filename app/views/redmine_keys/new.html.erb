@@ -1,4 +1,9 @@
 <div class="page-header">
-  <h1>RedmineKeys#new</h1>
+  <%= link_to redmine_keys_path, class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
+  <% end %>
+  <h1>Redmine認証情報登録</h1>
 </div>
-<p>Find me in app/views/redmine_keys/new.html.erb</p>
+
+<%= render 'form' %>
