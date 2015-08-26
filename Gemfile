@@ -27,6 +27,9 @@ gem 'bootstrap-generators'
 # HighCharts
 gem 'lazy_high_charts'
 
+# Password
+gem 'bcrypt-ruby', '3.1.2'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -40,6 +43,11 @@ gem 'lazy_high_charts'
 # gem 'therubyracer', platforms: :ruby
 
 group :development, :test do
+  # ER_Chart
+  # brew install graphviz
+  # http://qiita.com/satton_maroyaka/items/55e6cf42bd677c94d0d5
+  gem 'rails-erd'
+
   gem 'teaspoon'
   gem 'selenium-webdriver'
   gem 'blanket-rails'
