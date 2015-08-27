@@ -81,7 +81,6 @@ class ProjectsController < ApplicationController
 
     def version_repository_params
       params.require(:version_repository).permit(
-        :name,
         :path
       )
     end
