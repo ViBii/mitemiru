@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(version: 20150826074528) do
   end
 
   create_table "redmine_keys", force: :cascade do |t|
-    t.integer  "ticket_repositoty_id", limit: 4
+    t.integer  "ticket_repository_id", limit: 4
     t.integer  "user_id",              limit: 4
     t.string   "api_key",              limit: 255
     t.string   "url",                  limit: 255
