@@ -8,34 +8,31 @@ class RedmineKeysController < ApplicationController
   def create
     #@redmine_key = RedmineKey.new(redmine_key_params)
     @redmine_key = RedmineKey.new
-    @redmine_key.id = 0;
-    @redmine_key.ticket_repositoty_id = 0;
-    @redmine_key.user_id = 0;
-    @redmine_key.api_key = params[:api_key];
-    @redmine_key.url = params[:url];
-    @redmine_key.login_name = params[:login_name];
-    @redmine_key.password_digest = params[:password_digest];
-    @redmine_key.created_at = params[:create_at];
-    @redmine_key.updated_at = params[:update_at];
+    #@redmine_key.ticket_repositoty_id = 0;
+    #@redmine_key.user_id = 0;
+    @redmine_key.api_key = params[:redmine_key][:api_key];
+    @redmine_key.url = params[:redmine_key][:url];
+    @redmine_key.login_name = params[:redmine_key][:login_name];
+    @redmine_key.password_digest = params[:redmine_key][:password_digest];
     #respond_to do |format|
-      #format.html { render :new }
+      #format.html { redirect_to @redmine_key, notice: 'Successfully registered.' }
     #end
-    redirect_to '/base/top'    
+
+    if @redmine_key.save
+      redirect_to '/redmine_keys/new', notice: 'Sccessfully registered.'
+    end
   end
 
-=begin
+#=begin
   def redmine_key_params
     params.require(:redmine_keys).permit(
-      :id,
-      :ticket_repository_id,
-      :user_id,
+      #:ticket_repositoty_id,
+      #:user_id,
       :api_key,
       :url,
       :login_name,
       :password_digest,
-      :create_at,
-      :update_at
     )
   end
-=end
+#=end
 end
