@@ -1,0 +1,2 @@
+class RedmineAuthoritiesController < ApplicationController
+end
