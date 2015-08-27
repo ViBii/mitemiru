@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150826104107) do
+ActiveRecord::Schema.define(version: 20150827051554) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -30,28 +30,31 @@ ActiveRecord::Schema.define(version: 20150826104107) do
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "name",                  limit: 255
     t.integer  "version_repository_id", limit: 4
     t.integer  "ticket_repository_id",  limit: 4
+    t.string   "name",                  limit: 255
     t.time     "project_start_date"
     t.time     "project_end_date"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
   end
 
+  create_table "redmine_authorities", force: :cascade do |t|
+    t.integer "user_id",        limit: 4
+    t.integer "redmine_key_id", limit: 4
+  end
+
   create_table "redmine_keys", force: :cascade do |t|
-    t.integer  "ticket_repositoty_id", limit: 4
-    t.integer  "user_id",              limit: 4
-    t.string   "api_key",              limit: 255
-    t.string   "url",                  limit: 255
+    t.integer  "ticket_repository_id", limit: 4
     t.string   "login_name",           limit: 255
     t.string   "password_digest",      limit: 255
+    t.string   "api_key",              limit: 255
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
   end
 
   create_table "ticket_repositories", force: :cascade do |t|
-    t.string   "name",       limit: 255
+    t.string   "url",        limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
@@ -63,7 +66,7 @@ ActiveRecord::Schema.define(version: 20150826104107) do
   end
 
   create_table "version_repositories", force: :cascade do |t|
-    t.string   "name",       limit: 255
+    t.string   "path",       limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.string   "path",       limit: 255
