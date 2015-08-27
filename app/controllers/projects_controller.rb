@@ -29,7 +29,7 @@ class ProjectsController < ApplicationController
     @version_repository = VersionRepository.new(version_repository_params)
 
     respond_to do |format|
-      if @project.save #&& @version_repository
+      if @project.save && @version_repository.save
         format.html { redirect_to @project, notice: 'Project was successfully created.' }
         format.json { render :show, status: :created, location: @project }
       else
@@ -82,8 +82,7 @@ class ProjectsController < ApplicationController
     def version_repository_params
       params.require(:version_repository).permit(
         :name,
-        :version_repository_path,
-        :version_repository_path_cache
+        :path
       )
     end
 end

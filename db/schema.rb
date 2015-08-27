@@ -24,14 +24,19 @@ ActiveRecord::Schema.define(version: 20150826104107) do
 
   create_table "developers", force: :cascade do |t|
     t.string   "name",       limit: 255
+    t.string   "adress",     limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "name",                  limit: 255
+    t.integer  "version_repository_id", limit: 4
+    t.integer  "ticket_repository_id",  limit: 4
+    t.time     "project_start_date"
+    t.time     "project_end_date"
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   create_table "redmine_keys", force: :cascade do |t|

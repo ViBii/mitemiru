@@ -15,7 +15,7 @@ class PathUploader < CarrierWave::Uploader::Base
   def store_dir
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
-  process convert: "csv"
+  #process convert: "txt"
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
@@ -45,8 +45,8 @@ class PathUploader < CarrierWave::Uploader::Base
 
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
-  # def filename
-  #   "something.jpg" if original_filename
-  # end
+  def filename
+    "something.txt" if original_filename
+  end
 
 end
