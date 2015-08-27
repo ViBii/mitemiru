@@ -1,4 +1,4 @@
 class RedmineKey < ActiveRecord::Base
   belongs_to :ticket_repository
-  belongs_to :user
+  has_and_belongs_to_many :users
 end
