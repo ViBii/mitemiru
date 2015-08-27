@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'redmine_keys/new'
+
   get 'comp/index'
 
   get 'portfolio/index'
