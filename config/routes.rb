@@ -7,8 +7,11 @@ Rails.application.routes.draw do
 
   get 'base/setting'
 
+  get 'ticket_repositories/new'
+
   resources :projects
   resources :developers
+  resources :ticket_repositories
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
