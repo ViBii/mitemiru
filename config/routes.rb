@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   get 'base/setting'
 
+  get 'ticket_repositories/new'
+
   resources :projects
   resources :developers
   resources :ticket_repositories
