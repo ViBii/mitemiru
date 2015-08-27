@@ -4,137 +4,70 @@
 <% if false %>
 <%= high_chart("some_id", @chart) %>
 <% end %>
-
-<style>
-
-    body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        position: relative;
-        width: 960px;
-    }
-
-    .axis text {
-        font: 10px sans-serif;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-
-    .bar {
-        fill: steelblue;
-        fill-opacity: .9;
-    }
-
-    .x.axis path {
-        display: none;
-    }
-
-    label {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-
-</style>
-<label><input type="checkbox"> Sort values</label>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
 <script>
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
-
-    var formatPercent = d3.format(".0%");
-
-    var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1, 1);
-
-    var y = d3.scale.linear()
-            .range([height, 0]);
-
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickFormat(formatPercent);
-
-    var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.tsv("data.tsv", function(error, data) {
-
-        data.forEach(function(d) {
-            d.frequency = +d.frequency;
-        });
-
-        x.domain(data.map(function(d) { return d.letter; }));
-        y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-
-        svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-        svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Frequency");
-
-        svg.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", function(d) { return x(d.letter); })
-                .attr("width", x.rangeBand())
-                .attr("y", function(d) { return y(d.frequency); })
-                .attr("height", function(d) { return height - y(d.frequency); });
-
-        d3.select("input").on("change", change);
-
-        var sortTimeout = setTimeout(function() {
-            d3.select("input").property("checked", true).each(change);
-        }, 2000);
-
-        function change() {
-            clearTimeout(sortTimeout);
-
-            // Copy-on-write since tweens are evaluated after a delay.
-            var x0 = x.domain(data.sort(this.checked
-                    ? function(a, b) { return b.frequency - a.frequency; }
-                    : function(a, b) { return d3.ascending(a.letter, b.letter); })
-                    .map(function(d) { return d.letter; }))
-                    .copy();
-
-            svg.selectAll(".bar")
-                    .sort(function(a, b) { return x0(a.letter) - x0(b.letter); });
-
-            var transition = svg.transition().duration(750),
-                    delay = function(d, i) { return i * 50; };
-
-            transition.selectAll(".bar")
-                    .delay(delay)
-                    .attr("x", function(d) { return x0(d.letter); });
-
-            transition.select(".x.axis")
-                    .call(xAxis)
-                    .selectAll("g")
-                    .delay(delay);
+    historicalBarChart = [
+        {
+            key: "Cumulative Return",
+            values: [
+                {
+                    "label" : "A" ,
+                    "value" : 29.765957771107
+                } ,
+                {
+                    "label" : "B" ,
+                    "value" : 0
+                } ,
+                {
+                    "label" : "C" ,
+                    "value" : 32.807804682612
+                } ,
+                {
+                    "label" : "D" ,
+                    "value" : 196.45946739256
+                } ,
+                {
+                    "label" : "E" ,
+                    "value" : 0.19434030906893
+                } ,
+                {
+                    "label" : "F" ,
+                    "value" : 98.079782601442
+                } ,
+                {
+                    "label" : "G" ,
+                    "value" : 13.925743130903
+                } ,
+                {
+                    "label" : "H" ,
+                    "value" : 5.1387322875705
+                }
+            ]
         }
+    ];
+
+    nv.addGraph(function() {
+        var chart = nv.models.discreteBarChart()
+                        .x(function(d) { return d.label })
+                        .y(function(d) { return d.value })
+                        .staggerLabels(true)
+                    //.staggerLabels(historicalBarChart[0].values.length > 8)
+                        .showValues(true)
+                        .duration(250)
+                ;
+
+        d3.select('#chart1 svg')
+                .datum(historicalBarChart)
+                .call(chart);
+
+        nv.utils.windowResize(chart.update);
+        return chart;
     });
 
 </script>
+<div id="chart1">
+  <svg></svg>
+</div>
+
+
