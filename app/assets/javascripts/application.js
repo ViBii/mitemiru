@@ -15,6 +15,7 @@
 //= require bootstrap-sprockets
 //= require turbolinks
 //= require bootstrap
+//= require_directory ./lib
 //= require_tree .
 //= require highcharts/highcharts
 //= require highcharts/highcharts-more
