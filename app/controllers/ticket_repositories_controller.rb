@@ -10,7 +10,17 @@ class TicketRepositoriesController < ApplicationController
 
   # POST /ticket_repositories/new
   def create
-    @ticket_repository = TicketRepository.new
-    redirect_to '/ticket_repositories/new', notice: 'Ticket repository\'s successfully registered.' 
+    @ticket_repository = TicketRepository.new(ticket_repository_params)
+    if @ticket_repository.save
+      redirect_to '/ticket_repositories/new', notice: 'Ticket repository\'s successfully saved.'
+    else
+      redirect_to '/ticket_repositories/new', status: 'Failed to save.'
+    end
+  end
+
+  def ticket_repository_params
+    params.require(:ticket_repository).permit(
+      :url
+    )
   end
 end
