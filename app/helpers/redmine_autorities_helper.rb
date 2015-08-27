@@ -1,0 +1,2 @@
+module RedmineAutoritiesHelper
+end
