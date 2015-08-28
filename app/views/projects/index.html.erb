@@ -10,19 +10,17 @@
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
-        <th>名前</th>
-        <th></th>
-        <th></th>
+        <th>プロジェクト名前</th>
         <th></th>
       </tr>
     </thead>
 
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
-        <td><%= project.name %></td>
-        <td><%= link_to '詳細', project %></td>
-        <td><%= link_to '編集', edit_project_path(project) %></td>
-        <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to project.name, project %></td>
+        <td>
+            <%= link_to image_tag('blue_edit.png', { :border => '0', :alt => 'change'}), edit_project_path(project) %>
+            <%= link_to image_tag('blue_delete.png', { :border => '0', :alt => 'change'}), data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>
   </table>
