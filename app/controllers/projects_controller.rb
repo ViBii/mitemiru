@@ -26,7 +26,7 @@ class ProjectsController < ApplicationController
   # POST /projects.json
   def create
     @project = Project.new(project_params)
-    @version_repository = VersionRepository.new(version_repository_params)
+    CommitInfo.import(params[:project][:file])
 
     respond_to do |format|
       if @project.save && @version_repository.save
