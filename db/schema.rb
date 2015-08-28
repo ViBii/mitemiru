@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150827051554) do
+ActiveRecord::Schema.define(version: 20150828114459) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -20,6 +20,15 @@ ActiveRecord::Schema.define(version: 20150827051554) do
     t.time     "assign_end_date"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+  end
+
+  create_table "commit_infos", force: :cascade do |t|
+    t.integer  "version_repository_id", limit: 4
+    t.integer  "developer_id",          limit: 4
+    t.string   "commit_id",             limit: 255
+    t.string   "commit_message",        limit: 255
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   create_table "developers", force: :cascade do |t|
@@ -66,9 +75,8 @@ ActiveRecord::Schema.define(version: 20150827051554) do
   end
 
   create_table "version_repositories", force: :cascade do |t|
-    t.string   "path",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

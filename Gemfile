@@ -30,9 +30,6 @@ gem 'lazy_high_charts'
 # Password
 gem 'bcrypt-ruby', '3.1.2'
 
-# FileUploader
-gem 'carrierwave', '~> 0.10.0'
-
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
