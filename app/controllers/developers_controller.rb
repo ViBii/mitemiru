@@ -17,6 +17,11 @@ class DevelopersController < ApplicationController
     @developer = Developer.new
   end
 
+  # GET /developers/auth
+  def auth
+    @developer = Developer.all
+  end
+ 
   # GET /developers/1/edit
   def edit
   end
