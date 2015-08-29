@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'redmine_keys/new'
+
   get 'comp/index'
 
   get 'portfolio/index'
@@ -12,6 +14,7 @@ Rails.application.routes.draw do
   resources :projects
   resources :developers
   resources :ticket_repositories
+  resources :redmine_keys
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
