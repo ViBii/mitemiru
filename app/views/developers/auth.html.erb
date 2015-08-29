@@ -6,4 +6,7 @@
 
   <h1>開発者情報取得</h1>
   <p>チケット管理リポジトリの認証情報を入力してください。</p>
+  <% @ticket_repository.each do |ticket_repository| %>
+    <h1><%= ticket_repository.url %></h1>
+  <% end %>
 </div>

@@ -19,6 +19,7 @@ class DevelopersController < ApplicationController
 
   # GET /developers/auth
   def auth
+    @ticket_repository = TicketRepository.all
   end
 
   # GET /developers/1/edit
