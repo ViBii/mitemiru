@@ -19,12 +19,16 @@ class DevelopersController < ApplicationController
   # GET /developers/new
   def new
     @developer = Developer.new
-    @ticket_repository = TicketRepository.find(params[:get_id][:ticket_repository_id])
-    #@test = Hash.new
-    #@test[:id] = params[:get_id][:ticket_repository_id]
-    #render :text => @test[:id]
-    render :text => @ticket_repository[:url]
+    @authorized_key = Hash.new
+    @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
+    @authorized_key[:login_name] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:login_name]
+    @authorized_key[:password_digest] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:password_digest]
+    @authorized_key[:api_key] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:api_key]
+
+    req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_name], password: @authorized_key[:password_digest]
     #render :text => params
+    #render :text => @authorized_key[:api_key]
+    render :text => req
   end
 
   # GET /developers/auth
