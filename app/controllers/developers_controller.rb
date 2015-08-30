@@ -25,10 +25,18 @@ class DevelopersController < ApplicationController
     @authorized_key[:password_digest] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:password_digest]
     @authorized_key[:api_key] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:api_key]
 
+    # get user data
     req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_name], password: @authorized_key[:password_digest]
-    #render :text => params
-    #render :text => @authorized_key[:api_key]
-    render :text => req
+
+    # perse
+    json = JSON.parser.new(req)
+    hash = json.parse()
+
+    #
+    @developer_info = Hash.new
+    @developer_info[:total_count] = hash['total_count']
+    @developer_info[:developers] = hash['users']
+    #render :text => req
   end
 
   # GET /developers/auth
