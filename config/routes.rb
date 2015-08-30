@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get 'ticket_repositories/new'
 
   get 'developers/auth'
+  post 'developers/new'
 
   resources :projects
   resources :developers

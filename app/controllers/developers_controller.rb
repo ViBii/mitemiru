@@ -19,7 +19,7 @@ class DevelopersController < ApplicationController
 
   # GET /developers/auth
   def auth
-    @ticket_repository = TicketRepository.all
+    @authorized_key = TicketRepository.joins(:redmine_keys).uniq
   end
 
   # GET /developers/1/edit
