@@ -10,7 +10,7 @@
 <%= form_tag '/developers/new', method: :post do %>
   <div class="control-group">
     <%= label_tag(:ticket_repository_id, "リポジトリURL") %>
-    <%= collection_select({}, :ticket_repository_id, @authorized_key.all, :id, :url) %>
+    <%= collection_select(:get_id, :ticket_repository_id, @authorized_key.all, :id, :url) %>
   </div>
   <div class="control-group">
     <%= button_tag do %>
