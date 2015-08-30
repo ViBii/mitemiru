@@ -36,6 +36,11 @@ class DevelopersController < ApplicationController
     @developer_info = Hash.new
     @developer_info[:total_count] = hash['total_count']
     @developer_info[:developers] = hash['users']
+    @developer_info[:developers].each do |developer|
+      developer[:lastname] = developer['lastname']
+      developer[:firstname] = developer['firstname']
+      developer[:mail] = developer['mail']
+    end
     #render :text => req
   end
 
