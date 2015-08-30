@@ -1,3 +1,7 @@
+require 'kconv'
+require 'rest-client'
+require 'json'
+
 class DevelopersController < ApplicationController
   before_action :set_developer, only: [:show, :edit, :update, :destroy]
 
@@ -15,9 +19,11 @@ class DevelopersController < ApplicationController
   # GET /developers/new
   def new
     @developer = Developer.new
-    @test = Hash.new
-    @test[:id] = params[:get_id][:ticket_repository_id]
+    @ticket_repository = TicketRepository.find(params[:get_id][:ticket_repository_id])
+    #@test = Hash.new
+    #@test[:id] = params[:get_id][:ticket_repository_id]
     #render :text => @test[:id]
+    render :text => @ticket_repository[:url]
     #render :text => params
   end
 
