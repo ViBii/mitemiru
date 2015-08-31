@@ -17,6 +17,7 @@ class ProjectsController < ApplicationController
     @project = Project.new
     @authorized_key = Hash.new
     @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
+    @authorized_key[:ticket_repository_id] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:ticket_repository_id]
     @authorized_key[:login_name] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:login_name]
     @authorized_key[:password_digest] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:password_digest]
     @authorized_key[:api_key] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:api_key]
@@ -97,6 +98,9 @@ class ProjectsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
-      params.require(:project).permit(:name)
+      params.require(:project).permit(
+        :name,
+        :ticket_repository_id
+      )
     end
 end
