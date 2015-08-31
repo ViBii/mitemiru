@@ -1,0 +1,20 @@
+<div class="page-header">
+  <%= link_to developers_path, class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
+  <% end %>
+  <h1>新規開発者登録</h1>
+  <p>チケット管理システムのリポジトリを選択してください.</p>
+</div>
+
+<%= form_tag '/developers/new', method: :post do %>
+  <div class="control-group">
+    <%= label_tag(:ticket_repository_id, "リポジトリURL") %>
+    <%= collection_select(:get_id, :ticket_repository_id, @authorized_key.all, :id, :url) %>
+  </div>
+  <div class="control-group">
+    <%= button_tag do %>
+      <span>選択</span>
+    <% end %>
+  </div>
+<% end %>
