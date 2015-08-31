@@ -75,8 +75,9 @@ ActiveRecord::Schema.define(version: 20150828114459) do
   end
 
   create_table "version_repositories", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "commit_volume", limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
 end

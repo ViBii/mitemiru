@@ -25,16 +25,20 @@ class ProjectsController < ApplicationController
   # POST /projects
   # POST /projects.json
   def create
-    @project = Project.new(project_params)
-    CommitInfo.import(params[:project][:file])
+    @project = Project.new(
+      :name => params[:project][:name],
+      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
+      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
+      #:project_start_date,
+      #:project_end_date,
+    )
+    import_info = CommitInfo.import(params[:project][:file])
 
     respond_to do |format|
-      if @project.save && @version_repository.save
-        format.html { redirect_to @project, notice: 'Project was successfully created.' }
-        format.json { render :show, status: :created, location: @project }
+      if import_info && @project.save
+        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
       else
-        format.html { render :new }
-        format.json { render json: @project.errors, status: :unprocessable_entity }
+        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
       end
     end
   end
@@ -74,6 +78,7 @@ class ProjectsController < ApplicationController
         :name,
         :version_repository_id,
         :ticket_repository_id,
+        :file,
         :project_start_date,
         :project_end_date,
       )
@@ -81,9 +86,7 @@ class ProjectsController < ApplicationController
 
     def version_repository_params
       params.require(:version_repository).permit(
-        :developer_id,
-        :commit_id,
-        :commit_message
+        :commit_volume
       )
     end
 end
