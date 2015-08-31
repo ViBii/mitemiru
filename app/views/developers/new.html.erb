@@ -15,7 +15,6 @@
     <table class="table table-striped table-bordered table-hover">
       <thead>
         <tr>
-          <th>選択</th>
           <th>開発者名</th>
           <th>mail</th>
         </tr>
@@ -25,9 +24,8 @@
         <% @developer_info[:developers].each do |developer| %>
           <% name = developer['lastname']+' '+developer['firstname'] %>
           <tr>
-            <td><label><%= f.radio_button :name, name %></label></td>
-            <td><%= name %></td>
-            <td><%= developer['mail'] %></td>
+            <td><label><%= f.radio_button :name, name %><%= ' '+name %></label></td>
+            <td><label><%= f.radio_button :adress, developer['mail'] %><%= ' '+developer['mail'] %></label></td>
           </tr>
         <% end %>
       </tbody>
