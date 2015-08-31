@@ -29,19 +29,19 @@ class DevelopersController < ApplicationController
     req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_name], password: @authorized_key[:password_digest]
 
     # perse
-    json = JSON.parser.new(req)
-    hash = json.parse()
+    hash = JSON.parse(req)
 
     #
     @developer_info = Hash.new
     @developer_info[:total_count] = hash['total_count']
     @developer_info[:developers] = hash['users']
-    @developer_info[:developers].each do |developer|
-      developer[:lastname] = developer['lastname']
-      developer[:firstname] = developer['firstname']
-      developer[:mail] = developer['mail']
+
+    @developer_info[:name] = Array.new
+    for name in hash['users'] do
+      @developer_info[:name].push(name['lastname']+' '+name['firstname'])
     end
-    #render :text => req
+
+    #render :text => @developer_info[:name]
   end
 
   # GET /developers/auth
@@ -57,6 +57,7 @@ class DevelopersController < ApplicationController
   # POST /developers.json
   def create
     @developer = Developer.new(developer_params)
+    @developer.adress = 'testaddress'
 
     respond_to do |format|
       if @developer.save
