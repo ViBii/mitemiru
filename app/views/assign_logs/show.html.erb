@@ -3,17 +3,15 @@
     <span class="glyphicon glyphicon-list-alt"></span>
     戻る
   <% end %>
-  <%= link_to edit_assign_log_path(@assign_log), class: 'btn btn-primary' do %>
-    <span class="glyphicon glyphicon-pencil"></span>
-    編集
-  <% end %>
   <h1>所属情報詳細</h1>
 </div>
 
 <dl class="dl-horizontal">
   <dt>開発者名:</dt>
-  <dd><%= @assign_log.developer_id %></dd>
-  <dt>プロジェクト名名:</dt>
-  <dd><%= @assign_log.project_id %></dd>
+  <% @developer = Developer.find(@assign_log.developer_id) %>
+  <dd><%= @developer.name %></dd>
+  <dt>プロジェクト名:</dt>
+  <% @project = Project.find(@assign_log.project_id) %>
+  <dd><%= @project.name %></dd>
 
 </dl>
