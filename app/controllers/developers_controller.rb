@@ -1,3 +1,7 @@
+require 'kconv'
+require 'rest-client'
+require 'json'
+
 class DevelopersController < ApplicationController
   before_action :set_developer, only: [:show, :edit, :update, :destroy]
 
@@ -15,6 +19,34 @@ class DevelopersController < ApplicationController
   # GET /developers/new
   def new
     @developer = Developer.new
+    @authorized_key = Hash.new
+    @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
+    @authorized_key[:login_name] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:login_name]
+    @authorized_key[:password_digest] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:password_digest]
+    @authorized_key[:api_key] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:api_key]
+
+    # get user data
+    req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_name], password: @authorized_key[:password_digest]
+
+    # perse
+    hash = JSON.parse(req)
+
+    #
+    @developer_info = Hash.new
+    @developer_info[:total_count] = hash['total_count']
+    @developer_info[:developers] = hash['users']
+
+    @developer_info[:name] = Array.new
+    for name in hash['users'] do
+      @developer_info[:name].push(name['lastname']+' '+name['firstname'])
+    end
+
+    #render :text => @developer_info[:name]
+  end
+
+  # GET /developers/auth
+  def auth
+    @authorized_key = TicketRepository.joins(:redmine_keys).uniq
   end
 
   # GET /developers/1/edit
@@ -69,6 +101,9 @@ class DevelopersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def developer_params
-      params.require(:developer).permit(:name)
+      params.require(:developer).permit(
+        :name,
+        :adress
+      )
     end
 end
