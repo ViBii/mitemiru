@@ -34,7 +34,7 @@ gem 'bcrypt-ruby', '3.1.2'
 gem 'rest-client'
 
 # data analysis library
-gem gigit 
+gem install statsample
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
