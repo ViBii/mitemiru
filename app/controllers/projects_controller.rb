@@ -12,6 +12,11 @@ class ProjectsController < ApplicationController
   def show
   end
 
+  # GET /projects/auth
+  def auth
+    @authorized_key = TicketRepository.joins(:redmine_keys).uniq
+  end
+
   # GET /projects/auth_new
   def auth_new
     @project = Project.new
@@ -41,18 +46,9 @@ class ProjectsController < ApplicationController
     #render :text => @developer_info[:name]
   end
 
-  # GET /projects/auth
-  def auth
-    @authorized_key = TicketRepository.joins(:redmine_keys).uniq
-  end
-
-  # GET /projects/1/edit
-  def edit
-  end
-
   # POST /projects
   # POST /projects.json
-  def create
+  def auth_create
     @project = Project.new(project_params)
 
     respond_to do |format|
@@ -62,6 +58,36 @@ class ProjectsController < ApplicationController
       else
         format.html { render :new }
         format.json { render json: @project.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def new
+    @project = Project.new
+    @version_repository = VersionRepository.new
+  end
+
+  # GET /projects/1/edit
+  def edit
+  end
+
+  # POST /projects
+  # POST /projects.json
+  def create
+    @project = Project.new(
+      :name => params[:project][:name],
+      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
+      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
+      #:project_start_date,
+      #:project_end_date,
+    )
+    import_info = CommitInfo.import(params[:project][:file])
+
+    respond_to do |format|
+      if import_info && @project.save
+        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
+      else
+        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
       end
     end
   end
@@ -96,11 +122,20 @@ class ProjectsController < ApplicationController
       @project = Project.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
       params.require(:project).permit(
         :name,
-        :ticket_repository_id
+        :version_repository_id,
+        :ticket_repository_id,
+        :file,
+        :project_start_date,
+        :project_end_date,
+      )
+    end
+
+    def version_repository_params
+      params.require(:version_repository).permit(
+        :commit_volume
       )
     end
 end

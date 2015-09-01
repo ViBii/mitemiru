@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   get 'projects/auth'
   post 'projects/auth_new'
+  post 'projects/auth_create'
 
   resources :projects
   resources :developers
