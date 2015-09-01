@@ -1,5 +1,5 @@
-# DB
-/config/database.yml
+# secret
+/.env
 
 /.idea/
 

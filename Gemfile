@@ -41,6 +41,9 @@ gem 'bcrypt-ruby', '3.1.2'
 # Rest-client
 gem 'rest-client'
 
+# secret
+gem 'dotenv-rails'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
