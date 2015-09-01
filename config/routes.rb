@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   post 'developers/new'
 
   get 'projects/auth'
-  post 'projects/new'
+  post 'projects/auth_new'
 
   resources :projects
   resources :developers
