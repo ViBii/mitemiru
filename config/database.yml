@@ -13,7 +13,7 @@ development:
   database: mitemiru_development
   pool: 5
   username: root
-  password: *yourpassword*
+  password: <%= ENV['DB_PASSWORD'] %>
   host: localhost
 
 # Warning: The database defined as "test" will be erased and
@@ -29,10 +29,7 @@ test:
     host: localhost
 
 production:
-  adapter: mysql2
+  adapter: pg
   encoding: utf8
   database: mitemiru_production
   pool: 5
-  username: root
-  password:
-    host: localhost
