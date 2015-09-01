@@ -6,6 +6,7 @@ class TicketRepositoriesController < ApplicationController
   # GET /ticket_repositories/new
   def new
     @ticket_repository = TicketRepository.new
+    @ticket_info = TicketRepository.all
   end
 
   # POST /ticket_repositories/new

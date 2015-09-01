@@ -26,4 +26,20 @@
       <%= f.submit "登録", class: "btn btn-primary" %>
     </div>
   </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>登録済みリポジトリ</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= content_tag_for(:tr, @ticket_info) do |ticket_info| %>
+          <td><%= ticket_info.url %></td>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% end %>
