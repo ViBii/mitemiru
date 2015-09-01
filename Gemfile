@@ -3,14 +3,10 @@ source 'https://rubygems.org'
 # Rails
 gem 'rails', '4.2.3'
 # DB
+gem 'mysql2', :group => [:development, :test]
 group :production do
-  # heroku
   gem 'pg'
   gem 'rails_12factor'
-  # gem 'mysql2'
-end
-group :development, :test do
-  gem 'mysql2'
 end
 # SCSS
 gem 'sass-rails', '~> 5.0'
