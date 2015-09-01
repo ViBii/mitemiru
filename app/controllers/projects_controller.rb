@@ -12,8 +12,8 @@ class ProjectsController < ApplicationController
   def show
   end
 
-  # GET /projects/new
-  def new
+  # GET /projects/auth_new
+  def auth_new
     @project = Project.new
     @authorized_key = Hash.new
     @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
