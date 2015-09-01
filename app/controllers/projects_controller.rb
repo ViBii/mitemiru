@@ -15,6 +15,7 @@ class ProjectsController < ApplicationController
   # GET /projects/auth_new
   def auth_new
     @project = Project.new
+    @version_repository = VersionRepository.new
     @authorized_key = Hash.new
     @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
     @authorized_key[:ticket_repository_id] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:ticket_repository_id]
@@ -53,15 +54,20 @@ class ProjectsController < ApplicationController
   # POST /projects
   # POST /projects.json
   def create
-    @project = Project.new(project_params)
+    @project = Project.new(
+      :name => params[:project][:name],
+      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
+      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
+      #:project_start_date,
+      #:project_end_date,
+    )
+    import_info = CommitInfo.import(params[:project][:file])
 
     respond_to do |format|
-      if @project.save
-        format.html { redirect_to @project, notice: 'Project was successfully created.' }
-        format.json { render :show, status: :created, location: @project }
+      if import_info && @project.save
+        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
       else
-        format.html { render :new }
-        format.json { render json: @project.errors, status: :unprocessable_entity }
+        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
       end
     end
   end
@@ -96,11 +102,20 @@ class ProjectsController < ApplicationController
       @project = Project.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
       params.require(:project).permit(
         :name,
-        :ticket_repository_id
+        :version_repository_id,
+        :ticket_repository_id,
+        :file,
+        :project_start_date,
+        :project_end_date,
+      )
+    end
+
+    def version_repository_params
+      params.require(:version_repository).permit(
+        :commit_volume
       )
     end
 end
