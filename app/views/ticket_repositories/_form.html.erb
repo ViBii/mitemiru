@@ -11,7 +11,10 @@
       </ul>
     </div>
   <% end %>
-
+  <%= link_to '/redmine_keys/new', class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    Skip
+  <% end %>
   <div class="form-group">
     <%= f.label :url, "URL", class: "col-sm-2 control-label" %>
     <div class="col-sm-10">
@@ -23,8 +26,4 @@
       <%= f.submit "登録", class: "btn btn-primary" %>
     </div>
   </div>
-  <%= link_to '/redmine_keys/new', class: 'btn btn-default' do %>
-    <span class="glyphicon glyphicon-list-alt"></span>
-    Skip
-  <% end %>
 <% end %>
