@@ -33,6 +33,9 @@ gem 'bcrypt-ruby', '3.1.2'
 # Rest-client
 gem 'rest-client'
 
+#statsample
+gem 'statsample'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
