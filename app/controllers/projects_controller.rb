@@ -12,6 +12,10 @@ class ProjectsController < ApplicationController
   def show
   end
 
+  # GET /projects/info
+  def info
+  end
+
   # GET /projects/auth
   def auth
     @authorized_key = TicketRepository.joins(:redmine_keys).uniq
