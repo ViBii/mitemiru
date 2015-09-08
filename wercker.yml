@@ -1,4 +1,4 @@
-box: wercker/rvm
+box: ruby
 # Build definition
 # See the Rails section on the wercker devcenter:
 # http://devcenter.wercker.com/articles/languages/ruby/settingup-rails4.html
@@ -30,7 +30,6 @@ build:
 
     after-steps:
         - wantedly/pretty-slack-notify:
-            team: ViBi
             webhook_url: https://hooks.slack.com/services/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
             channel: ci_alerm
             username: WerckerCI
