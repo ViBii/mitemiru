@@ -35,8 +35,11 @@ build:
             username: WerckerCI
 deploy:
     steps:
-        - heroku-deploy
-        - script:
-            name: Update database
-#           code: heroku run rake db:migrate --app $APP_NAME
-            code: heroku run:detached rake db:migrate --app mitemiru
+      - heroku-deploy:
+        install-toolbelt: true
+        key: $HEROKU_KEY
+        user: $HEROKU_USER
+        app-name: $APP_NAME
+      - script:
+        name: Update database
+        code: heroku run rake db:migrate –app $APP_NAME
