@@ -42,4 +42,4 @@ deploy:
         app-name: $APP_NAME
       - script:
         name: Update database
-        code: heroku run rake db:migrate –app $APP_NAME
+        code: heroku run rake db:migrate –app mitemiru
