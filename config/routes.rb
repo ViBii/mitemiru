@@ -14,10 +14,16 @@ Rails.application.routes.draw do
   get 'developers/auth'
   post 'developers/new'
 
+  get 'projects/info'
+  get 'projects/auth'
+  post 'projects/auth_new'
+  post 'projects/auth_create'
+
   resources :projects
   resources :developers
   resources :ticket_repositories
   resources :redmine_keys
+  resources :assign_logs
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

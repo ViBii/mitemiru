@@ -3,7 +3,11 @@ source 'https://rubygems.org'
 # Rails
 gem 'rails', '4.2.3'
 # DB
-gem 'mysql2'
+gem 'mysql2', :group => [:development, :test]
+group :production do
+  gem 'pg'
+  gem 'rails_12factor'
+end
 # SCSS
 gem 'sass-rails', '~> 5.0'
 # Uglifier
@@ -33,8 +37,11 @@ gem 'bcrypt-ruby', '3.1.2'
 # Rest-client
 gem 'rest-client'
 
-#statsample
+# statsample
 gem 'statsample'
+
+# secret
+gem 'dotenv-rails'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

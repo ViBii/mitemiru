@@ -1,16 +1,16 @@
 <div class="page-header">
-  <%= link_to developers_path, class: 'btn btn-default' do %>
+  <%= link_to projects_path, class: 'btn btn-default' do %>
     <span class="glyphicon glyphicon-list-alt"></span>
     戻る
   <% end %>
-  <h1>新規開発者登録</h1>
+  <h1>新規プロジェクト登録</h1>
   <p>
   Redmineリポジトリを選択してください。
   選択フォームに表示されない場合は、右上の「各種管理」をクリックし、Redmine認証情報登録をおこなってください。
   </p>
 </div>
 
-<%= form_tag '/developers/new', method: :post do %>
+<%= form_tag '/projects/auth_new', method: :post do %>
   <div class="control-group">
     <%= label_tag(:ticket_repository_id, "リポジトリURL") %>
     <%= collection_select(:get_id, :ticket_repository_id, @authorized_key.all, :id, :url) %>
