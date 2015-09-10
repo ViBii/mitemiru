@@ -7,13 +7,12 @@ class ProjectsController < ApplicationController
     @projects = Project.all
   end
 
-  # GET /projects/1
-  # GET /projects/1.json
-  def show
+  def select_developer
   end
 
-  # GET /projects/info
-  def info
+  def new
+    @project = Project.new
+    @version_repository = VersionRepository.new
   end
 
   # GET /projects/auth
@@ -66,10 +65,6 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def new
-    @project = Project.new
-    @version_repository = VersionRepository.new
-  end
 
   # GET /projects/1/edit
   def edit

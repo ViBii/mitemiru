@@ -18,7 +18,7 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <%= render(:partial => "./shared/header", :locals => {:selected_value => "", :show_header => false}) %>
+    <%= render(:partial => "./layouts/header", :locals => {:selected_value => "", :show_header => false}) %>
 
     <div class="container">
       <% flash.each do |name, msg| %>
