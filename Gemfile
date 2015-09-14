@@ -37,6 +37,9 @@ gem 'bcrypt-ruby', '3.1.2'
 # Rest-client
 gem 'rest-client'
 
+# statsample
+gem 'statsample'
+
 # secret
 gem 'dotenv-rails'
 
