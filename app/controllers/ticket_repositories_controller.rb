@@ -6,13 +6,14 @@ class TicketRepositoriesController < ApplicationController
   # GET /ticket_repositories/new
   def new
     @ticket_repository = TicketRepository.new
+    @ticket_info = TicketRepository.all
   end
 
   # POST /ticket_repositories/new
   def create
     @ticket_repository = TicketRepository.new(ticket_repository_params)
     if @ticket_repository.save
-      redirect_to '/ticket_repositories/new', notice: 'Ticket repository\'s successfully registered.'
+      redirect_to '/redmine_keys/new', notice: 'Ticket repository URL is successfully registered.'
     else
       redirect_to '/ticket_repositories/new', status: 'Failed to register.'
     end

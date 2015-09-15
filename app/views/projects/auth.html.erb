@@ -4,10 +4,13 @@
     戻る
   <% end %>
   <h1>新規プロジェクト登録</h1>
-  <p>チケット管理システムのリポジトリを選択してください.</p>
+  <p>
+  Redmineリポジトリを選択してください。
+  選択フォームに表示されない場合は、右上の「各種管理」をクリックし、Redmine認証情報登録をおこなってください。
+  </p>
 </div>
 
-<%= form_tag '/projects/new', method: :post do %>
+<%= form_tag '/projects/auth_new', method: :post do %>
   <div class="control-group">
     <%= label_tag(:ticket_repository_id, "リポジトリURL") %>
     <%= collection_select(:get_id, :ticket_repository_id, @authorized_key.all, :id, :url) %>
