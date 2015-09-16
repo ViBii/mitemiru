@@ -20,9 +20,8 @@
       <%= content_tag_for(:tr, @developers) do |developer| %>
         <td><%= link_to developer.name, developer %></td>
         <td><%= developer.adress %></td>
-        <td>
-            <%= link_to image_tag('blue_edit.png', { :border => '0', :alt => 'change'}), edit_developer_path(developer) %>
-            <%= link_to image_tag('blue_delete.png', { :border => '0', :alt => 'delete'}), developer, method: :delete, data: { confirm: 'Are you sure?' } %>
+        <td><%= link_to '編集', edit_developer_path(developer) %></td>
+        <td><%= link_to '削除', developer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
     <% end %>
     </tbody>
   </table>
