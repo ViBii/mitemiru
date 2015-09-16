@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   get 'projects/info'
   get 'projects/auth'
+  get 'commit_counter/getcommits'
   post 'projects/auth_new'
   post 'projects/auth_create'
 
