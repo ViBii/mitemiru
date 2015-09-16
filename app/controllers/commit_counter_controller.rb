@@ -1,7 +1,3 @@
-require 'kconv'
-require 'rest-client'
-require 'json'
-
 class CommitCounterController < ApplicationController
   def index
 
