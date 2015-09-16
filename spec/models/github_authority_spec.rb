@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe "find_developers/index.html.erb", type: :view do
+RSpec.describe GithubAuthority, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end
