@@ -19,7 +19,13 @@ class CommitCounterController < ApplicationController
     # perse
     hash = JSON.parse(req)
 
-    render :text => hash
+    finalstr = ""
+    hash.each do |json|
+      # Rails.logger.info json.inspect
+      finalstr.concat(json['author']['login'] + ":" + json['total'].to_s + "<br>")
+    end
+
+    render :text => finalstr
 
   end
 end
