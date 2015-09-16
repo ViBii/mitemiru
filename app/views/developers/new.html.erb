@@ -25,7 +25,7 @@
           <% name = developer['lastname']+' '+developer['firstname'] %>
           <tr>
             <td><label><%= f.radio_button :name, name %><%= ' '+name %></label></td>
-            <td><label><%= f.radio_button :adress, developer['mail'] %><%= ' '+developer['mail'] %></label></td>
+            <td><label><%= f.radio_button :email, developer['mail'] %><%= ' '+developer['mail'] %></label></td>
           </tr>
         <% end %>
       </tbody>
