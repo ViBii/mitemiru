@@ -10,7 +10,7 @@ class CommentsCounterController < ApplicationController
     finalstr = ""
     issues.each do |issue|
     finalstr.concat("IssueNum: " + issue['number'].to_s + " IssueTitle: " + issue['title'])
-    #issue['assignee']['login'].to_s + "<br>"
+    #issue属性の中身がnilではない場合、assignee開発者の名前を表示する
       if issue['assignee'] != nil then
         finalstr.concat(" AssigneeName: "+issue['assignee']['login'] + "<br>")
       else
