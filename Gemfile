@@ -43,6 +43,9 @@ gem 'dotenv-rails'
 # gon
 gem 'gon'
 
+# statsample
+gem 'statsample'
+
 group :development, :test do
   # ER_Chart
   # brew install graphviz
@@ -60,14 +63,15 @@ group :development, :test do
   gem 'launchy'
   gem 'poltergeist'
   gem 'database_cleaner'
-  gem 'pry-rails'              # railsでpryが使える
-  gem 'pry-byebug'             # pryでデバックコマンドが使える
-  gem 'better_errors'          # エラー画面を見やすくする
+  # pry
+  gem 'pry-rails'
+  # debug
+  gem 'pry-byebug'
+  # error_window
+  gem 'better_errors'
   gem 'binding_of_caller'
   gem 'byebug'
-  # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'execjs'
   gem 'therubyracer'
