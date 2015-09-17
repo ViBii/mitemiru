@@ -11,8 +11,29 @@ class ProjectsController < ApplicationController
   end
 
   def new
-    @project = Project.new
-    @version_repository = VersionRepository.new
+  end
+
+  def create
+    @project = Project.new(
+      :name => params[:project][:name],
+      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
+      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
+      #:project_start_date,
+      #:project_end_date,
+    )
+    import_info = CommitInfo.import(params[:project][:file])
+
+    respond_to do |format|
+      if import_info && @project.save
+        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
+      else
+        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
+      end
+    end
+  end
+
+  def auth_redmine
+
   end
 
   # GET /projects/auth
@@ -72,24 +93,6 @@ class ProjectsController < ApplicationController
 
   # POST /projects
   # POST /projects.json
-  def create
-    @project = Project.new(
-      :name => params[:project][:name],
-      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
-      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
-      #:project_start_date,
-      #:project_end_date,
-    )
-    import_info = CommitInfo.import(params[:project][:file])
-
-    respond_to do |format|
-      if import_info && @project.save
-        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
-      else
-        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
-      end
-    end
-  end
 
   # PATCH/PUT /projects/1
   # PATCH/PUT /projects/1.json

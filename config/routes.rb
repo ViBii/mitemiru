@@ -9,8 +9,8 @@ Rails.application.routes.draw do
   get 'base/setting'
 
   get 'projects/select_developer'
-  get 'projects/auth_redmine'
-  get 'projects/auth_github'
+  post 'projects/auth_redmine'
+  post 'projects/auth_github'
 
   resources :projects
   resources :developers
