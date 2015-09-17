@@ -33,7 +33,25 @@ class ProjectsController < ApplicationController
   end
 
   def auth_redmine
+    params['url']
+    params['login_name']
+    params['password_digest']
+    params['api_key']
+    project_req = RestClient::Request.execute method: :get,
+      url:      params['url'] + '/projects.json',
+      user:     params['login_name'],
+      password: params['password_digest']
+    redmine_projects = JSON.parse(project_req)
+    total_count = redmine_projects['total_count']
+    projects = redmine_projects['projects']
 
+    developer_req = RestClient::Request.execute method: :get,
+      url:      params['url'] + '/users.json',
+      user:     params['login_name'],
+      password: params['password_digest']
+    redmine_developers = JSON.parse(developer_req)
+    users = redmine_developers['users']
+    render text: users
   end
 
   # GET /projects/auth

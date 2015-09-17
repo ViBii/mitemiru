@@ -29,7 +29,7 @@ gem 'autoprefixer-rails'
 gem 'bootstrap-generators'
 
 # HighCharts
-gem 'lazy_high_charts'
+# gem 'lazy_high_charts'
 
 # Password
 gem 'bcrypt-ruby', '3.1.2'
@@ -40,24 +40,14 @@ gem 'rest-client'
 # secret
 gem 'dotenv-rails'
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use Unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
+# gon
+gem 'gon'
 
 group :development, :test do
   # ER_Chart
   # brew install graphviz
   # http://qiita.com/satton_maroyaka/items/55e6cf42bd677c94d0d5
   gem 'rails-erd'
-
   gem 'teaspoon'
   gem 'selenium-webdriver'
   gem 'blanket-rails'
