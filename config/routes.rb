@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   get 'developers/auth'
   post 'developers/new'
+  get 'comments_counter/getcomments'
 
   get 'projects/info'
   get 'projects/auth'
