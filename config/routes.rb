@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'version_repositories/index'
+
   get 'datasamples/index'
 
   get 'redmine_keys/new'
@@ -11,7 +13,9 @@ Rails.application.routes.draw do
 
   get 'base/setting'
 
-  get 'ticket_repositories/new'
+  get 'ticket_repositories/index'
+
+  get 'version_repositories/index'
 
   get 'developers/auth'
   post 'developers/new'
@@ -24,6 +28,7 @@ Rails.application.routes.draw do
   resources :projects
   resources :developers
   resources :ticket_repositories
+  resources :version_repositories
   resources :redmine_keys
   resources :assign_logs
   # The priority is based upon order of creation: first created -> highest priority.
