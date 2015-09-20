@@ -1,4 +1,8 @@
 <div class="page-header">
+  <%= link_to '/base/setting', class: 'btn btn-default' do %>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      戻る
+  <% end %>
   <h1>プロジェクト一覧</h1>
 </div>
 
@@ -10,6 +14,7 @@
         <th>バージョン管理ツール</th>
         <th>チケット管理ツール</th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
 
@@ -18,9 +23,8 @@
         <td><%= link_to project.name, project %></td>
         <td><%= project.version_repository_id %></td>
         <td><%= project.ticket_repository_id %></td>
-        <td>
-            <%= link_to image_tag('blue_edit.png', { :border => '0', :alt => 'change'}), edit_project_path(project) %>
-            <%= link_to image_tag('blue_delete.png', { :border => '0', :alt => 'change'}), project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to '編集', edit_project_path(project) %></td>
+        <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>
   </table>
