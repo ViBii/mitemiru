@@ -31,7 +31,7 @@ class CommentsCounterController < ApplicationController
 
     issues.each do |issue|
 
-      #assigneeArgが担当してないissueの一覧表示
+      #assigneeArgが担当してない,かつ comment数は0ではないissueの一覧表示
       if (issue['assignee'] == nil || issue['assignee']['login'] != assigneeArg) && issue['comments'] != 0 then
         finalstr.concat("IssueNum: " + issue['number'].to_s + " IssueTitle: " + issue['title'])
         if issue['assignee'] != nil then
