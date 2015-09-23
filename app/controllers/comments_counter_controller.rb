@@ -10,34 +10,38 @@ class CommentsCounterController < ApplicationController
     #issuesの担当者のfilter
     assigneeArg = "Altairzym"
 
-    Octokit.auto_paginate = true
+    #認証を取る
+    cl = Octokit::Client.new(login: "Altairzym", oauth_token: "c37202470329cc3edda1a82ce5943aab4942bce2")
+    #repos = cl.repositories("komasaru", {sort: :pushed_at})
 
-    #複数filterの場合
-    #issues = Octokit.list_issues("ViBii/mitemiru",state: stateArg,assignee: assigneeArg)
+    cl.auto_paginate = true
 
-    issues = Octokit.list_issues("ViBii/mitemiru",state: stateArg)
+    issues = cl.list_issues("ViBii/mitemiru",state: stateArg)
     #issues.length
 
     finalstr = ""
-    #issues.each do |issue|
-    #finalstr.concat("IssueNum: " + issue['number'].to_s + " IssueTitle: " + issue['title'])
-    #issue属性の中身がnilではない場合、assignee開発者の名前を表示する
-    #  if issue['assignee'] != nil then
-    #    finalstr.concat(" AssigneeName: "+issue['assignee']['login'] + "<br>")
-    #  else
-    #    finalstr.concat(" AssigneeName: nil<br>")
-    #  end
-    #end
 
     issues.each do |issue|
 
-      #assigneeArgが担当してない,かつ comment数は0ではないissueの一覧表示
-      if (issue['assignee'] == nil || issue['assignee']['login'] != assigneeArg) && issue['comments'] != 0 then
+      #assigneeArgが担当してない,かつ comment数は0ではない,かつ 担当者がnilではないissueの一覧表示
+      if issue['assignee'] != nil && issue['assignee']['login'] != assigneeArg && issue['comments'] != 0 then
+        #各issueのcommentsの取得
+        comments = Octokit.issue_comments("octokit/octokit.rb", issue['number'].to_s)
+
+        counter = 0
+
+        #commentsから該当開発者の発言を合計する
+        comments.each do |comment|
+          if comment['user']['login'] == assigneeArg
+            counter = counter + 1
+          end
+        end
+
         finalstr.concat("IssueNum: " + issue['number'].to_s + " IssueTitle: " + issue['title'])
         if issue['assignee'] != nil then
-          finalstr.concat(" AssigneeName: "+issue['assignee']['login'] + " comments: " + issue['comments'].to_s + "<br><br>")
+          finalstr.concat(" AssigneeName: "+issue['assignee']['login'] + " comments: " + issue['comments'].to_s + " comment回数: "+ counter.to_s + "<br><br>")
         else
-          finalstr.concat(" AssigneeName: nil comments: " + issue['comments'].to_s + "<br><br>")
+          finalstr.concat(" AssigneeName: nil comments: " + issue['comments'].to_s + " comment回数: "+ counter.to_s + "<br><br>")
         end
       end
     end
