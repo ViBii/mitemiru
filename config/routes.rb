@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   get 'commit_counter/index'
   post 'commit_counter/index'
 
+  post 'commit_counter/select_projects'
+  post 'commit_counter/draw_graph'
+
   get 'redmine_keys/new'
 
   get 'comp/index'
