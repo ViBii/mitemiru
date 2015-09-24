@@ -6,12 +6,12 @@ class CommitCounterController < ApplicationController
     
     # The number of commits
     # Sample data
-    @commit_info[:count] = [12, 30]
+    @commit_info[:count] = [11, 30, 3]
     gon.commit_count = @commit_info[:count]
 
-    # Project ID
+    # Project name
     # Sample data
-    @commit_info[:project_id] = [1, 4]
-    gon.project_id = @commit_info[:project_id]
+    @commit_info[:project_name] = ['MITEMIRU', 'サンプルプロジェクト', '炎上プロジェクト']
+    gon.project_name = @commit_info[:project_name]
   end
 end
