@@ -1,7 +1,0 @@
-<%= form_tag({:controller => 'commit_counter', :action => 'select_projects'}, remote: true) do %>
-  <div class="control-group">
-    <%= label_tag(:developer_id, "開発者名") %>
-    <%= collection_select(:developer_info, :developer_id, @developer.all, :id, :name) %>
-    <%= button_to "Select" %>
-  </div>
-<% end %>

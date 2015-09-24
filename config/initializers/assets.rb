@@ -11,4 +11,4 @@ Rails.application.config.assets.version = '1.0'
 # Rails.application.config.assets.precompile += %w( search.js )
 
 #commit_counter
-Rails.application.config.assets.precompile += %w( commit_counter.js )
+Rails.application.config.assets.precompile += %w( commit_counter_graph.js )

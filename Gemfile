@@ -40,6 +40,9 @@ gem 'rest-client'
 # secret
 gem 'dotenv-rails'
 
+# gon
+gem 'gon'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

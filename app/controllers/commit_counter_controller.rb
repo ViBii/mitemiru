@@ -1,12 +1,11 @@
 class CommitCounterController < ApplicationController
   def index
-    @developer = Developer.all
-  end
+    #コミット数の集計処理を記載
 
-  def select_projects
-    @project = Project.all
-  end
+    @commit_info = Hash.new
+    # The number of commits
+    @commit_info[:count] = 12
 
-  def draw_graph
+    gon.commit_count = @commit_info[:count]
   end
 end
