@@ -6,8 +6,9 @@ class CommitCounterController < ApplicationController
   def getcommits
 
     #repo設定
-    githubRepo = "ViBii/mitemiru"
-
+    @version_repo_id = 1
+    repo_url = VersionRepository.find(@version_repo_id)[:url]
+    githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
     contributors = Octokit.contribs(githubRepo)
 
     #@version_repo_id = 1
@@ -28,7 +29,7 @@ class CommitCounterController < ApplicationController
     contributors.each do |contributor|
       finalstr.concat(contributor['login'] + ":" + contributor['contributions'].to_s + "<br>")
     end
-    
+
     render :text => finalstr
 
   end
