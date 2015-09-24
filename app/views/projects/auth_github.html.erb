@@ -1,1 +1,31 @@
-<%= @a %>
+<%= form_tag('/projects/create') do %>
+  <% @scope_projects.each do |scope_project| %>
+    <h2><%= scope_project %></h2>
+    <br>
+    <div class="form-group">
+      <div class="table-responsive">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">ＵＲＬ</label>
+          <div class="col-sm-8">
+            <input type="text" name="url" class="form-control" id="url" />
+          </div>
+        </div>
+        <br>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">ログイン名</label>
+          <div class="col-sm-5">
+            <input type="text" name="login_name" class="form-control" id="login_name" />
+          </div>
+        </div>
+        <br>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">パスワード</label>
+          <div class="col-sm-5">
+            <input type="text" name="password_digest" class="form-control" id="password_digest" />
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <%= submit_tag "登録", class: "btn btn-primary" %>
+<% end %>
