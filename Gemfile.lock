@@ -38,7 +38,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     arel (6.0.3)
-    autoprefixer-rails (6.0.2)
+    autoprefixer-rails (6.0.3)
       execjs
       json
     awesome_print (1.6.1)
@@ -101,6 +101,8 @@ GEM
     factory_girl_rails (4.5.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
+    faraday (0.9.1)
+      multipart-post (>= 1.2, < 3)
     ffi (1.9.10)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
@@ -128,16 +130,19 @@ GEM
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
-    mime-types (2.6.1)
+    mime-types (2.6.2)
     mini_portile (0.6.2)
     minimization (0.2.3)
       text-table (~> 1.2)
-    minitest (5.8.0)
+    minitest (5.8.1)
     multi_json (1.11.2)
+    multipart-post (2.0.0)
     mysql2 (0.3.20)
     netrc (0.10.3)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
+    octokit (4.1.0)
+      sawyer (~> 0.6.0, >= 0.5.3)
     pg (0.18.3)
     phantomjs (1.9.8.0)
     poltergeist (1.6.0)
@@ -246,6 +251,9 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sawyer (0.6.0)
+      addressable (~> 2.3.5)
+      faraday (~> 0.8, < 0.10)
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
@@ -335,6 +343,7 @@ DEPENDENCIES
   jquery-rails
   launchy
   mysql2 (~> 0.3.20)
+  octokit (~> 4.0)
   pg
   phantomjs
   poltergeist

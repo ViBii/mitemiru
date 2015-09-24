@@ -75,4 +75,5 @@ group :development, :test do
   gem 'spring'
   gem 'execjs'
   gem 'therubyracer'
+  gem "octokit", "~> 4.0"
 end
