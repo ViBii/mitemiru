@@ -1,7 +1,7 @@
 var signUpRedmine = function() {
   $.ajax({
     type: 'post',
-    url: 'auth_redmine',
+    url: 'select_developer',
     data: {
       url: $('#url').val(),
       login_name: $('#login_name').val(),
@@ -10,6 +10,7 @@ var signUpRedmine = function() {
     }
   })
   .done(function(returnData) {
-    $('#addArea').append('<li>' + returnData + '</li>');
+    $('#addArea').append(returnData);
   });
 }
+

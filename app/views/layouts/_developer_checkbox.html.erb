@@ -1,0 +1,6 @@
+<% @developers.each do |developer| %>
+  <%= check_box_tag 'develper[id][]', developer["id"] %>
+  <%= developer["lastname"] + developer["firstname"] %>
+  <%= developer["mail"] %>
+  <br>
+<% end %>

@@ -16,15 +16,8 @@ Vibi.load = function(e) {
   if(gon.controller === "projects") {
     if(gon.action === "select_developer") {
       $('#redmine_auth_button').click(function() {
-        console.log('aaa');
         signUpRedmine();
       });
-    }
-
-    if(gon.action === "new") {
-    }
-
-    if(gon.action === "edit") {
     }
   };
 
