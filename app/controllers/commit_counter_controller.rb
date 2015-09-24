@@ -6,12 +6,19 @@ class CommitCounterController < ApplicationController
     
     # The number of commits
     # Sample data
-    @commit_info[:count] = [11, 30, 3]
-    gon.commit_count = @commit_info[:count]
+    @commit_info[:own_commit] = 11
+    @commit_info[:all_commit] = 90
+    gon.own_commit = @commit_info[:own_commit]
+    gon.all_commit = @commit_info[:all_commit]
 
     # Developer name
     # Sample data
-    @commit_info[:developer_name] = ['玄葉', '戸塚', '興戸']
+    @commit_info[:developer_name] = '玄葉 条士郎'
     gon.developer_name = @commit_info[:developer_name]
+
+    # Developer num
+    # SampleData
+    @commit_info[:developer_num] = 10;
+    gon.developer_num = @commit_info[:developer_num]
   end
 end
