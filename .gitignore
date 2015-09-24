@@ -38,5 +38,6 @@ bower.json
 # Ignore pow environment settings
 .powenv
 *.swp
+*.tmp
 
 .DS_Store

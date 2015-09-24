@@ -1,0 +1,13 @@
+<%= form_tag('/projects/auth_github') do %>
+  <% developers.each do |developer| %>
+    <%= check_box_tag "developer[id][]", developer["id"] %>
+    <%= developer["lastname"] + developer["firstname"] %>
+    <%= developer["mail"] %>
+    <br>
+  <% end %>
+  <%= hidden_field_tag :url, @url %>
+  <%= hidden_field_tag :login_name, @login_name %>
+  <%= hidden_field_tag :password_digest, @password_digest %>
+  <%= hidden_field_tag :api_key, @api_key %>
+  <%= submit_tag "次へ", class: "btn btn-primary" %>
+<% end %>

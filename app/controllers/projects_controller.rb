@@ -9,25 +9,48 @@ class ProjectsController < ApplicationController
 
   def select_developer
     if request.xhr?
-      project_req = RestClient::Request.execute method: :get,
-        url:      params['url'] + '/projects.json',
-        user:     params['login_name'],
-        password: params['password_digest']
-      redmine_projects = JSON.parse(project_req)
-      total_count = redmine_projects['total_count']
-      projects = redmine_projects['projects']
+      @url             = params['url']
+      @login_name      = params['login_name']
+      @password_digest = params['password_digest']
+      @api_key         = params['api_key']
+
+      # Redmineの全プロジェクトを取得するスクリプト
+      # project_req = RestClient::Request.execute method: :get,
+      #   url:      params['url'] + '/projects.json',
+      #   user:     params['login_name'],
+      #   password: params['password_digest']
+      # redmine_projects = JSON.parse(project_req)
+      # total_count = redmine_projects['total_count']
+      # projects = redmine_projects['projects']
 
       developer_req = RestClient::Request.execute method: :get,
         url:      params['url'] + '/users.json',
         user:     params['login_name'],
         password: params['password_digest']
       redmine_developers = JSON.parse(developer_req)
-      @developers = redmine_developers['users']
-      render :partial => "./layouts/developer_checkbox"
+      developers = redmine_developers['users']
+      render :partial => "developer_checkbox", :locals => { developers: developers }
     end
   end
 
-  def new
+  def auth_github
+    url             = params['url']
+    login_name      = params['login_name']
+    password_digest = params['password_digest']
+    api_key         = params['api_key']
+    scope_projects  = []
+
+    params[:developer][:id].each do |developer_id|
+      project_req = RestClient::Request.execute method: :get,
+        url:      params['url'] + "/users/#{developer_id}.json?include=memberships,groups",
+        user:     params['login_name'],
+        password: params['password_digest']
+      redmine_projects = JSON.parse(project_req)
+      redmine_projects["user"]["memberships"].each do |project|
+        scope_projects << project["project"]["name"]
+      end
+    end
+    @a = scope_projects.uniq!
   end
 
   def create
