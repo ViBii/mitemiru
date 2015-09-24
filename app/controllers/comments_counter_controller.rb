@@ -11,8 +11,8 @@ class CommentsCounterController < ApplicationController
     assigneeArg = "yaginuuu"
 
     #システム利用者github認証
-    githubUserName = "Altairzym"
-    githubUserPW = "z13299928050"
+    githubUserName = "UserName"
+    githubUserPW = "PW"
 
     #repo設定
     githubRepo = "ViBii/mitemiru"
