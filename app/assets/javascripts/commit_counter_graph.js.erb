@@ -1,97 +1,108 @@
 var commit_count = gon.commit_count;
-var project_id = gon.project_name;
+var developer_name = gon.developer_name;
+var color = d3.scale.category20();
 
-var xPadding = 140;
-var yPadding = 20;
-var barPadding = 2;
-var barWidth = 150;
+var topPadding = 50;
+var leftPadding = 150;
+var rightPadding = 20;
+var w = 500+leftPadding+rightPadding;
+var h = 400;
 
-var w = xPadding + commit_count.length * (barWidth + barPadding);
-var h = 420;
+var sum = function(arr) {
+  var sum = 0;
+  arr.forEach(function(elm) {
+    sum += elm;
+  });
+  return sum;
+};
 
-var yScale = d3.scale.linear()
-               .domain([0, d3.max(commit_count)])
-               .range([h-yPadding, yPadding])
+var xScale = d3.scale.linear()
+               .domain([0, sum(commit_count)])
+               .range([0, 500])
                .nice();
 
-var yAxis = d3.svg.axis()
-                  .scale(yScale)
-                  .orient("left");
+var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom");
 
 var svg = d3.select("body")
             .append("svg")
             .attr("width", w)
             .attr("height", h);
 
-// y軸の表示
+// x軸の表示
 svg.append("g")
    .attr({
      class: "axis",
-     transform: "translate(140, 0)"
+     transform: "translate(150, 200)"
    })
-   .call(yAxis);
+   .call(xAxis);
 
 // y軸のラベル
-svg.append("text")
-   .text("コミット数")
-   .attr("x", xPadding-50)
-   .attr("y", h/2)
-   .attr("text-anchor", "middle")
-   .attr("writing-mode", "tb")
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "15px");
+//svg.append("text")
+//   .text("コミット数")
+//   .attr("x", xPadding-50)
+//   .attr("y", h/2)
+//   .attr("text-anchor", "middle")
+//   .attr("writing-mode", "tb")
+//   .attr("font-family", "sans-serif")
+//   .attr("font-size", "15px");
 
 // 棒グラフの描画
 svg.selectAll("rect")
    .data(commit_count)
    .enter()
    .append("rect")
-   .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth);
+   .attr("x", function(d,i) {
+     var x = 0;
+     for (var j=0; j<i; j++) {
+       x += commit_count[j];
+     }
+     return leftPadding + xScale(x);
    })
-   .attr("y", function(d) {
-     return yScale(d);
+   .attr("y", 50)
+   .attr("width", function(d) {
+     return xScale(d);
    })
-   .attr("width", barWidth)
-   .attr("height", function(d) {
-     return h-yScale(d)-yPadding;
-   })
-   .attr("fill", "teal");
+   .attr("height", 100) 
+   .attr("fill", function(d, i) {
+     return color(i);
+   });
 
 // 棒グラフの高さのテキスト表示
-svg.selectAll("graph_tag")
-   .data(commit_count)
-   .enter()
-   .append("text")
-   .text(function(d) {
-     return d;
-   })
-   .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
-   })
-   .attr("y", function(d) {
-     return yScale(d) + 25;
-   })
-   .attr("text-anchor", "middle")
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "20px")
-   .attr("fill", "white");
+//svg.selectAll("graph_tag")
+//   .data(commit_count)
+//   .enter()
+//   .append("text")
+//   .text(function(d) {
+//     return d;
+//   })
+//   .attr("x", function(d, i) {
+//     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
+//   })
+//   .attr("y", function(d) {
+//     return yScale(d) + 25;
+//   })
+//   .attr("text-anchor", "middle")
+//   .attr("font-family", "sans-serif")
+//   .attr("font-size", "20px")
+//   .attr("fill", "white");
 
-// プロジェクト名の表示
-svg.selectAll("project_name")
-   .data(project_id)
-   .enter()
-   .append("text")
-   .text(function(d) {
-     return d;
-   })
-   .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
-   })
-   .attr("y", function(d) {
-     return h-6;
-   })
-   .attr("text-anchor", "middle")
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "11px")
-   .attr("fill", "black");
+// 開発者名の表示
+//svg.selectAll("developer_name")
+//   .data(developer_name)
+//   .enter()
+//   .append("text")
+//   .text(function(d) {
+//     return d;
+//   })
+//   .attr("x", function(d, i) {
+//     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
+//   })
+//   .attr("y", function(d) {
+//     return h-6;
+//   })
+//   .attr("text-anchor", "middle")
+//   .attr("font-family", "sans-serif")
+//   .attr("font-size", "11px")
+//   .attr("fill", "black");
