@@ -7,19 +7,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>MITEMIRU</title>
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <%= javascript_include_tag "https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js", "https://oss.maxcdn.com/respond/1.4.2/respond.min.js" %>
-    <![endif]-->
+    <%= include_gon %>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <%= render(:partial => "./shared/header", :locals => {:selected_value => "", :show_header => false}) %>
-
+    <%= render(:partial => "./layouts/header", :locals => {:selected_value => "", :show_header => false}) %>
     <div class="container">
       <% flash.each do |name, msg| %>
         <%= content_tag :div, class: "alert alert-#{ name == :error ? "danger" : "success" } alert-dismissable", role: "alert" do %>
@@ -27,7 +22,6 @@
           <%= msg %>
         <% end %>
       <% end %>
-
       <%= yield %>
     </div>
   </body>
