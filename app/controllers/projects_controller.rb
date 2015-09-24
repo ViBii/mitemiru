@@ -7,13 +7,46 @@ class ProjectsController < ApplicationController
     @projects = Project.all
   end
 
-  # GET /projects/1
-  # GET /projects/1.json
-  def show
+  def select_developer
+    if request.xhr?
+      project_req = RestClient::Request.execute method: :get,
+        url:      params['url'] + '/projects.json',
+        user:     params['login_name'],
+        password: params['password_digest']
+      redmine_projects = JSON.parse(project_req)
+      total_count = redmine_projects['total_count']
+      projects = redmine_projects['projects']
+
+      developer_req = RestClient::Request.execute method: :get,
+        url:      params['url'] + '/users.json',
+        user:     params['login_name'],
+        password: params['password_digest']
+      redmine_developers = JSON.parse(developer_req)
+      @developers = redmine_developers['users']
+      render :partial => "./layouts/developer_checkbox"
+    end
   end
 
-  # GET /projects/info
-  def info
+  def new
+  end
+
+  def create
+    @project = Project.new(
+      :name => params[:project][:name],
+      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
+      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
+      #:project_start_date,
+      #:project_end_date,
+    )
+    import_info = CommitInfo.import(params[:project][:file])
+
+    respond_to do |format|
+      if import_info && @project.save
+        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
+      else
+        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
+      end
+    end
   end
 
   # GET /projects/auth
@@ -66,10 +99,6 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def new
-    @project = Project.new
-    @version_repository = VersionRepository.new
-  end
 
   # GET /projects/1/edit
   def edit
@@ -77,24 +106,6 @@ class ProjectsController < ApplicationController
 
   # POST /projects
   # POST /projects.json
-  def create
-    @project = Project.new(
-      :name => params[:project][:name],
-      :version_repository_id => VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1,
-      :ticket_repository_id  => TicketRepository.last.present?  ? TicketRepository.last.id  + 1 : 1
-      #:project_start_date,
-      #:project_end_date,
-    )
-    import_info = CommitInfo.import(params[:project][:file])
-
-    respond_to do |format|
-      if import_info && @project.save
-        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
-      else
-        format.html { redirect_to projects_path, notice: 'ファイルの読み込みに失敗しました。' }
-      end
-    end
-  end
 
   # PATCH/PUT /projects/1
   # PATCH/PUT /projects/1.json
