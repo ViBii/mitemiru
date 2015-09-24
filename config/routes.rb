@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'users/index'
+
   get 'version_repositories/index'
 
   get 'datasamples/index'
@@ -31,6 +33,7 @@ Rails.application.routes.draw do
   resources :version_repositories
   resources :redmine_keys
   resources :assign_logs
+  resources :users
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
