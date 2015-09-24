@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
+  get 'commit_counter/index'
+
   root 'base#top'
+  
   get 'datasamples/index'
 
   get 'redmine_keys/new'
@@ -11,6 +14,7 @@ Rails.application.routes.draw do
   get 'base/top'
   get 'base/setting'
 
+  get 'comments_counter/getcomments'
   get 'projects/select_developer'
   post 'projects/select_developer'
   get 'projects/auth_github'
