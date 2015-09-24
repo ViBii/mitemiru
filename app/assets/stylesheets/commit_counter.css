@@ -1,16 +1,4 @@
-div.bar {
-  display: inline-block;
-  width: 20px;
-  height: 75px;
-  background-color: teal;
-  margin-right: 2px;
-}
-
 .axis path, .axis line {
   fill: none;
   stroke: black;
-}
-
-.axis text {
-  font-size: 11px;
 }

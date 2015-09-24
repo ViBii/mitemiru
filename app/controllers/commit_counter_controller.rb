@@ -1,6 +1,6 @@
 class CommitCounterController < ApplicationController
   def index
-    #コミット数の集計処理を記載
+    #コミット数の集計処理をここに記載
 
     @commit_info = Hash.new
     
