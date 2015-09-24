@@ -40,6 +40,9 @@ gem 'rest-client'
 # secret
 gem 'dotenv-rails'
 
+# gon
+gem 'gon'
+
 # statsample
 gem 'statsample'
 

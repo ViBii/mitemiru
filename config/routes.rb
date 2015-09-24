@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'commit_counter/index'
+
   get 'datasamples/index'
 
   get 'redmine_keys/new'
