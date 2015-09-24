@@ -8,11 +8,11 @@ class CommentsCounterController < ApplicationController
     stateArg = "all"
 
     #見たい開発者のGithub上のUserName
-    assigneeArg = "Altairzym"
+    assigneeArg = "yaginuuu"
 
     #システム利用者github認証
-    githubUserName = "userName"
-    githubUserPW = "PW"
+    githubUserName = "Altairzym"
+    githubUserPW = "z13299928050"
 
     #repo設定
     githubRepo = "ViBii/mitemiru"
@@ -29,11 +29,18 @@ class CommentsCounterController < ApplicationController
     puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
     puts
 
+    #同じリポジトリの中の他の開発者名前を取得する
+    contributors = Octokit.contribs(githubRepo)
+    developer_name = Hash.new
+    contributors.each do |contributor|
+      if contributor['login'] != assigneeArg then
+        developer_name[contributor['login']] = 0
+      end
+    end
+
     #issue情報を取る
     Octokit.auto_paginate = true
     issues = Octokit.list_issues(githubRepo,state: stateArg)
-
-    puts issues.length
 
     finalstr = ""
 
@@ -43,9 +50,7 @@ class CommentsCounterController < ApplicationController
       if issue['assignee'] != nil && issue['assignee']['login'] != assigneeArg && issue['comments'] != 0 then
         #各issueのcommentsの取得
         comments = Octokit.issue_comments(githubRepo, issue['number'].to_s)
-
         counter = 0
-
         #commentsから該当開発者の発言を合計する
         comments.each do |comment|
           if comment['user']['login'] == assigneeArg
@@ -53,14 +58,25 @@ class CommentsCounterController < ApplicationController
           end
         end
 
-        finalstr.concat("IssueNum: " + issue['number'].to_s + " IssueTitle: " + issue['title'])
-        if issue['assignee'] != nil then
-          finalstr.concat(" AssigneeName: "+issue['assignee']['login'] + " comments: " + issue['comments'].to_s + " comment回数: "+ counter.to_s + "<br><br>")
-        else
-          finalstr.concat(" AssigneeName: nil comments: " + issue['comments'].to_s + " comment回数: "+ counter.to_s + "<br><br>")
+        #comment数を分類する
+        if counter != 0 then
+          developer_name.each_pair {|name, num|
+            if name == issue['assignee']['login'] then
+              developer_name[name] = developer_name[name] + counter
+            end
+          }
+          finalstr.concat(issue['number'].to_s + "  " + issue['assignee']['login'] + "  "+ counter.to_s + "<br><br>")
         end
+
       end
     end
+
+    finalstr.concat("合計結果:<br>開発者名: " + assigneeArg + "<br>")
+
+    developer_name.each_pair {|name, num|
+      finalstr.concat("開発者 " + name + " にcomment回数: " + num.to_s + "<br>")
+    }
+
     render :text => finalstr
   end
 end
