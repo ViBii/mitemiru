@@ -7,26 +7,42 @@ class CommentsCounterController < ApplicationController
     #issuesの状態
     stateArg = "all"
 
-    #issuesの担当者のfilter
+    #見たい開発者のGithub上のUserName
     assigneeArg = "Altairzym"
 
+    #システム利用者github認証
+    githubUserName = "userName"
+    githubUserPW = "PW"
+
+    #repo設定
+    githubRepo = "ViBii/mitemiru"
+
     #認証を取る
-    cl = Octokit::Client.new(login: "Altairzym", oauth_token: "c37202470329cc3edda1a82ce5943aab4942bce2")
-    #repos = cl.repositories("komasaru", {sort: :pushed_at})
+    Octokit.configure do |c|
+      c.login = githubUserName
+      c.password = githubUserPW
+    end
 
-    cl.auto_paginate = true
+    # API 呼び出し回数
+    ratelimit           = Octokit.ratelimit
+    ratelimit_remaining = Octokit.ratelimit_remaining
+    puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
+    puts
 
-    issues = cl.list_issues("ViBii/mitemiru",state: stateArg)
-    #issues.length
+    #issue情報を取る
+    Octokit.auto_paginate = true
+    issues = Octokit.list_issues(githubRepo,state: stateArg)
+
+    puts issues.length
 
     finalstr = ""
 
     issues.each do |issue|
 
-      #assigneeArgが担当してない,かつ comment数は0ではない,かつ 担当者がnilではないissueの一覧表示
+      #assigneeArgが担当しなかった,かつ comment数は0ではない,かつ 担当者がnilではないissueの一覧表示
       if issue['assignee'] != nil && issue['assignee']['login'] != assigneeArg && issue['comments'] != 0 then
         #各issueのcommentsの取得
-        comments = Octokit.issue_comments("octokit/octokit.rb", issue['number'].to_s)
+        comments = Octokit.issue_comments(githubRepo, issue['number'].to_s)
 
         counter = 0
 
