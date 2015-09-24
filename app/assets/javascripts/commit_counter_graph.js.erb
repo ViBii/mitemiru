@@ -1,0 +1,67 @@
+// コミット数(gonでコントローラから取得)
+var commit_count = gon.commit_count;
+var project_id = gon.project_id;
+
+var w = 400;
+var h = 300;
+var xPadding = 100;
+var yPadding = 20;
+var barPadding = 1;
+
+var yScale = d3.scale.linear()
+               .domain([0, d3.max(commit_count)])
+               .range([h-yPadding, yPadding])
+               .nice();
+
+var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left");
+
+var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+svg.append("g")
+   .attr({
+     class: "axis",
+     transform: "translate(100, 0)"
+   })
+   .call(yAxis);
+
+svg.selectAll("rect")
+   .data(commit_count)
+   .enter()
+   .append("rect")
+   .attr("x", function(d, i) {
+     return xPadding + 5 + i * ((w - xPadding - 5) / commit_count.length);
+   })
+   .attr("y", function(d) {
+     return yScale(d);
+   })
+   .attr("width", (w - xPadding - 5) / commit_count.length - barPadding)
+   .attr("height", function(d) {
+     return h-yScale(d)-yPadding;
+   })
+   .attr("fill", "teal");
+
+svg.selectAll("text2")
+   .data(commit_count)
+   .enter()
+   .append("text")
+   .text(function(d) {
+     return d;
+   })
+   .attr("x", function(d, i) {
+     if (d < 10) {
+       return xPadding + 5 + i * ((w - xPadding - 5) / commit_count.length) + ((w - xPadding - 5) / commit_count.length) * 0.5 - 9;
+     } else {
+       return xPadding + 5 + i * ((w - xPadding - 5) / commit_count.length) + ((w - xPadding - 5) / commit_count.length) * 0.5 - 16;
+     }
+   })
+   .attr("y", function(d) {
+     return yScale(d) + 25;
+   })
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "20px")
+   .attr("fill", "white");
