@@ -43,6 +43,9 @@ gem 'dotenv-rails'
 # gon
 gem 'gon'
 
+# statsample
+gem 'statsample'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
