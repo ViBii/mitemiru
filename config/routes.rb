@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   get 'commit_counter/index'
 
+  get 'comments_counter/index'
   root 'base#top'
   
   get 'datasamples/index'

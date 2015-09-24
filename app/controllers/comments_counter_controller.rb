@@ -8,7 +8,7 @@ class CommentsCounterController < ApplicationController
     stateArg = "all"
 
     #見たい開発者のGithub上のUserName
-    assigneeArg = "yaginuuu"
+    assigneeArg = "ryoki1118"
 
     #システム利用者github認証
     githubUserName = ENV['Github_UserName']
