@@ -52,7 +52,7 @@ class CommitCounterController < ApplicationController
     #finalstr.concat("対象開発者: " + developer_name + "のコミット率は: " + commits_rate.round(2).to_s + "%<br>")
 
     #グラフ用jsonの作成
-    finalstr.concat("{\"developerName\":\"" + developer_name +"\",\"developerCommit\":"+ developer_commits.to_s + ",\"totalCommit\":"+ total_commits.to_s + "\"commitRate\":" + commits_rate.round(2).to_s + "}")
+    finalstr.concat("{\"developerName\":\"" + developer_name +"\",\"developerCommit\":"+ developer_commits.to_s + ",\"totalCommit\":"+ total_commits.to_s + ",\"commitRate\":" + commits_rate.round(2).to_s + "}")
 
     render :json => finalstr
 
