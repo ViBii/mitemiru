@@ -46,6 +46,9 @@ gem 'gon'
 # statsample
 gem 'statsample'
 
+#octokit
+gem "octokit", "~> 4.0"
+
 group :development, :test do
   # ER_Chart
   # brew install graphviz
@@ -75,5 +78,4 @@ group :development, :test do
   gem 'spring'
   gem 'execjs'
   gem 'therubyracer'
-  gem "octokit", "~> 4.0"
 end
