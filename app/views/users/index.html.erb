@@ -1,4 +1,28 @@
 <div class="page-header">
-  <h1>Users#index</h1>
+  <%= link_to '/base/setting', class: 'btn btn-default' do %>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      戻る
+  <% end %>
+  <h1>システムユーザ一覧</h1>
 </div>
-<p>Find me in app/views/users/index.html.erb</p>
+
+<div class="table-responsive">
+  <table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+      <th>名前</th>
+      <th></th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <%= content_tag_for(:tr, @users) do |user| %>
+        <td><%= link_to user.name, user %></td>
+        <td><%= link_to '編集', edit_user_path(developer) %></td>
+        <td><%= link_to '削除', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
