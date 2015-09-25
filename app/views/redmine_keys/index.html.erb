@@ -18,7 +18,7 @@
 
     <tbody>
       <%= content_tag_for(:tr, @redmine_keys) do |redmine_key| %>
-        <td><%= redmine_key.login_name %></td>
+        <td><%= redmine_key.login_id %></td>
         <td><%= link_to '詳細', redmine_key %></td>
         <td><%= link_to '削除', redmine_key, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>

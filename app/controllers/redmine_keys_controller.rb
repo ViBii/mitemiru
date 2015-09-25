@@ -71,7 +71,7 @@ class RedmineKeysController < ApplicationController
     def redmine_key_params
       params.require(:redmine_key).permit(
         :ticket_repository_id,
-        :login_name,
+        :login_id,
         :password_digest,
         :api_key
       )

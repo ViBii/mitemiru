@@ -21,12 +21,12 @@ class DevelopersController < ApplicationController
     @developer = Developer.new
     @authorized_key = Hash.new
     @authorized_key[:url] = TicketRepository.find(params[:get_id][:ticket_repository_id])[:url]
-    @authorized_key[:login_name] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:login_name]
+    @authorized_key[:login_id] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:login_id]
     @authorized_key[:password_digest] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:password_digest]
     @authorized_key[:api_key] = RedmineKey.find_by(ticket_repository_id: params[:get_id][:ticket_repository_id])[:api_key]
 
     # get user data
-    req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_name], password: @authorized_key[:password_digest]
+    req = RestClient::Request.execute method: :get, url: @authorized_key[:url]+'/users.json', user: @authorized_key[:login_id], password: @authorized_key[:password_digest]
 
     # perse
     hash = JSON.parse(req)
@@ -103,7 +103,7 @@ class DevelopersController < ApplicationController
     def developer_params
       params.require(:developer).permit(
         :name,
-        :adress
+        :email
       )
     end
 end

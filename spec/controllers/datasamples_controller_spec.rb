@@ -1,9 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe CommitCounterController, type: :controller do
+RSpec.describe DatasamplesController, type: :controller do
 
-<<<<<<< HEAD
-=======
   describe "GET #index" do
     it "returns http success" do
       get :index
@@ -11,5 +9,4 @@ RSpec.describe CommitCounterController, type: :controller do
     end
   end
 
->>>>>>> master
 end

@@ -1,0 +1,7 @@
+<h1><%= @commit_info[:developer_name] %>さんのコミット数</h1>
+<p>
+開発者の人数は合計<%= @commit_info[:developer_num] %>人です。
+</p>
+
+<%= include_gon %>
+<%= javascript_include_tag "commit_counter_graph" %>

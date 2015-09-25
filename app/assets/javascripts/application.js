@@ -16,7 +16,4 @@
 //= require turbolinks
 //= require bootstrap
 //= require_directory ./lib
-//= require_tree .
-//= require highcharts/highcharts
-//= require highcharts/highcharts-more
-//= require highcharts/highstock
+//= require_tree ./own
