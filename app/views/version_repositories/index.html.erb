@@ -18,7 +18,7 @@
 
     <tbody>
     <%= content_tag_for(:tr, @version_repositories) do |version_repository| %>
-        <td><%= version_repository.url%></td>
+        <td><%= link_to version_repository.url, version_repository%></td>
         <td><%= link_to '編集', edit_version_repository_path(version_repository) %></td>
         <td><%= link_to '削除', version_repository, method: :delete, data: { confirm: 'Are you sure?' } %></td>
     <% end %>

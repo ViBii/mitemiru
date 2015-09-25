@@ -22,8 +22,8 @@
       </thead>
 
       <tbody>
-        <%= content_tag_for(:tr, @ticket_repositories) do |ticket_repository| %>
-          <td><%= ticket_repository.url %></td>
+        <%= content_tag_for(:tr, @ticket_info) do |ticket_info| %>
+          <td><%= ticket_info.url %></td>
         <% end %>
       </tbody>
     </table>

@@ -19,6 +19,12 @@ class TicketRepositoriesController < ApplicationController
     end
   end
 
+  def edit
+  end
+
+  def show
+  end
+
   def ticket_repository_params
     params.require(:ticket_repository).permit(
       :url
