@@ -43,15 +43,18 @@ class CommitCounterController < ApplicationController
       if contributor['login'] == developer_name then
         developer_commits = contributor['contributions']
       end
-      finalstr.concat(contributor['login'] + ":" + contributor['contributions'].to_s + "<br>")
+      #finalstr.concat(contributor['login'] + ":" + contributor['contributions'].to_s + "<br>")
     end
 
     #コミット率
-    commits_rate = developer_commits.to_f/total_commits.to_f*100
+    commits_rate = developer_commits.to_f/total_commits.to_f * 100
 
-    finalstr.concat("対象開発者: " + developer_name + "のコミット率は: " + commits_rate.round(2).to_s + "%")
+    #finalstr.concat("対象開発者: " + developer_name + "のコミット率は: " + commits_rate.round(2).to_s + "%<br>")
 
-    render :text => finalstr
+    #グラフ用jsonの作成
+    finalstr.concat("{\"developerName\":\"" + developer_name +"\",\"developerCommit\":"+ developer_commits.to_s + ",\"totalCommit\":"+ total_commits.to_s + "\"commitRate\":" + commits_rate.round(2).to_s + "}")
+
+    render :json => finalstr
 
   end
 end
