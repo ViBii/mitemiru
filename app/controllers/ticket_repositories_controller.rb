@@ -1,4 +1,5 @@
 class TicketRepositoriesController < ApplicationController
+  before_action :set_ticket_repository, only: [:show, :edit, :update, :destroy]
   def index
     @ticket_repositories = TicketRepository.all
   end
@@ -23,6 +24,12 @@ class TicketRepositoriesController < ApplicationController
   end
 
   def show
+  end
+
+  private
+  # Use callbacks to share common setup or constraints between actions.
+  def set_ticket_repository
+    @ticket_repository = TicketRepository.find(params[:id])
   end
 
   def ticket_repository_params

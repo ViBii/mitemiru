@@ -1,18 +1,17 @@
 <div class="page-header">
-  <%= link_to developers_path, class: 'btn btn-default' do %>
+  <%= link_to version_repositories_path, class: 'btn btn-default' do %>
     <span class="glyphicon glyphicon-list-alt"></span>
     戻る
   <% end %>
-  <%= link_to edit_developer_path(@developer), class: 'btn btn-primary' do %>
+  <%= link_to edit_version_repository_path(@version_repository), class: 'btn btn-primary' do %>
     <span class="glyphicon glyphicon-pencil"></span>
     編集
   <% end %>
-  <h1>開発者詳細</h1>
+  <h1>Github認証情報詳細</h1>
 </div>
 
 <dl class="dl-horizontal">
-  <dt>名前:</dt>
-  <dd><%= @developer.name %></dd>
-  <dt>メールアドレス:</dt>
-  <dd><%= @developer.email %></dd>
+  <dt>登録済みリポジトリ:</dt>
+  <dd><%= @version_repository.url %></dd>
 </dl>
+
