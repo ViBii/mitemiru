@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   get 'base/setting'
 
   get 'datasamples/index'
-  get 'redmine_keys/new'
   get 'comments_counter/getcomments'
   get 'commit_counter/index'
 
@@ -20,6 +19,7 @@ Rails.application.routes.draw do
   resources :projects
   resources :developers
   resources :ticket_repositories
+  resources :version_repositories
   resources :redmine_keys
-  resources :assign_logs
+  resources :users
 end

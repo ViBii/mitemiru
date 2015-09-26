@@ -1,11 +1,11 @@
-<%= form_for(@ticket_repository, html: { class: "form-horizontal", role: "form" }) do |f| %>
-  <% if @ticket_repository.errors.any? %>
+<%= form_for(@version_repository, html: { class: "form-horizontal", role: "form" }) do |f| %>
+    <% if @version_repository.errors.any? %>
         <div class="alert alert-danger alert-dismissable" role="alert">
           <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-          <h4><%= pluralize(@ticket_repository.errors.count, "error") %> prohibited this ticket repository from being saved:</h4>
+          <h4><%= pluralize(@version_repository.errors.count, "error") %> prohibited this ticket repository from being saved:</h4>
 
           <ul>
-            <% @ticket_repository.errors.full_messages.each do |msg| %>
+            <% @version_repository.errors.full_messages.each do |msg| %>
                 <li><%= msg %></li>
             <% end %>
           </ul>

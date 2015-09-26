@@ -3,8 +3,7 @@
       <span class="glyphicon glyphicon-list-alt"></span>
       戻る
   <% end %>
-  <h1>Redmine認証情報一覧</h1>
-
+  <h1>Github認証情報一覧</h1>
 </div>
 
 <div class="table-responsive">
@@ -18,10 +17,10 @@
     </thead>
 
     <tbody>
-    <%= content_tag_for(:tr, @ticket_repositories) do |ticket_repository| %>
-        <td><%= link_to ticket_repository.url, ticket_repository%></td>
-        <td><%= link_to '編集', edit_ticket_repository_path(ticket_repository) %></td>
-        <td><%= link_to '削除', ticket_repository, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <%= content_tag_for(:tr, @version_repositories) do |version_repository| %>
+        <td><%= link_to version_repository.url, version_repository%></td>
+        <td><%= link_to '編集', edit_version_repository_path(version_repository) %></td>
+        <td><%= link_to '削除', version_repository, method: :delete, data: { confirm: 'Are you sure?' } %></td>
     <% end %>
     </tbody>
 

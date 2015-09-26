@@ -1,0 +1,16 @@
+<div class="page-header">
+  <%= link_to ticket_repositories_path, class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
+  <% end %>
+  <%= link_to edit_ticket_repository_path(@ticket_repository), class: 'btn btn-primary' do %>
+    <span class="glyphicon glyphicon-pencil"></span>
+    編集
+  <% end %>
+  <h1>Redmine認証情報詳細</h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt>登録済みリポジトリ:</dt>
+  <dd><%= @ticket_repository.url %></dd>
+</dl>

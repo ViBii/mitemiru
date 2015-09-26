@@ -1,0 +1,17 @@
+<div class="page-header">
+  <%= link_to version_repositories_path, class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
+  <% end %>
+  <%= link_to edit_version_repository_path(@version_repository), class: 'btn btn-primary' do %>
+    <span class="glyphicon glyphicon-pencil"></span>
+    編集
+  <% end %>
+  <h1>Github認証情報詳細</h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt>登録済みリポジトリ:</dt>
+  <dd><%= @version_repository.url %></dd>
+</dl>
+
