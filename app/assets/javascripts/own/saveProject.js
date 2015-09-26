@@ -4,7 +4,7 @@ var signUpRedmine = function() {
     url: 'select_developer',
     data: {
       url: $('#url').val(),
-      login_name: $('#login_name').val(),
+      login_id: $('#login_id').val(),
       password_digest: $('#password_digest').val(),
       api_key: $('#api_key').val()
     }
