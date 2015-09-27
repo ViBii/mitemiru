@@ -1,6 +1,7 @@
 <h1><%= @commit_info[:developer_name] %>さんのコミット数</h1>
 <p>
-開発者の人数は合計<%= @commit_info[:developer_num] %>人です。
+開発者の人数は合計<%= @commit_info[:developer_num] %>人です。<br>
+  コミット率は<%= @commits_rate %>%です。
 </p>
 
 <%= include_gon %>
