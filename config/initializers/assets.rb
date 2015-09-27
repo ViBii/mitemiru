@@ -12,3 +12,6 @@ Rails.application.config.assets.version = '1.0'
 
 #commit_counter
 Rails.application.config.assets.precompile += %w( commit_counter_graph.js )
+
+#comments_counter
+Rails.application.config.assets.precompile += %w( comments_counter_graph.js )
