@@ -13,11 +13,6 @@ Rails.application.routes.draw do
   get 'comments_counter/getcomments'
   get 'commit_counter/index'
 
-  get 'projects/info'
-  get 'projects/auth'
-  get 'commit_counter/getcommits'
-  post 'projects/auth_new'
-  post 'projects/auth_create'
   get 'projects/select_developer'
   post 'projects/select_developer'
   post 'projects/auth_github'

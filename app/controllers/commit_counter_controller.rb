@@ -31,7 +31,7 @@ class CommitCounterController < ApplicationController
     end
 
     #コミット率
-    commits_rate = developer_commits.to_f/total_commits.to_f * 100
+    @commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
 
     @commit_info = Hash.new
 
