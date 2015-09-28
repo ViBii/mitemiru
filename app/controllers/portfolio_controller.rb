@@ -5,8 +5,8 @@ class PortfolioController < ApplicationController
   def tracker_viewer
     @tracker_info = Hash.new
 
-    @tracker_info[:category] = ['bug', 'feature', 'test']
-    gon.tracker_category = @tracker_info[:category]
+    @tracker_info[:category] = ['Bug', 'Feature', 'Test']
+    gon.tracker = @tracker_info[:category]
 
     @tracker_info[:ticket_num] = [20, 8, 13]
     gon.ticket_num = @tracker_info[:ticket_num]
