@@ -1,21 +1,16 @@
 var tracker = gon.tracker;
+var man_hour = ['実績工数', '予定工数'];
 var task_result = gon.task_result;
 var task_estimate = gon.task_estimate;
 var color = ['#006ab3', '#b1d7e8'];
 
-for (var i=0; i<tracker.length; i++) {
-  document.write("<p>");
-  document.write(tracker[i]+" <br />");
-  document.write("実績: "+task_result[i]+" <br />");
-  document.write("予定: "+task_estimate[i]+" <br />");
-  document.write("</p>");
-}
-
-var w = 720;
-var h = 420;
-
+var topPadding = 50;
+var bottomPadding = 30;
 var leftPadding = 150;
 var rightPadding = 100;
+
+var w = 860;
+var h = 200 + topPadding + bottomPadding + 70*tracker.length;
 
 var maxScale = Math.max(d3.max(task_result), d3.max(task_estimate));
 
@@ -37,19 +32,51 @@ var svg = d3.select("body")
 svg.append("g")
    .attr({
      class: "axis",
-     transform: "translate(0, "+70*task_result.length+")"
+     transform: "translate(0, "+(topPadding+70*tracker.length)+")"
    })
    .call(xAxis);
 
 // x軸のラベル
 svg.append("text")
-   .text("時間[h]")
+   .text("工数[h]")
    .attr("x", (w+leftPadding-rightPadding)/2)
-   .attr("y", 70*task_result.length+45)
+   .attr("y", topPadding+70*tracker.length+45)
    .attr("text-anchor", "middle")
    .attr("dominant-baseline", "middle")
    .attr("font-family", "sans-serif")
    .attr("font-size", "20px");
+
+// 凡例の表示
+svg.selectAll(".legend")
+   .data(color)
+   .enter()
+   .append("rect")
+   .attr("x", function(d, i) {
+     return i * 200 + leftPadding + 50;
+   })
+   .attr("y", topPadding/2 - 8)
+   .attr("width", 16)
+   .attr("height", 16)
+   .attr("fill", function(d) {
+     return d;
+   });
+
+svg.selectAll(".tracker")
+   .data(man_hour)
+   .enter()
+   .append("text")
+   .text(function(d) {
+     return d;
+   })
+   .attr("x", function(d, i) {
+     return i * 200 + leftPadding + 70;
+   })
+   .attr("y", topPadding/2+2)
+   .attr("text-anchor", "start")
+   .attr("dominant-baseline", "middle")
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "15px")
+   .attr("fill", "black");
 
 // 実績グラフの描画
 svg.selectAll(".rect")
@@ -69,7 +96,7 @@ svg.selectAll(".rect")
    .duration(1000)
    .attr("x", leftPadding)
    .attr("y", function(d, i) {
-     return i * 70;
+     return topPadding + i * 70;
    })
    .attr("width", function(d, i) {
      return xScale(d)-leftPadding;
@@ -84,7 +111,7 @@ svg.selectAll(".estimate")
    .append("rect")
    .transition()
    .delay(function(d, i) {
-     return i * 300 + task_result.length * 300;
+     return i * 300 + tracker.length * 300;
    })
    .each("start", function() {
      d3.select(this).attr({
@@ -95,7 +122,7 @@ svg.selectAll(".estimate")
    .duration(1000)
    .attr("x", leftPadding)
    .attr("y", function(d, i) {
-     return i * 70 + 30;
+     return topPadding + i * 70 + 30;
    })
    .attr("width", function(d, i) {
      return xScale(d)-leftPadding;
@@ -103,7 +130,7 @@ svg.selectAll(".estimate")
    .attr("height", 30)
    .attr("fill", color[1]);
 
-// 実績時間の表示
+// 実績工数の表示
 svg.selectAll(".result_time")
    .data(task_result)
    .enter()
@@ -120,10 +147,10 @@ svg.selectAll(".result_time")
      }
    })
    .attr("y", function(d, i) {
-     return i * 70 + 17;
+     return topPadding + i * 70 + 17;
    })
    .attr("text-anchor", function(d) {
-     // 時間ラベルの表示位置調整
+     // 工数ラベルの表示位置調整
      if (d > maxScale/8) {
        return "end";
      } else {
@@ -151,7 +178,7 @@ svg.selectAll(".result_time")
        .attr("opacity", 1.0)
    });
 
-// 見積もり時間の表示
+// 見積もり工数の表示
 svg.selectAll(".estimate_time")
    .data(task_estimate)
    .enter()
@@ -168,10 +195,10 @@ svg.selectAll(".estimate_time")
      }
    })
    .attr("y", function(d, i) {
-     return i * 70 + 47;
+     return topPadding + i * 70 + 47;
    })
    .attr("text-anchor", function(d) {
-     // 時間ラベルの表示位置調整
+     // 工数ラベルの表示位置調整
      if (d > maxScale/8) {
        return "end";
      } else {
@@ -184,7 +211,7 @@ svg.selectAll(".estimate_time")
    .attr("fill", "black")
    .transition()
    .delay(function(d, i) {
-     return i * 300 + task_result.length * 300;
+     return i * 300 + tracker.length * 300;
    })
    .each("end", function() {
      d3.select(this)
@@ -206,7 +233,7 @@ svg.selectAll(".tracker")
        return leftPadding-10;
    })
    .attr("y", function(d, i) {
-     return i * 70 + 30;
+     return topPadding + i * 70 + 30;
    })
    .attr("text-anchor", "end")
    .attr("dominant-baseline", "middle")
