@@ -13,7 +13,9 @@ class CommentsCounterController < ApplicationController
     githubUserPW = ENV['Github_UserPW']
 
     #repo設定
-    githubRepo = "ViBii/mitemiru"
+    @version_repo_id = 1
+    repo_url = VersionRepository.find(@version_repo_id)[:url]
+    githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
 
     #認証を取る
     Octokit.configure do |c|
