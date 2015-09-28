@@ -1,3 +1,15 @@
+var tracker = gon.tracker;
+var task_result = gon.task_result;
+var task_estimate = gon.task_estimate;
+
+for (var i=0; i<tracker.length; i++) {
+  document.write("<p>");
+  document.write(tracker[i]+" <br />");
+  document.write("実績: "+task_result[i]+" <br />");
+  document.write("予定: "+task_estimate[i]+" <br />");
+  document.write("</p>");
+}
+
 /*
 var commit_count = gon.commit_count;
 var project_id = gon.project_name;
