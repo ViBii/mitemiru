@@ -14,7 +14,7 @@ for (var i=0; i<tracker.length; i++) {
 var w = 720;
 var h = 420;
 
-var leftPadding = 100;
+var leftPadding = 150;
 var rightPadding = 100;
 
 var maxScale = Math.max(d3.max(task_result), d3.max(task_estimate));
@@ -41,16 +41,15 @@ svg.append("g")
    })
    .call(xAxis);
 
-/*
 // x軸のラベル
 svg.append("text")
-   .text("時間")
-   .attr("x", w/2)
-   .attr("y", 300)
+   .text("時間[h]")
+   .attr("x", (w+leftPadding-rightPadding)/2)
+   .attr("y", 70*task_result.length+45)
    .attr("text-anchor", "middle")
+   .attr("dominant-baseline", "middle")
    .attr("font-family", "sans-serif")
-   .attr("font-size", "15px");
-*/
+   .attr("font-size", "20px");
 
 // 実績グラフの描画
 svg.selectAll(".rect")
@@ -194,43 +193,30 @@ svg.selectAll(".estimate_time")
        .attr("opacity", 1.0)
    });
 
-
-/*
-// 棒グラフの高さのテキスト表示
-svg.selectAll("graph_tag")
-   .data(commit_count)
+// トラッカー名の表示
+svg.selectAll(".tracker")
+   .data(tracker)
    .enter()
    .append("text")
+   .attr("opacity", 0.0)
    .text(function(d) {
      return d;
    })
    .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
+       return leftPadding-10;
    })
-   .attr("y", function(d) {
-     return yScale(d) + 25;
+   .attr("y", function(d, i) {
+     return i * 70 + 30;
    })
-   .attr("text-anchor", "middle")
+   .attr("text-anchor", "end")
+   .attr("dominant-baseline", "middle")
    .attr("font-family", "sans-serif")
-   .attr("font-size", "20px")
-   .attr("fill", "white");
-
-// プロジェクト名の表示
-svg.selectAll("project_name")
-   .data(project_id)
-   .enter()
-   .append("text")
-   .text(function(d) {
-     return d;
-   })
-   .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth) + barWidth / 2;
-   })
-   .attr("y", function(d) {
-     return h-6;
-   })
-   .attr("text-anchor", "middle")
-   .attr("font-family", "sans-serif")
-   .attr("font-size", "11px")
-   .attr("fill", "black");
-*/
+   .attr("font-size", "15px")
+   .attr("fill", "black")
+   .transition()
+   .each("start", function() {
+     d3.select(this)
+       .transition()
+       .duration(2000)
+       .attr("opacity", 1.0)
+   });
