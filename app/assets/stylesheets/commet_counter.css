@@ -1,5 +1,6 @@
 .link {
     stroke: #ccc;
+    stroke-opacity: .6;
 }
 
 .node text {
