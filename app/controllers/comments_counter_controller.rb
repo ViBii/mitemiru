@@ -1,3 +1,5 @@
+require 'json'
+
 class CommentsCounterController < ApplicationController
   def index
 #issuesの状態
@@ -70,13 +72,13 @@ class CommentsCounterController < ApplicationController
     end
 
     #該当開発者の設定
-    nodes.concat("{\"nodes\":[{\"name\":" + @assigneeArg + ",\"group\":1}")
+    nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":1}")
     links.concat("],\"links\":[{\"source\":0,\"target\":")
     loopTime = 0
 
     developer_name.each_pair {|name, num|
       if loopTime < developer_name.length then
-        nodes.concat(",{\"name\":" + name + ",\"group\":2}")
+        nodes.concat(",{\"name\":\"" + name + "\",\"group\":2}")
         links.concat((loopTime + 1).to_s + ",\"value\":")
         if loopTime != developer_name.length - 1 then
           links.concat(num.to_s + "},{\"source\":0,\"target\":")
@@ -86,7 +88,9 @@ class CommentsCounterController < ApplicationController
         loopTime = loopTime + 1
       end
     }
+
     @graph = JSON.parse(nodes + links)
+    gon.graph = @graph
   end
 
   def getcomments
