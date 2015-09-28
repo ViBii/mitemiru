@@ -4,34 +4,28 @@
       <a href='/' class="navbar-brand">MITEMIRU</a>
     </div>
     <ul class="nav navbar-nav">
-      <li onclick="jump('/')">
-        <a href>
+      <li>
+        <%= link_to '/', data: { no_turbolink: true } do %>
           <span class="glyphicon glyphicon-home"></span>
           トップに戻る
-        </a>
+        <% end %>
       </li>
-      <li onclick="jump('/projects/select_developer')">
-        <a href>
-          プロジェクト登録
-        </a>
+      <li>
+        <%= link_to "プロジェクト登録", '/projects/select_developer', data: { no_turbolink: true } %>
       </li>
-      <li onclick="jump('/portfolio/index')">
-        <a href>
-          ポートフォリオを見る
-        </a>
+      <li>
+        <%= link_to "ポートフォリオを見る", '/portfolio/index', data: { no_turbolink: true } %>
       </li>
-      <li onclick="jump('/comp/index')">
-        <a href>
-          比較をする
-        </a>
+      <li>
+        <%= link_to "比較する", '/comp/index', data: { no_turbolink: true } %>
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li onclick="jump('/base/setting')">
-        <a href>
+      <li>
+        <%= link_to '/base/setting', data: { no_turbolink: true } do %>
           <span class="glyphicon glyphicon-cog"></span>
           各種管理
-        </a>
+        <% end %>
       </li>
     </ul>
   </div>
