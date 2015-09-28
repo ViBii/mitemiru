@@ -14,4 +14,4 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.config.assets.precompile += %w( commit_counter_graph.js )
 
 #tracker_viewer
-Rails.application.config.assets.precompile += %w( tracker_viewer_graph.js )
+Rails.application.config.assets.precompile += %w( ticket_digestion_graph.js )

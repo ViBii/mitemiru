@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'comp/index'
 
   get 'portfolio/index'
-  get 'portfolio/tracker_viewer'
+  get 'portfolio/ticket_digestion'
 
   get 'base/top'
   get 'base/setting'

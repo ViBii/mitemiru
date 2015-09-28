@@ -2,7 +2,7 @@ class PortfolioController < ApplicationController
   def index
   end
 
-  def tracker_viewer
+  def ticket_digestion
     @tracker_info = Hash.new
 
     @tracker_info[:category] = ['Bug', 'Feature', 'Test']
