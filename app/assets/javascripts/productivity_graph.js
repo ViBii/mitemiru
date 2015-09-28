@@ -1,6 +1,7 @@
 var tracker = gon.tracker;
 var task_result = gon.task_result;
 var task_estimate = gon.task_estimate;
+var color = ['#006ab3', '#b1d7e8'];
 
 for (var i=0; i<tracker.length; i++) {
   document.write("<p>");
@@ -10,67 +11,98 @@ for (var i=0; i<tracker.length; i++) {
   document.write("</p>");
 }
 
-/*
-var commit_count = gon.commit_count;
-var project_id = gon.project_name;
-
-var xPadding = 140;
-var yPadding = 20;
-var barPadding = 2;
-var barWidth = 150;
-
-var w = xPadding + commit_count.length * (barWidth + barPadding);
+var w = 640;
 var h = 420;
 
-var yScale = d3.scale.linear()
-               .domain([0, d3.max(commit_count)])
-               .range([h-yPadding, yPadding])
+var leftPadding = 20;
+var rightPadding = 20;
+
+var xScale = d3.scale.linear()
+               .domain([0, Math.max(d3.max(task_result), d3.max(task_estimate))])
+               .range([leftPadding, w-rightPadding])
                .nice();
 
-var yAxis = d3.svg.axis()
-                  .scale(yScale)
-                  .orient("left");
+var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom");
 
 var svg = d3.select("body")
             .append("svg")
             .attr("width", w)
             .attr("height", h);
 
-// y軸の表示
+// x軸の表示
 svg.append("g")
    .attr({
      class: "axis",
-     transform: "translate(140, 0)"
+     transform: "translate(0, "+70*task_result.length+")"
    })
-   .call(yAxis);
+   .call(xAxis);
 
-// y軸のラベル
+/*
+// x軸のラベル
 svg.append("text")
-   .text("コミット数")
-   .attr("x", xPadding-50)
-   .attr("y", h/2)
+   .text("時間")
+   .attr("x", w/2)
+   .attr("y", 300)
    .attr("text-anchor", "middle")
-   .attr("writing-mode", "tb")
    .attr("font-family", "sans-serif")
    .attr("font-size", "15px");
+*/
 
-// 棒グラフの描画
-svg.selectAll("rect")
-   .data(commit_count)
+// 実績グラフの描画
+svg.selectAll(".rect")
+   .data(task_result)
    .enter()
    .append("rect")
-   .attr("x", function(d, i) {
-     return xPadding + 5 + i * (barPadding + barWidth);
+   .transition()
+   .delay(function(d, i) {
+     return i * 300;
    })
-   .attr("y", function(d) {
-     return yScale(d);
+   .each("start", function() {
+     d3.select(this).attr({
+       width: 0,
+       fill: color[0]
+     })
    })
-   .attr("width", barWidth)
-   .attr("height", function(d) {
-     return h-yScale(d)-yPadding;
+   .duration(1000)
+   .attr("x", leftPadding)
+   .attr("y", function(d, i) {
+     return i * 70;
    })
-   .attr("fill", "teal");
+   .attr("width", function(d, i) {
+     return xScale(d)-rightPadding;
+   })
+   .attr("height", 30)
+   .attr("fill", color[0]);
 
+// 見積もりグラフの描画
+svg.selectAll(".estimate")
+   .data(task_estimate)
+   .enter()
+   .append("rect")
+   .transition()
+   .delay(function(d, i) {
+     return i * 300 + task_result.length * 300;
+   })
+   .each("start", function() {
+     d3.select(this).attr({
+       width: 0,
+       fill: color[1]
+     })
+   })
+   .duration(1000)
+   .attr("x", leftPadding)
+   .attr("y", function(d, i) {
+     return i * 70 + 30;
+   })
+   .attr("width", function(d, i) {
+     return xScale(d)-rightPadding;
+   })
+   .attr("height", 30)
+   .attr("fill", color[1]);
+
+/*
 // 棒グラフの高さのテキスト表示
 svg.selectAll("graph_tag")
    .data(commit_count)
