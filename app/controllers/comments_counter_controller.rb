@@ -6,7 +6,7 @@ class CommentsCounterController < ApplicationController
     stateArg = "all"
 
     #見たい開発者のGithub上のUserName
-    @assigneeArg = "yaginuuu"
+    @assigneeArg = "Altairzym"
 
     #システム利用者github認証
     githubUserName = ENV['Github_UserName']
@@ -44,6 +44,7 @@ class CommentsCounterController < ApplicationController
     @graph = ""
     nodes = ""
     links = ""
+    @finalstr = ""
 
     issues.each do |issue|
 
@@ -74,6 +75,7 @@ class CommentsCounterController < ApplicationController
     #該当開発者の設定
     nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":1}")
     links.concat("],\"links\":[{\"source\":0,\"target\":")
+    @finalstr.concat("開発者名: " + @assigneeArg + "<br>")
     loopTime = 0
 
     developer_name.each_pair {|name, num|
@@ -85,6 +87,7 @@ class CommentsCounterController < ApplicationController
         else
           links.concat(num.to_s + "}]}")
         end
+        @finalstr.concat("開発者 " + name + " にcomment回数: " + num.to_s + "<br>")
         loopTime = loopTime + 1
       end
     }

@@ -12,21 +12,7 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var graph = {
-    "nodes":[
-        {"name":"Myriel","group":1},
-        {"name":"Napoleon","group":2},
-        {"name":"Mlle.Baptistine","group":3},
-        {"name":"Mme.Magloire","group":4},
-        {"name":"CountessdeLo","group":5},
-        {"name":"Geborand","group":6}
-    ],
-    "links":[
-        {"source":1,"target":0,"value":1},
-        {"source":1,"target":2,"value":1},
-        {"source":1,"target":3,"value":3}
-    ]
-};
+var graph = gon.graph;
 
 force
     .nodes(graph.nodes)
