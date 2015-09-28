@@ -46,7 +46,6 @@ class CommentsCounterController < ApplicationController
     @graph = ""
     nodes = ""
     links = ""
-    @finalstr = ""
 
     issues.each do |issue|
 
@@ -75,9 +74,8 @@ class CommentsCounterController < ApplicationController
     end
 
     #該当開発者の設定
-    nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":1}")
+    nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":3}")
     links.concat("],\"links\":[{\"source\":0,\"target\":")
-    @finalstr.concat("開発者名: " + @assigneeArg + "<br>")
     loopTime = 0
 
     developer_name.each_pair {|name, num|
@@ -89,7 +87,6 @@ class CommentsCounterController < ApplicationController
         else
           links.concat(num.to_s + "}]}")
         end
-        @finalstr.concat("開発者 " + name + " にcomment回数: " + num.to_s + "<br>")
         loopTime = loopTime + 1
       end
     }
