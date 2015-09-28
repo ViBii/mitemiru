@@ -28,15 +28,15 @@ class PortfolioController < ApplicationController
     @productivity_info = Hash.new
 
     # トラッカー名
-    @productivity_info[:tracker] = ['Bug', 'Feature', 'Test']
+    @productivity_info[:tracker] = ['Bug', 'Feature', 'Test', 'Document']
     gon.tracker = @productivity_info[:tracker]
 
     # 実績工数
-    @productivity_info[:result] = [120, 56, 79]
+    @productivity_info[:result] = [120, 56, 79, 12]
     gon.task_result = @productivity_info[:result]
 
     # 予定工数
-    @productivity_info[:estimate] = [100, 70, 70]
+    @productivity_info[:estimate] = [100, 70, 70, 10]
     gon.task_estimate = @productivity_info[:estimate]
 
     # 開発者名

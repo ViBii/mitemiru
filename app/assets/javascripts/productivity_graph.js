@@ -11,14 +11,16 @@ for (var i=0; i<tracker.length; i++) {
   document.write("</p>");
 }
 
-var w = 640;
+var w = 720;
 var h = 420;
 
-var leftPadding = 20;
-var rightPadding = 20;
+var leftPadding = 100;
+var rightPadding = 100;
+
+var maxScale = Math.max(d3.max(task_result), d3.max(task_estimate));
 
 var xScale = d3.scale.linear()
-               .domain([0, Math.max(d3.max(task_result), d3.max(task_estimate))])
+               .domain([0, maxScale])
                .range([leftPadding, w-rightPadding])
                .nice();
 
@@ -71,7 +73,7 @@ svg.selectAll(".rect")
      return i * 70;
    })
    .attr("width", function(d, i) {
-     return xScale(d)-rightPadding;
+     return xScale(d)-leftPadding;
    })
    .attr("height", 30)
    .attr("fill", color[0]);
@@ -97,10 +99,101 @@ svg.selectAll(".estimate")
      return i * 70 + 30;
    })
    .attr("width", function(d, i) {
-     return xScale(d)-rightPadding;
+     return xScale(d)-leftPadding;
    })
    .attr("height", 30)
    .attr("fill", color[1]);
+
+// 実績時間の表示
+svg.selectAll(".result_time")
+   .data(task_result)
+   .enter()
+   .append("text")
+   .attr("opacity", 0.0)
+   .text(function(d, i) {
+     return d+"h";
+   })
+   .attr("x", function(d, i) {
+     if (d > maxScale/8) {
+       return xScale(d)-5;
+     } else {
+       return xScale(d)+3;
+     }
+   })
+   .attr("y", function(d, i) {
+     return i * 70 + 17;
+   })
+   .attr("text-anchor", function(d) {
+     // 時間ラベルの表示位置調整
+     if (d > maxScale/8) {
+       return "end";
+     } else {
+       return "start";
+     }
+   })
+   .attr("dominant-baseline", "middle")
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "20px")
+   .attr("fill", function(d) {
+     if (d > maxScale/8) {
+       return "white";
+     } else {
+       return "black";
+     }
+   })
+   .transition()
+   .delay(function(d, i) {
+     return i * 300;
+   })
+   .each("end", function() {
+     d3.select(this)
+       .transition()
+       .duration(2000)
+       .attr("opacity", 1.0)
+   });
+
+// 見積もり時間の表示
+svg.selectAll(".estimate_time")
+   .data(task_estimate)
+   .enter()
+   .append("text")
+   .attr("opacity", 0.0)
+   .text(function(d, i) {
+     return d+"h";
+   })
+   .attr("x", function(d, i) {
+     if (d > maxScale/8) {
+       return xScale(d)-5;
+     } else {
+       return xScale(d)+3;
+     }
+   })
+   .attr("y", function(d, i) {
+     return i * 70 + 47;
+   })
+   .attr("text-anchor", function(d) {
+     // 時間ラベルの表示位置調整
+     if (d > maxScale/8) {
+       return "end";
+     } else {
+       return "start";
+     }
+   })
+   .attr("dominant-baseline", "middle")
+   .attr("font-family", "sans-serif")
+   .attr("font-size", "20px")
+   .attr("fill", "black")
+   .transition()
+   .delay(function(d, i) {
+     return i * 300 + task_result.length * 300;
+   })
+   .each("end", function() {
+     d3.select(this)
+       .transition()
+       .duration(2000)
+       .attr("opacity", 1.0)
+   });
+
 
 /*
 // 棒グラフの高さのテキスト表示
