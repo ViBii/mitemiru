@@ -3,11 +3,15 @@
 </p>
 <%= form_tag('/projects') do %>
   <% @scope_projects.each do |scope_project| %>
-    <h2><%= scope_project %></h2>
-    <%= hidden_field_tag 'github_info[][name]', scope_project %>
-    <br>
     <div class="form-group">
       <div class="table-responsive">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">プロジェクト名</label>
+          <div class="col-sm-8">
+            <%= text_field_tag "github_info[][name]", nil, id: "name", class: "form-control", value: scope_project %>
+          </div>
+        </div>
+        <br>
         <div class="form-group">
           <label class="col-sm-2 control-label">ＵＲＬ</label>
           <div class="col-sm-8">

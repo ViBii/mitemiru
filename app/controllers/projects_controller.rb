@@ -120,7 +120,17 @@ class ProjectsController < ApplicationController
           github_key.save
         end
 
-        unless Project.exists?(name: github_info["name"])
+        if Project.where(name: github_info["name"]).present?
+          same_project = Project.where(name: github_info["name"]).first
+          same_project.update(
+            :id                    => same_project.id,
+            :version_repository_id => version_repository_id,
+            :ticket_repository_id  => session["ticket_repository_id"],
+            :name                  => github_info["name"],
+            :project_start_date    => nil,
+            :project_end_date      => nil
+          )
+        else
           project = Project.new(
             :version_repository_id => version_repository_id,
             :ticket_repository_id  => session["ticket_repository_id"],
