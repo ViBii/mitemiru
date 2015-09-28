@@ -23,4 +23,7 @@ class PortfolioController < ApplicationController
     # 開発者名
     @tracker_info[:developer] = '玄葉 条士郎'
   end
+
+  def productivity
+  end
 end
