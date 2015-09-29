@@ -1,21 +1,21 @@
+require 'json'
+
 class CommentsCounterController < ApplicationController
   def index
-
-  end
-
-  def getcomments
-    #issuesの状態
+#issuesの状態
     stateArg = "all"
 
     #見たい開発者のGithub上のUserName
-    assigneeArg = "yaginuuu"
+    @assigneeArg = "Altairzym"
 
     #システム利用者github認証
     githubUserName = ENV['Github_UserName']
     githubUserPW = ENV['Github_UserPW']
 
     #repo設定
-    githubRepo = "ViBii/mitemiru"
+    @version_repo_id = 1
+    repo_url = VersionRepository.find(@version_repo_id)[:url]
+    githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
 
     #認証を取る
     Octokit.configure do |c|
@@ -33,7 +33,7 @@ class CommentsCounterController < ApplicationController
     contributors = Octokit.contribs(githubRepo)
     developer_name = Hash.new
     contributors.each do |contributor|
-      if contributor['login'] != assigneeArg then
+      if contributor['login'] != @assigneeArg then
         developer_name[contributor['login']] = 0
       end
     end
@@ -42,18 +42,21 @@ class CommentsCounterController < ApplicationController
     Octokit.auto_paginate = true
     issues = Octokit.list_issues(githubRepo,state: stateArg)
 
-    finalstr = ""
+    #最終json
+    @graph = ""
+    nodes = ""
+    links = ""
 
     issues.each do |issue|
 
       #assigneeArgが担当しなかった,かつ comment数は0ではない,かつ 担当者がnilではないissueの一覧表示
-      if issue['assignee'] != nil && issue['assignee']['login'] != assigneeArg && issue['comments'] != 0 then
+      if issue['assignee'] != nil && issue['assignee']['login'] != @assigneeArg && issue['comments'] != 0 then
         #各issueのcommentsの取得
         comments = Octokit.issue_comments(githubRepo, issue['number'].to_s)
         counter = 0
         #commentsから該当開発者の発言を合計する
         comments.each do |comment|
-          if comment['user']['login'] == assigneeArg
+          if comment['user']['login'] == @assigneeArg
             counter = counter + 1
           end
         end
@@ -65,18 +68,31 @@ class CommentsCounterController < ApplicationController
               developer_name[name] = developer_name[name] + counter
             end
           }
-          finalstr.concat(issue['number'].to_s + "  " + issue['assignee']['login'] + "  "+ counter.to_s + "<br><br>")
         end
 
       end
     end
 
-    finalstr.concat("合計結果:<br>開発者名: " + assigneeArg + "<br>")
+    #該当開発者の設定
+    nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":3}")
+    links.concat("],\"links\":[{\"source\":0,\"target\":")
+    loopTime = 0
 
     developer_name.each_pair {|name, num|
-      finalstr.concat("開発者 " + name + " にcomment回数: " + num.to_s + "<br>")
+      if loopTime < developer_name.length then
+        nodes.concat(",{\"name\":\"" + name + "\",\"group\":2}")
+        links.concat((loopTime + 1).to_s + ",\"value\":")
+        if loopTime != developer_name.length - 1 then
+          links.concat(num.to_s + "},{\"source\":0,\"target\":")
+        else
+          links.concat(num.to_s + "}]}")
+        end
+        loopTime = loopTime + 1
+      end
     }
 
-    render :text => finalstr
+    @graph = JSON.parse(nodes + links)
+    gon.graph = @graph
   end
+
 end

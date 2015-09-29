@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get 'base/setting'
 
   get 'datasamples/index'
-  get 'comments_counter/getcomments'
+  get 'comments_counter/index'
   get 'commit_counter/index'
 
   get 'projects/select_developer'
