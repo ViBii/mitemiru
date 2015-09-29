@@ -17,5 +17,9 @@ Rails.application.config.assets.precompile += %w( commit_counter_graph.js )
 Rails.application.config.assets.precompile += %w( comments_counter_graph.js )
 
 #tracker_viewer
+# portfolio/ticket_digestion
 Rails.application.config.assets.precompile += %w( ticket_digestion_graph.js )
+
+# portfolio/productivity
+Rails.application.config.assets.precompile += %w( productivity_graph.js )
 

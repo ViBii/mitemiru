@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   get 'portfolio/index'
   get 'portfolio/ticket_digestion'
+  get 'portfolio/productivity'
 
   get 'base/top'
   get 'base/setting'
