@@ -18,12 +18,29 @@ force
     .links(graph.links)
     .start();
 
+var marker = svg.append("defs").append("marker")
+    .attr({
+        'id': "arrowhead",
+        'refX': 13,
+        'refY': 2,
+        'markerWidth': 4,
+        'markerHeight': 4,
+        'orient': "auto"
+    });
+
+marker.append("path")
+    .attr({
+        d: "M 0,0 V 4 L4,2 Z",
+        fill: "red"
+    });
+
 var link = svg.selectAll(".link")
     .data(graph.links)
     .enter().append("g")
     .attr("class", "link")
     .append("line")
     .attr("class", "link-line")
+    .attr("marker-end","url(#arrowhead)")
     .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
 var linkText = svg.selectAll(".link")
