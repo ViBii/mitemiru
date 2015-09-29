@@ -3,6 +3,18 @@ class PortfolioController < ApplicationController
   end
 
   def ticket_digestion
+    ######################
+    # チケット情報の取得 #
+    ######################
+
+    # Redmineの認証情報
+    @redmine_info = Hash.new
+    @redmine_info[:url] = 'test-vibi-redmine.herokuapp.com'
+    @redmine_info[:user] = 'admin'
+    @redmine_info[:password] = 'admin'
+
+
+
     @tracker_info = Hash.new
 
     # トラッカー名
