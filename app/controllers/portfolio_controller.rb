@@ -20,31 +20,48 @@ class PortfolioController < ApplicationController
     @redmine_info[:project] = 'sample1'
 
     # 存在するチケット数を取得
-    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/issues.json', user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
+    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json', user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
 
     # すべてのチケット情報を取得
+    all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?limit='+total_issue_count.to_s, user: @redmine_info[:user], password: @redmine_info[:password])
 
-    @tracker_info = Hash.new
-    @tracker_info[:test] = total_issue_count
+    # トラッカーの一覧を取得
+    tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:user], password: @redmine_info[:password])
+    @tracker = Hash.new
+    @tracker[:id] = Array.new
+    @tracker[:name] = Array.new
+    for tracker in tracker_info['trackers'] do
+      @tracker[:id].push(tracker['id'])
+      @tracker[:name].push(tracker['name'])
+    end
 
     ##########################
     # チケット情報のグラフ化 #
     ##########################
 
+    @tracker_info = Hash.new
+    @tracker_info[:count] = Array.new(@tracker[:id].length)
+
+    for i in 1..@tracker_info[:count].length do
+      @tracker_info[:count][i-1] = 0
+    end
+
+    for i in all_ticket_info['issues'] do
+      @tracker_info[:count][i['tracker']['id']-1] += 1
+    end
+
     # トラッカー名
-    @tracker_info[:category] = ['Bug', 'Feature', 'Test']
-    gon.tracker = @tracker_info[:category]
+    gon.tracker = @tracker[:name]
 
     # 各トラッカーのチケット消化数
-    @tracker_info[:ticket_num] = [20, 8, 13]
-    gon.ticket_num = @tracker_info[:ticket_num]
+    gon.ticket_num = @tracker_info[:count]
 
     # 消化チケットの総数
-    @tracker_info[:ticket_num_all] = 0
-    for n in @tracker_info[:ticket_num] do
-      @tracker_info[:ticket_num_all] += n;
+    @tracker_info[:total_count] = 0
+    for n in @tracker_info[:count] do
+      @tracker_info[:total_count] += n;
     end
-    gon.ticket_num_all = @tracker_info[:ticket_num_all]
+    gon.ticket_num_all = @tracker_info[:total_count]
 
     # 開発者名
     @tracker_info[:developer] = '玄葉 条士郎'
