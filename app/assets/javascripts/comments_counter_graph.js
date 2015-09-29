@@ -31,7 +31,7 @@ var marker = svg.append("defs").append("marker")
 marker.append("path")
     .attr({
         d: "M 0,0 V 4 L4,2 Z",
-        fill: "red"
+        fill: "#ccc"
     });
 
 var link = svg.selectAll(".link")
