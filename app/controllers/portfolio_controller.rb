@@ -12,18 +12,32 @@ class PortfolioController < ApplicationController
     @redmine_info[:url] = 'test-vibi-redmine.herokuapp.com'
     @redmine_info[:user] = 'admin'
     @redmine_info[:password] = 'admin'
-
-    # Redmineへの問い合わせ
-    req = RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json', user: @redmine_info[:user], password: @redmine_info[:password]
-    hash = JSON.parse(req)
-
     @redmine_info[:project] = 'sample1'
 
+    # 開発者情報の格納先
+    @developer = Hash.new
+    @developer[:mail] = 'admin@example.net'
+
+    # 開発者の一覧をRedmineから取得
+    developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json',
+                           user: @redmine_info[:user], password: @redmine_info[:password])['users']
+
+    # 対象開発者情報の抽出
+    for developer in developer_info do
+      if (developer['mail'] == @developer[:mail])
+        @developer[:id] = developer['id']
+        @developer[:firstname] = developer['firstname']
+        @developer[:lastname] = developer['lastname']
+      end
+    end
+
     # 存在するチケット数を取得
-    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json', user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
+    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?status_id=*',
+                                   user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
 
     # すべてのチケット情報を取得
-    all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?limit='+total_issue_count.to_s, user: @redmine_info[:user], password: @redmine_info[:password])
+    all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?status_id=*&limit='+total_issue_count.to_s,
+                                 user: @redmine_info[:user], password: @redmine_info[:password])
 
     # トラッカーの一覧を取得
     tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:user], password: @redmine_info[:password])
@@ -40,6 +54,15 @@ class PortfolioController < ApplicationController
     ##########################
 
     @tracker_info = Hash.new
+
+    # デバッグ
+    #@tracker_info[:test] = all_ticket_info
+    
+    # 開発者名
+    @tracker_info[:developer_id] = @developer[:id]
+    @tracker_info[:developer_name] = @developer[:firstname]+' '+@developer[:lastname]
+
+    # 各トラッカーのチケット消化数
     @tracker_info[:count] = Array.new(@tracker[:id].length)
 
     for i in 1..@tracker_info[:count].length do
@@ -47,14 +70,17 @@ class PortfolioController < ApplicationController
     end
 
     for i in all_ticket_info['issues'] do
-      @tracker_info[:count][i['tracker']['id']-1] += 1
+      if (!(i['assigned_to'].nil?))
+        if (i['assigned_to']['id'] == @developer[:id])
+          @tracker_info[:count][i['tracker']['id']-1] += 1
+        end
+      end
     end
+
+    gon.ticket_num = @tracker_info[:count]
 
     # トラッカー名
     gon.tracker = @tracker[:name]
-
-    # 各トラッカーのチケット消化数
-    gon.ticket_num = @tracker_info[:count]
 
     # 消化チケットの総数
     @tracker_info[:total_count] = 0
@@ -62,9 +88,6 @@ class PortfolioController < ApplicationController
       @tracker_info[:total_count] += n;
     end
     gon.ticket_num_all = @tracker_info[:total_count]
-
-    # 開発者名
-    @tracker_info[:developer] = '玄葉 条士郎'
   end
 
   def productivity
