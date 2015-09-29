@@ -16,6 +16,8 @@ class PortfolioController < ApplicationController
 
     # 開発者情報の格納先
     @developer = Hash.new
+
+    # 参照する開発者のメールアドレス
     @developer[:mail] = 'admin@example.net'
 
     # 開発者の一覧をRedmineから取得
@@ -53,41 +55,38 @@ class PortfolioController < ApplicationController
     # チケット情報のグラフ化 #
     ##########################
 
-    @tracker_info = Hash.new
+    @issue_info = Hash.new
 
-    # デバッグ
-    #@tracker_info[:test] = all_ticket_info
-    
-    # 開発者名
-    @tracker_info[:developer_id] = @developer[:id]
-    @tracker_info[:developer_name] = @developer[:firstname]+' '+@developer[:lastname]
+    # 開発者情報
+    @issue_info[:developer_id] = @developer[:id]
+    @issue_info[:developer_name] = @developer[:firstname]+' '+@developer[:lastname]
 
     # 各トラッカーのチケット消化数
-    @tracker_info[:count] = Array.new(@tracker[:id].length)
+    @issue_info[:count] = Array.new(@tracker[:id].length)
 
-    for i in 1..@tracker_info[:count].length do
-      @tracker_info[:count][i-1] = 0
+    for i in 1..@issue_info[:count].length do
+      @issue_info[:count][i-1] = 0
     end
 
     for i in all_ticket_info['issues'] do
       if (!(i['assigned_to'].nil?))
         if (i['assigned_to']['id'] == @developer[:id])
-          @tracker_info[:count][i['tracker']['id']-1] += 1
+          @issue_info[:count][i['tracker']['id']-1] += 1
         end
       end
     end
 
-    gon.ticket_num = @tracker_info[:count]
+    gon.ticket_num = @issue_info[:count]
 
     # トラッカー名
     gon.tracker = @tracker[:name]
 
     # 消化チケットの総数
-    @tracker_info[:total_count] = 0
-    for n in @tracker_info[:count] do
-      @tracker_info[:total_count] += n;
+    @issue_info[:total_count] = 0
+    for n in @issue_info[:count] do
+      @issue_info[:total_count] += n;
     end
-    gon.ticket_num_all = @tracker_info[:total_count]
+    gon.ticket_num_all = @issue_info[:total_count]
   end
 
   def productivity
