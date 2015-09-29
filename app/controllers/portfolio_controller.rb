@@ -12,12 +12,26 @@ class PortfolioController < ApplicationController
     @redmine_info[:url] = 'test-vibi-redmine.herokuapp.com'
     @redmine_info[:user] = 'admin'
     @redmine_info[:password] = 'admin'
-    @redmine_info[:project] = 'sample1'
 
-    # 開発者情報の格納先
+    # プロジェクトの識別子を取得
+    @project = Hash.new
+
+    # プロジェクト名
+    @project[:name] = 'サンプルプロジェクト1'
+
+    project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
+                                user: @redmine_info[:user], password: @redmine_info[:password])['projects']
+
+    for project in project_info do
+      if (project['name'] == @project[:name])
+        @project[:identifier] = project['identifier']
+      end
+    end
+
+    # 開発者情報を取得
     @developer = Hash.new
 
-    # 参照する開発者のメールアドレス
+    # 開発者のメールアドレス
     @developer[:mail] = 'admin@example.net'
 
     # 開発者の一覧をRedmineから取得
@@ -34,11 +48,11 @@ class PortfolioController < ApplicationController
     end
 
     # 存在するチケット数を取得
-    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?status_id=*',
+    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*',
                                    user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
 
     # すべてのチケット情報を取得
-    all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@redmine_info[:project]+'/issues.json?status_id=*&limit='+total_issue_count.to_s,
+    all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*&limit='+total_issue_count.to_s,
                                  user: @redmine_info[:user], password: @redmine_info[:password])
 
     # トラッカーの一覧を取得
@@ -56,10 +70,6 @@ class PortfolioController < ApplicationController
     ##########################
 
     @issue_info = Hash.new
-
-    # 開発者情報
-    @issue_info[:developer_id] = @developer[:id]
-    @issue_info[:developer_name] = @developer[:firstname]+' '+@developer[:lastname]
 
     # 各トラッカーのチケット消化数
     @issue_info[:count] = Array.new(@tracker[:id].length)

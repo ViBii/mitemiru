@@ -1,4 +1,8 @@
-<h1><%= @issue_info[:developer_name] %>さんのチケット消化数</h1>
+<h1><%= @developer[:firstname]+' '+@developer[:lastname] %>さんのチケット消化数</h1>
+
+<p>
+開発者名: <%= @developer[:firstname]+' '+@developer[:lastname] %> <br />
+プロジェクト名: <%= @project[:name] %> <br />
 
 <%= include_gon %>
 <%= javascript_include_tag "ticket_digestion_graph" %>
