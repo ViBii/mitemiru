@@ -94,5 +94,5 @@ class CommentsCounterController < ApplicationController
     @graph = JSON.parse(nodes + links)
     gon.graph = @graph
   end
-  
+
 end

@@ -1,5 +1,5 @@
 var width = 960,
-    height = 250
+    height = 500
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -7,7 +7,7 @@ var svg = d3.select("body").append("svg")
 
 var force = d3.layout.force()
     .gravity(.05)
-    .distance(150)
+    .distance(200)
     .charge(-100)
     .size([width, height]);
 
@@ -48,11 +48,11 @@ node.append("image")
     .attr("xlink:href", "https://github.com/favicon.ico")
     .attr("x", -8)
     .attr("y", -8)
-    .attr("width", 30)
-    .attr("height", 30);
+    .attr("width", 40)
+    .attr("height", 40);
 
 node.append("text")
-    .attr("dx", 25)
+    .attr("dx", 35)
     .attr("dy", ".35em")
     .text(function(d) { return d.name });
 
