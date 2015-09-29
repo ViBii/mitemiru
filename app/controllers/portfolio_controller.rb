@@ -24,7 +24,7 @@ class PortfolioController < ApplicationController
     @project = Hash.new
 
     # プロジェクト名
-    @project[:name] = 'サンプルプロジェクト1'
+    @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+params[:project_info][:project_id])[0].name
 
     project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
                                 user: @redmine_info[:user], password: @redmine_info[:password])['projects']
