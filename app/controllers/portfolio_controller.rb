@@ -13,9 +13,23 @@ class PortfolioController < ApplicationController
     @redmine_info[:user] = 'admin'
     @redmine_info[:password] = 'admin'
 
+    # Redmineへの問い合わせ
+    req = RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json', user: @redmine_info[:user], password: @redmine_info[:password]
+    hash = JSON.parse(req)
 
+    @redmine_info[:project] = 'sample1'
+
+    # 存在するチケット数を取得
+    total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/issues.json', user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
+
+    # すべてのチケット情報を取得
 
     @tracker_info = Hash.new
+    @tracker_info[:test] = total_issue_count
+
+    ##########################
+    # チケット情報のグラフ化 #
+    ##########################
 
     # トラッカー名
     @tracker_info[:category] = ['Bug', 'Feature', 'Test']
