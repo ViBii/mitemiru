@@ -1,5 +1,10 @@
 class PortfolioController < ApplicationController
   def index
+    @developer = Developer.all
+  end
+
+  def show_projects
+    @project = Project.all
   end
 
   def ticket_digestion
