@@ -4,7 +4,9 @@ class PortfolioController < ApplicationController
   end
 
   def show_projects
-    @project = Project.all
+    @project = Project.find_by_sql("SELECT projects.id, projects.name FROM projects, assign_logs WHERE assign_logs.project_id = projects.id AND assign_logs.developer_id = "+params[:developer_info][:id])
+    @developer_info= Hash.new
+    @developer_info[:id] = params[:developer_info][:id]
   end
 
   def ticket_digestion
