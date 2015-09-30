@@ -2,11 +2,6 @@
   <div class="control-group">
     <%= label_tag(:id, "開発者名") %>
     <%= collection_select(:developer_info, :id, @developer.all, :id, :name) %>
-    
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <%= submit_tag "更新", class: "btn btn-primary" %>
-      </div>
-    </div>
+    <%= button_to "Select" %>
   </div>
 <% end %>
