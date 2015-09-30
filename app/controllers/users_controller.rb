@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy
     respond_to do |format|
-      format.html { redirect_to developers_url, notice: 'version_repository was successfully destroyed.' }
+      format.html { redirect_to users_url, notice: 'version_repository was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
