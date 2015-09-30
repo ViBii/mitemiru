@@ -1,0 +1,14 @@
+<div class="proj_form">
+  <%= form_tag({:controller => 'portfolio', :action => 'ticket_digestion'}) do %>
+    <% if @info[:status] == true then %>
+      <div class="control-group">
+        <%= label_tag(:project_id, "プロジェクト名") %>
+        <%= collection_select(:project_info, :project_id, @project, :id, :name) %>
+        <%= hidden_field_tag 'developer_id', @developer_info[:id] %>
+        <%= button_to "Select" %>
+      </div>
+    <% else %>
+      <p>開発者が所属するプロジェクトはありません</p>
+    <% end %>
+  <% end %>
+</div>

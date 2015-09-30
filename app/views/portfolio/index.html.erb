@@ -1,18 +1,13 @@
 <div class="page-header">
-  <h1>開発者のポートフォリオを表示します.</h1>
-<!-- Place somewhere in the <body> of your page -->
-<div class="flexslider">
-  <ul class="slides">
-    <li>
-      <%= image_tag "slide1.jpg" %>
-    </li>
-    <li>
-      <%= image_tag "slide2.jpg" %>
-    </li>
-    <li>
-      <%= image_tag "slide3.jpg" %>
-    </li>
-  </ul>
-</div>
+  <%= link_to '/', class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    トップに戻る
+  <% end %>
+
+  <h1>ポートフォリオ</h1>
+  <p>開発者とプロジェクトを選択してください</p>
 </div>
 
+<div class="form">
+  <%= render 'dev_form' %>
+</div>
