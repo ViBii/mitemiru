@@ -1,5 +1,20 @@
 class PortfolioController < ApplicationController
   def index
+  end
+
+  def select_function
+    if params[:id] == '1' then
+      redirect_to '/commit_counter/index'
+    elsif params[:id] == '2' then
+      redirect_to '/comments_counter/index'
+    elsif params[:id] == '3' then
+      redirect_to '/portfolio/productivity_info'
+    elsif params[:id] == '4' then
+      redirect_to '/portfolio/productivity'
+    end
+  end
+
+  def productivity_info
     @developer = Developer.all
   end
 

@@ -26,13 +26,14 @@ class TicketRepositoriesController < ApplicationController
   def show
   end
 
-<<<<<<< HEAD
   def destroy
     @ticket_repository.destroy
     respond_to do |format|
       format.html { redirect_to ticket_repositories_url, notice: 'ticket_repository was successfully destroyed.' }
       format.json { head :no_content }
-=======
+    end
+  end
+
   def update
     respond_to do |format|
       if @ticket_repository.update(ticket_repository_params)
@@ -42,7 +43,6 @@ class TicketRepositoriesController < ApplicationController
         format.html { render :edit }
         format.json { render json: @ticket_repository.errors, status: :unprocessable_entity }
       end
->>>>>>> bugofsubmitbtn
     end
   end
 
