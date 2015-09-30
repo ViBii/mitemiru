@@ -10,6 +10,14 @@ class VersionRepositoriesController < ApplicationController
   def show
   end
 
+  def destroy
+    @version_repository.destroy
+    respond_to do |format|
+      format.html { redirect_to developers_url, notice: 'version_repository was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_version_repository
