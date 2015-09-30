@@ -10,13 +10,14 @@ class VersionRepositoriesController < ApplicationController
   def show
   end
 
-<<<<<<< HEAD
   def destroy
     @version_repository.destroy
     respond_to do |format|
       format.html { redirect_to version_repositories_url, notice: 'version_repository was successfully destroyed.' }
       format.json { head :no_content }
-=======
+    end
+  end
+
   def update
     respond_to do |format|
       if @version_repository.update(version_repository_params)
@@ -26,7 +27,6 @@ class VersionRepositoriesController < ApplicationController
         format.html { render :edit }
         format.json { render json: @version_repository.errors, status: :unprocessable_entity }
       end
->>>>>>> bugofsubmitbtn
     end
   end
 
