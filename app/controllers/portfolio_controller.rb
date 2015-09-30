@@ -1,5 +1,3 @@
-require 'json'
-
 class PortfolioController < ApplicationController
   def index
   end
@@ -51,7 +49,7 @@ class PortfolioController < ApplicationController
     end
 
     #redmine上の該当開発者の全てのissue情報を取得する
-    issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
+    issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
 
     issues_json = JSON.parse(issues_req)
 
@@ -75,7 +73,7 @@ class PortfolioController < ApplicationController
     result_hours = Hash.new
 
     #実績工数情報の取得
-    result_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json', user: redmineName, password: redminePW
+    result_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100', user: redmineName, password: redminePW
     result_json = JSON.parse(result_req)
 
     #工数Hash初期化
