@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   get 'portfolio/index'
   post 'portfolio/show_projects'
+  post 'portfolio/select_function'
   post 'portfolio/ticket_digestion'
   get 'portfolio/productivity'
 

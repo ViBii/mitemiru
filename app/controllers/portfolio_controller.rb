@@ -1,6 +1,13 @@
 class PortfolioController < ApplicationController
   def index
     @developer = Developer.all
+    @function = Hash.new;
+    @function[:id] = Array.new(4)
+    @function[:name] = ['a', 'b', 'c', 'd']
+  end
+
+  def select_function
+    redirect_to '/portfolio/index'
   end
 
   def show_projects
