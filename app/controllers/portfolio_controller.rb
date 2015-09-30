@@ -49,9 +49,33 @@ class PortfolioController < ApplicationController
     end
 
     #redmine上の該当開発者の全てのissue情報を取得する
-    issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
+    issuesArr = []
+    first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
 
-    issues_json = JSON.parse(issues_req)
+    first_issues_json = JSON.parse(first_issues_req)
+
+    first_issues_json['issues'].each do |issue|
+      issuesArr.push(issue)
+    end
+
+    #ページの最初のデータのindex
+    issue_offset = 0
+    #総数
+    total_count = first_issues_json['total_count']
+    #各ページ表示する最大値
+    limit = first_issues_json['limit']
+
+    #issueのpagination処理    issueが多すぎ状態を回避するため
+    while total_count > limit do
+      issue_offset = issue_offset + limit
+      issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer_redmineId.to_s+'&off', user: redmineName, password: redminePW
+      total_count = total_count - limit
+      JSON.parse(issues_req)['issues'].each do |issue|
+        issuesArr.push(issue)
+      end
+    end
+
+    issues_json = JSON.parse(issuesArr.to_json)
 
     # トラッカーHash
     @productivity_info = Hash.new
@@ -84,7 +108,7 @@ class PortfolioController < ApplicationController
 
     #*************************************************工数計算部分
     #予定工数の計算
-    issues_json['issues'].each do |issue|
+    issues_json.each do |issue|
 
       #予定工数計算部分
       if nil != issue['estimated_hours'] then
