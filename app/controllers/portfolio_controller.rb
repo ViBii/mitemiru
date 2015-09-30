@@ -16,19 +16,20 @@ class PortfolioController < ApplicationController
 
     # Redmineの認証情報
     @redmine_info = Hash.new
-    @redmine_info[:url] = 'test-vibi-redmine.herokuapp.com'
-    @redmine_info[:user] = 'admin'
-    @redmine_info[:password] = 'admin'
+    @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+params[:project_info][:project_id])[0].ticket_repository_id
+    @redmine_info[:url] = TicketRepository.find_by_sql("SELECT url FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].url
+    @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
+    @redmine_info[:password_digest] = RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest 
 
-    # プロジェクトの識別子を取得
     @project = Hash.new
 
     # プロジェクト名
     @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+params[:project_info][:project_id])[0].name
 
     project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
-                                user: @redmine_info[:user], password: @redmine_info[:password])['projects']
+                                user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['projects']
 
+    # プロジェクトの識別子を取得
     for project in project_info do
       if (project['name'] == @project[:name])
         @project[:identifier] = project['identifier']
@@ -39,11 +40,12 @@ class PortfolioController < ApplicationController
     @developer = Hash.new
 
     # 開発者のメールアドレス
-    @developer[:mail] = 'admin@example.net'
+    @developer[:id] = params[:developer_id]
+    @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
 
     # 開発者の一覧をRedmineから取得
     developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json',
-                           user: @redmine_info[:user], password: @redmine_info[:password])['users']
+                           user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
 
     # 対象開発者情報の抽出
     for developer in developer_info do
@@ -56,14 +58,14 @@ class PortfolioController < ApplicationController
 
     # 存在するチケット数を取得
     total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*',
-                                   user: @redmine_info[:user], password: @redmine_info[:password])['total_count']
+                                   user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['total_count']
 
     # すべてのチケット情報を取得
     all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*&limit='+total_issue_count.to_s,
-                                 user: @redmine_info[:user], password: @redmine_info[:password])
+                                 user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
 
     # トラッカーの一覧を取得
-    tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:user], password: @redmine_info[:password])
+    tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
     @tracker = Hash.new
     @tracker[:id] = Array.new
     @tracker[:name] = Array.new
