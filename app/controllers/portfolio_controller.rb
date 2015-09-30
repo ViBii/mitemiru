@@ -49,26 +49,29 @@ class PortfolioController < ApplicationController
     end
 
     #redmine上の該当開発者の全てのissue情報を取得する
-    issuesArr = []
-    first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
 
+    #全てのissue情報を保存するarray、最後json形式に変更する
+    issuesArr = []
+
+    first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
     first_issues_json = JSON.parse(first_issues_req)
 
+    #第一回問い合わせしてもらった情報をarrayに保存
     first_issues_json['issues'].each do |issue|
       issuesArr.push(issue)
     end
 
-    #ページの最初のデータのindex
+    #最初のデータのindex
     issue_offset = 0
     #総数
     total_count = first_issues_json['total_count']
-    #各ページ表示する最大値
+    #一回問い合わせする最大値
     limit = first_issues_json['limit']
 
-    #issueのpagination処理    issueが多すぎ状態を回避するため
+    #issueのpagination処理
     while total_count > limit do
       issue_offset = issue_offset + limit
-      issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer_redmineId.to_s+'&off', user: redmineName, password: redminePW
+      issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
       total_count = total_count - limit
       JSON.parse(issues_req)['issues'].each do |issue|
         issuesArr.push(issue)
@@ -97,8 +100,36 @@ class PortfolioController < ApplicationController
     result_hours = Hash.new
 
     #実績工数情報の取得
-    result_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100', user: redmineName, password: redminePW
-    result_json = JSON.parse(result_req)
+
+    #全てのtime entry情報を保存するarray、最後json形式に変更する
+    time_entry_Arr = []
+
+    first_time_entry_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100', user: redmineName, password: redminePW
+    first_time_entry_json = JSON.parse(first_time_entry_req)
+
+    #第一回問い合わせしてもらった情報をarrayに保存
+    first_time_entry_json['time_entries'].each do |time_entry|
+      time_entry_Arr.push(time_entry)
+    end
+
+    #最初のデータのindex
+    time_entry_offset = 0
+    #総数
+    time_entry_total_count = first_time_entry_json['total_count']
+    #一回問い合わせする最大値
+    time_entry_limit = first_time_entry_json['limit']
+
+    #time entryのpagination処理
+    while time_entry_total_count > time_entry_limit do
+      time_entry_offset = time_entry_offset + time_entry_limit
+      time_entry_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100&offset='+ time_entry_offset.to_s, user: redmineName, password: redminePW
+      time_entry_total_count = time_entry_total_count - time_entry_limit
+      JSON.parse(time_entry_req)['time_entries'].each do |time_entry|
+        time_entry_Arr.push(time_entry)
+      end
+    end
+
+    time_entry_json = JSON.parse(time_entry_Arr.to_json)
 
     #工数Hash初期化
     @productivity_info[:tracker].each do |tracker|
@@ -116,7 +147,7 @@ class PortfolioController < ApplicationController
       end
 
       #実績工数計算部分
-      result_json['time_entries'].each do |time_entry|
+      time_entry_json.each do |time_entry|
         if issue['id'] == time_entry['issue']['id'] then
           result_hours[issue['tracker']['name']] = result_hours[issue['tracker']['name']] + time_entry['hours']
         end
@@ -134,8 +165,6 @@ class PortfolioController < ApplicationController
     result_hours.each{|key, value|
       result_hours_result.push(value)
     }
-
-    puts result_hours_result
 
     #****************************************************graph
 
