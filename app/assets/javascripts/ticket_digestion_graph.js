@@ -46,8 +46,8 @@ g.append("text")
      return tracker[i];
    }
  })
- .attr("y", -15)
- .attr("font-size", "30px")
+ .attr("y", -10)
+ .attr("font-size", "20px")
  .attr("fill", "white");
 
 g.append("text")
@@ -61,8 +61,8 @@ g.append("text")
      return ticket_num[i];
    }
  })
- .attr("y", 15)
- .attr("font-size", "30px")
+ .attr("y", 10)
+ .attr("font-size", "20px")
  .attr("fill", "white");
 
 g.append("text")
