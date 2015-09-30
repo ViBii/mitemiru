@@ -27,7 +27,7 @@ class PortfolioController < ApplicationController
   end
 
   def productivity
-    #**************************************************get issue Time
+    #***********************************************get ProductionCost
 
     #redmine上のアカウント名
     @developer_name = "SYU"
@@ -39,8 +39,8 @@ class PortfolioController < ApplicationController
     redminePW = "z13299928050"
 
     #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-    memberships_url = 'http://vibi-redmine.herokuapp.com/projects/vibi'
-    memberships_req = RestClient::Request.execute method: :get, url: memberships_url+'/memberships.json', user: redmineName, password: redminePW
+    redmine_url = 'http://vibi-redmine.herokuapp.com/projects/vibi'
+    memberships_req = RestClient::Request.execute method: :get, url: redmine_url+'/memberships.json', user: redmineName, password: redminePW
 
     # perse
     memberships_json = JSON.parse(memberships_req)
@@ -52,17 +52,43 @@ class PortfolioController < ApplicationController
     end
 
     #redmine上の該当開発者の全てのissue情報を取得する
-    issues_req = RestClient::Request.execute method: :get, url: memberships_url+'/issues.json?status_id=*&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
+    issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&assigned_to_id='+ developer_redmineId.to_s, user: redmineName, password: redminePW
 
     issues_json = JSON.parse(issues_req)
 
-    #puts issues_json
-    #******************************************************graph
+    # トラッカーHash
     @productivity_info = Hash.new
 
     # トラッカー名
-    @productivity_info[:tracker] = ['Bug', 'Feature', 'Test', 'Document']
+    @productivity_info[:tracker] = ['BUG', 'FEATURE', 'SUPPORT', 'DOCUMENT']
     gon.tracker = @productivity_info[:tracker]
+
+    #実績工数Hash
+    estimated_hours = Hash.new
+    #実績工数Hash初期化
+    @productivity_info[:tracker].each do |tracker|
+      estimated_hours[tracker] = 0
+    end
+
+    #予定工数の計算
+    issues_json['issues'].each do |issue|
+      @productivity_info[:tracker].each do |tracker|
+        if issue['tracker']['name'] == tracker then
+          estimated_hours[tracker] = estimated_hours[tracker] + issue['estimated_hours']
+        end
+      end
+
+    end
+
+    #実績工数Array
+    estimated_hours_result = []
+    estimated_hours.each{|key, value|
+      estimated_hours_result.push(value)
+    }
+    puts estimated_hours_result
+
+
+    #******************************************************graph
 
     # 実績工数
     @productivity_info[:result] = [120, 56, 79, 12]
