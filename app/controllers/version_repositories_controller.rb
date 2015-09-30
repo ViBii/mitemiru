@@ -10,10 +10,28 @@ class VersionRepositoriesController < ApplicationController
   def show
   end
 
+  def update
+    respond_to do |format|
+      if @version_repository.update(version_repository_params)
+        format.html { redirect_to @version_repository, notice: 'version_repository was successfully updated.' }
+        format.json { render :show, status: :ok, location: @version_repository }
+      else
+        format.html { render :edit }
+        format.json { render json: @version_repository.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_version_repository
     @version_repository = VersionRepository.find(params[:id])
+  end
+
+  def version_repository_params
+    params.require(:version_repository).permit(
+        :url
+    )
   end
 
 end

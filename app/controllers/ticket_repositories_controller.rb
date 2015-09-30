@@ -26,6 +26,18 @@ class TicketRepositoriesController < ApplicationController
   def show
   end
 
+  def update
+    respond_to do |format|
+      if @ticket_repository.update(ticket_repository_params)
+        format.html { redirect_to @ticket_repository, notice: 'ticket_repository was successfully updated.' }
+        format.json { render :show, status: :ok, location: @ticket_repository }
+      else
+        format.html { render :edit }
+        format.json { render json: @ticket_repository.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_ticket_repository
