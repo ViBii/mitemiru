@@ -4,7 +4,15 @@ class PortfolioController < ApplicationController
   end
 
   def show_projects
+    @info = Hash.new
+    @info[:status] = true
+    
+    # プロジェクト情報を取得
     @project = Project.find_by_sql("SELECT projects.id, projects.name FROM projects, assign_logs WHERE assign_logs.project_id = projects.id AND assign_logs.developer_id = "+params[:developer_info][:id])
+    if (@project.empty?)
+      @info[:status] = false
+    end
+
     @developer_info= Hash.new
     @developer_info[:id] = params[:developer_info][:id]
   end
@@ -14,7 +22,7 @@ class PortfolioController < ApplicationController
     # チケット情報の取得 #
     ######################
 
-    # Redmineの認証情報
+    # Redmineの認証情報を取得
     @redmine_info = Hash.new
     @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+params[:project_info][:project_id])[0].ticket_repository_id
     @redmine_info[:url] = TicketRepository.find_by_sql("SELECT url FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].url
@@ -23,9 +31,8 @@ class PortfolioController < ApplicationController
 
     @project = Hash.new
 
-    # プロジェクト名
+    # プロジェクト名を取得
     @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+params[:project_info][:project_id])[0].name
-
     project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
                                 user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['projects']
 
@@ -39,7 +46,7 @@ class PortfolioController < ApplicationController
     # 開発者情報を取得
     @developer = Hash.new
 
-    # 開発者のメールアドレス
+    # 開発者のメールアドレスを取得
     @developer[:id] = params[:developer_id]
     @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
 
