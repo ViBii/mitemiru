@@ -12,6 +12,8 @@
     <thead>
     <tr>
       <th>登録済みリポジトリ</th>
+      <th>対応したプロジェクト名</th>
+      <th>ログインID</th>
       <th></th>
       <th></th>
     </tr>
@@ -20,6 +22,8 @@
     <tbody>
     <%= content_tag_for(:tr, @ticket_repositories) do |ticket_repository| %>
         <td><%= link_to ticket_repository.url, ticket_repository%></td>
+        <td></td>
+        <td></td>
         <td><%= link_to '編集', edit_ticket_repository_path(ticket_repository) %></td>
         <td><%= link_to '削除', ticket_repository, method: :delete, data: { confirm: 'Are you sure?' } %></td>
     <% end %>
