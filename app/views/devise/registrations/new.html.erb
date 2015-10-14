@@ -1,0 +1,13 @@
+<h2>ユーザ登録</h2>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= devise_error_messages! %>
+
+  <%= f.text_field :login_id, autofocus: true, class: 'form-control', required: true, placeholder: 'ログインID' %>
+  <%= f.password_field :password, class: 'form-control', required: true, placeholder: 'パスワード' %>
+  <%= f.password_field :password_confirmation, class: 'form-control', required: true, placeholder: '確認用パスワード' %>
+
+  <%= f.submit "ユーザ登録する", class: 'btn btn-lg btn-primary btn-block' %>
+<% end %>
+
+<%= render "devise/shared/links" %>

@@ -42,6 +42,7 @@ GEM
       execjs
       json
     awesome_print (1.6.1)
+    bcrypt (3.1.10)
     bcrypt-ruby (3.1.2)
     better_errors (2.1.1)
       coderay (>= 1.0.0)
@@ -55,9 +56,12 @@ GEM
       railties (>= 3.1.0)
     bootstrap-sass (3.2.0.2)
       sass (~> 3.2)
+    bootstrap-sass-extras (0.0.6)
+      rails (>= 3.1.0)
     builder (3.2.2)
     byebug (5.0.0)
       columnize (= 0.9.0)
+    cancancan (1.13.1)
     capybara (2.5.0)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -83,6 +87,15 @@ GEM
       spreadsheet (~> 1.0.3)
     database_cleaner (1.5.0)
     debug_inspector (0.0.2)
+    devise (3.5.2)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 3.2.6, < 5)
+      responders
+      thread_safe (~> 0.1)
+      warden (~> 1.2.3)
+    devise-i18n (0.12.1)
+    devise-i18n-views (0.3.6)
     diff-lcs (1.2.5)
     dirty-memoize (0.0.4)
     distribution (0.7.3)
@@ -104,6 +117,8 @@ GEM
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.10)
+    font-awesome-rails (4.4.0.0)
+      railties (>= 3.2, < 5.0)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     gon (6.0.1)
@@ -111,6 +126,8 @@ GEM
       json
       multi_json
       request_store (>= 1.0)
+    haml (4.0.7)
+      tilt
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     i18n (0.7.0)
@@ -121,7 +138,12 @@ GEM
       rails-dom-testing (~> 1.0)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
+    jquery-ui-rails (5.0.5)
+      railties (>= 3.2.16)
     json (1.8.3)
+    kaminari (0.16.3)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     launchy (2.4.3)
       addressable (~> 2.3)
     libv8 (3.16.14.11)
@@ -138,11 +160,13 @@ GEM
     multi_json (1.11.2)
     multipart-post (2.0.0)
     mysql2 (0.3.20)
+    nested_form (0.3.2)
     netrc (0.10.3)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
     octokit (4.1.0)
       sawyer (~> 0.6.0, >= 0.5.3)
+    orm_adapter (0.5.0)
     pg (0.18.3)
     phantomjs (1.9.8.0)
     poltergeist (1.6.0)
@@ -169,6 +193,9 @@ GEM
     pry-rails (0.3.4)
       pry (>= 0.9.10)
     rack (1.6.4)
+    rack-pjax (0.8.0)
+      nokogiri (~> 1.5)
+      rack (~> 1.1)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.3)
@@ -198,6 +225,20 @@ GEM
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
+    rails_admin (0.7.0)
+      builder (~> 3.1)
+      coffee-rails (~> 4.0)
+      font-awesome-rails (>= 3.0, < 5)
+      haml (~> 4.0)
+      jquery-rails (>= 3.0, < 5)
+      jquery-ui-rails (~> 5.0)
+      kaminari (~> 0.14)
+      nested_form (~> 0.3)
+      rack-pjax (~> 0.7)
+      rails (~> 4.0)
+      remotipart (~> 1.0)
+      safe_yaml (~> 1.0)
+      sass-rails (>= 4.0, < 6)
     rails_serve_static_assets (0.0.4)
     rails_stdout_logging (0.0.4)
     railties (4.2.3)
@@ -208,12 +249,15 @@ GEM
     rake (10.4.2)
     rdoc (4.2.0)
     ref (2.0.0)
+    remotipart (1.2.1)
     reportbuilder (1.4.2)
       clbustos-rtf (~> 0.4.0)
       prawn (~> 0.8.4)
       prawn-svg (~> 0.9.1)
       text-table (~> 1.2)
     request_store (1.2.0)
+    responders (2.1.0)
+      railties (>= 4.2.0, < 5)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
@@ -244,6 +288,7 @@ GEM
     ruby-ole (1.2.11.8)
     rubyvis (0.6.1)
     rubyzip (1.1.7)
+    safe_yaml (1.0.4)
     sass (3.4.18)
     sass-rails (5.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -309,6 +354,8 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
+    warden (1.2.3)
+      rack (>= 1.0)
     web-console (2.2.1)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -332,9 +379,14 @@ DEPENDENCIES
   blanket-rails
   bootstrap-generators
   bootstrap-sass (~> 3.2.0)
+  bootstrap-sass-extras (~> 0.0.6)
   byebug
+  cancancan
   coffee-rails (~> 4.1.0)
   database_cleaner
+  devise
+  devise-i18n
+  devise-i18n-views
   dotenv-rails
   execjs
   factory_girl_rails
@@ -352,6 +404,7 @@ DEPENDENCIES
   rails (= 4.2.3)
   rails-erd
   rails_12factor
+  rails_admin
   rest-client
   rspec
   rspec-rails
