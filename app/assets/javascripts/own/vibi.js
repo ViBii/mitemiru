@@ -26,6 +26,9 @@ Vibi.load = function(e) {
   if(gon.controller === 'portfolio'){
     $('.flexslider').flexslider();
   }
+  if(gon.controller === 'commit_counter'){
+      commitAjax();
+  }
 };
 
 //Windowの読込が完了したらVibi.loadを実行する
