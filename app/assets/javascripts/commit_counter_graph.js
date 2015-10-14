@@ -1,3 +1,18 @@
+//画面初期化した時実行するfunction
+
+$(document).ready(function(){
+    $.ajax({
+        url: "commits_ajax",
+        type: "POST",
+        dataType: "json",
+        async: false,
+        data: "",
+        success: function(commit_data) {
+            alert("success" + commit_data.name);
+        }
+    });
+});
+
 var commit_count = [gon.all_commit, gon.own_commit];
 var developer_name = ['その他', gon.developer_name];
 var color = ['#b1d7e8', '#006ab3'];
@@ -52,7 +67,7 @@ svg.selectAll("rect")
    .attr("width", function(d) {
      return xScale(d);
    })
-   .attr("height", barHeight); 
+   .attr("height", barHeight);
 
 // コミット数の表示
 svg.selectAll("commit_count")
