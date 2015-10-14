@@ -1,6 +1,10 @@
 class CommitCounterController < ApplicationController
   def index
-    #コミット数の集計処理をここに記載
+    #対象開発者の名前
+    @developer_name = "Altairzym"
+  end
+
+  def commits_ajax
 
     #repo設定
     @version_repo_id = 1
@@ -31,27 +35,13 @@ class CommitCounterController < ApplicationController
     end
 
     #コミット率
-    @commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
+    commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
 
     @commit_info = Hash.new
 
-    # The number of commits
-    # Sample data
-    @commit_info[:own_commit] = developer_commits
-    @commit_info[:all_commit] = total_commits
-    gon.own_commit = @commit_info[:own_commit]
-    gon.all_commit = @commit_info[:all_commit]
-
-    # Developer name
-    # Sample data
-    @commit_info[:developer_name] = developer_name
-    gon.developer_name = @commit_info[:developer_name]
-
-    # Developer num
-    # SampleData
-    @commit_info[:developer_num] = total_developers
-    gon.developer_num = @commit_info[:developer_num]
-
+    finalStr = "{\"all_commit\":" + total_commits.to_s + ",\"own_commit\":" + developer_commits.to_s + ",\"developer_name\":\"" + developer_name + "\",\"commit_rate\":" + commits_rate.to_s + ",\"total_developers\":" + total_developers.to_s + "}"
+    graphJson = JSON.parse(finalStr)
+    render :json => graphJson
   end
 
 end
