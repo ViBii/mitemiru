@@ -1,20 +1,7 @@
 class CommitCounterController < ApplicationController
   def index
-    #repo設定
-    @version_repo_id = 1
-    repo_url = VersionRepository.find(@version_repo_id)[:url]
-    githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
-
-    #チーム内開発者のコミット情報を取る
-    Octokit.auto_paginate = true
-    contributors = Octokit.contribs(githubRepo)
-
     #対象開発者の名前
     @developer_name = "Altairzym"
-
-    #チーム内開発者総数
-    @total_developers = contributors.length
-
   end
 
   def commits_ajax
@@ -48,7 +35,7 @@ class CommitCounterController < ApplicationController
     end
 
     #コミット率
-    @commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
+    commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
 
     @commit_info = Hash.new
 
@@ -68,7 +55,7 @@ class CommitCounterController < ApplicationController
     # SampleData
     # @commit_info[:developer_num] = total_developers
     # gon.developer_num = @commit_info[:developer_num]
-    finalStr = "{\"all_commit\":" + total_commits.to_s + ",\"own_commit\":" + developer_commits.to_s + ",\"developer_name\":\"" + developer_name + "\"}"
+    finalStr = "{\"all_commit\":" + total_commits.to_s + ",\"own_commit\":" + developer_commits.to_s + ",\"developer_name\":\"" + developer_name + "\",\"commit_rate\":" + commits_rate.to_s + ",\"total_developers\":" + total_developers.to_s + "}"
     graphJson = JSON.parse(finalStr)
     render :json => graphJson
   end
