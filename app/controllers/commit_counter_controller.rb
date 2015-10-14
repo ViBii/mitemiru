@@ -1,6 +1,23 @@
 class CommitCounterController < ApplicationController
   def index
-    #コミット数の集計処理をここに記載
+    #repo設定
+    @version_repo_id = 1
+    repo_url = VersionRepository.find(@version_repo_id)[:url]
+    githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
+
+    #チーム内開発者のコミット情報を取る
+    Octokit.auto_paginate = true
+    contributors = Octokit.contribs(githubRepo)
+
+    #対象開発者の名前
+    @developer_name = "Altairzym"
+
+    #チーム内開発者総数
+    @total_developers = contributors.length
+
+  end
+
+  def commits_ajax
 
     #repo設定
     @version_repo_id = 1
@@ -51,7 +68,6 @@ class CommitCounterController < ApplicationController
     # SampleData
     @commit_info[:developer_num] = total_developers
     gon.developer_num = @commit_info[:developer_num]
-
   end
 
 end
