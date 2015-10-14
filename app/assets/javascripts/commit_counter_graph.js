@@ -1,5 +1,5 @@
 var create_commit_graph = function(all_commit,own_commit,developer_name){
-    alert(all_commit + developer_name + own_commit);
+    //alert(all_commit + developer_name + own_commit);
     var commit_count = [all_commit, own_commit];
     var developer_name = ['その他', developer_name];
     var color = ['#b1d7e8', '#006ab3'];
@@ -13,7 +13,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
     var barHeight = 100;
 
     var xScale = d3.scale.linear()
-        .domain([0, gon.all_commit])
+        .domain([0, all_commit])
         .range([0, 500])
         .nice();
 
