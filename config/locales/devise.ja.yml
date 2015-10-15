@@ -108,7 +108,7 @@ ja:
       invalid: "Invalid email or password."
       locked: "アカウントがロックされています。"
       last_attempt: "あなたのアカウントがロックされる前に、もう1つの試みを持っています。"
-      not_found_in_database: "メールアドレスまたはパスワードが無効です。"
+      not_found_in_database: "ログインIDまたはパスワードが無効です。"
       timeout: "一定時間が経過したため、再度ログインが必要です"
       unauthenticated: "ログインまたは登録が必要です。"
       unconfirmed: "本登録を行ってください。"
