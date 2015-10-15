@@ -1,3 +1,7 @@
+var create_productivity_graph = function (){
+
+}
+
 var tracker = gon.tracker;
 var man_hour = ['実績工数', '予定工数'];
 var task_result = gon.task_result;

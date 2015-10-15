@@ -131,6 +131,10 @@ class PortfolioController < ApplicationController
   end
 
   def productivity
+    @developer_name = "SYU"
+  end
+
+  def productivity_ajax
     #*************************************Redmineアカウント情報、tracker情報の取得
     #redmine上のアカウント名
     @developer_name = "SYU"

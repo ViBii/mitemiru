@@ -25,10 +25,15 @@ Vibi.load = function(e) {
   };
   if(gon.controller === 'portfolio'){
     $('.flexslider').flexslider();
+    //工数グラフの生成function
+    if(gon.action === "productivity") {
+        costAjax();
+    }
   }
   if(gon.controller === 'commit_counter'){
       commitAjax();
   }
+
 };
 
 //Windowの読込が完了したらVibi.loadを実行する
