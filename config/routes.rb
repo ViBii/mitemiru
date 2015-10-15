@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   post 'portfolio/ticket_digestion'
   get 'portfolio/productivity_info'
   get 'portfolio/productivity'
+  post 'portfolio/productivity_ajax'
 
   get 'base/top'
   get 'base/setting'

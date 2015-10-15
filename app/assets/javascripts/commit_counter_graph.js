@@ -1,5 +1,4 @@
 var create_commit_graph = function(all_commit,own_commit,developer_name){
-    //alert(all_commit + developer_name + own_commit);
     var commit_count = [all_commit, own_commit];
     var developer_name = ['その他', developer_name];
     var color = ['#b1d7e8', '#006ab3'];

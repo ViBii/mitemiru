@@ -131,6 +131,10 @@ class PortfolioController < ApplicationController
   end
 
   def productivity
+    @developer_name = "SYU"
+  end
+
+  def productivity_ajax
     #*************************************Redmineアカウント情報、tracker情報の取得
     #redmine上のアカウント名
     @developer_name = "SYU"
@@ -261,6 +265,8 @@ class PortfolioController < ApplicationController
 
     end
 
+    finalStr = "{\"developer_name\":\"" + @developer_name + "\",\"estimated_hours_result\":"
+
     #予定工数Arrayの設定
     estimated_hours_result = []
     estimated_hours.each{|key, value|
@@ -274,15 +280,8 @@ class PortfolioController < ApplicationController
 
     #****************************************************graph
 
-    # 実績工数
-    @productivity_info[:result] = result_hours_result
-    gon.task_result = @productivity_info[:result]
+    finalStr.concat(estimated_hours_result.to_s + ",\"result_hours_result\":" + result_hours_result.to_s + ",\"tracker\":" + @productivity_info[:tracker].to_s + "}");
 
-    # 予定工数
-    @productivity_info[:estimate] = estimated_hours_result
-    gon.task_estimate = @productivity_info[:estimate]
-
-    # 開発者名
-    @productivity_info[:developer] = @developer_name
+    render :json => finalStr
   end
 end
