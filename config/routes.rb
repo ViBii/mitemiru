@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get 'commit_counter/index'
 
   get 'projects/select_developer'
+  get 'projects/authen'
   post 'projects/select_developer'
   post 'projects/auth_github'
 
