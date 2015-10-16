@@ -65,6 +65,9 @@ gem 'devise-i18n-views'
 gem 'cancancan'
 gem 'rails_admin'
 
+# seed
+gem 'seed-fu', '~> 2.3'
+
 group :development, :test do
   # ER_Chart
   # brew install graphviz

@@ -6,6 +6,6 @@ Role.connection.execute("TRUNCATE TABLE roles;")
 Role.create(name: "admin")
 
 user = User.where(login_id: "admin")
-user.first.roles << Role.where(name: "admin")
+user.roles << Role.where(name: "admin")
 
 puts "Init seed push complete!!"
