@@ -16,6 +16,7 @@
         <th></th>
         <th></th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
 
@@ -24,6 +25,7 @@
         <td><%= link_to project.name, project %></td>
         <td><%= project.project_start_date %></td>
         <td><%= project.project_end_date %></td>
+        <td></td>
         <td><%= link_to 'リポジトリ認証', "/projects/authen" %></td>
         <td><%= link_to '編集', edit_project_path(project) %></td>
         <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
