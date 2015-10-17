@@ -2,7 +2,12 @@ require 'json'
 
 class CommentsCounterController < ApplicationController
   def index
-#issuesの状態
+    #見たい開発者のGithub上のUserName
+    @assigneeArg = "Altairzym"
+  end
+
+  def comments_ajax
+    #issuesの状態
     stateArg = "all"
 
     #見たい開発者のGithub上のUserName
@@ -43,7 +48,7 @@ class CommentsCounterController < ApplicationController
     issues = Octokit.list_issues(githubRepo,state: stateArg)
 
     #最終json
-    @graph = ""
+    finalStr = ""
     nodes = ""
     links = ""
 
@@ -91,8 +96,10 @@ class CommentsCounterController < ApplicationController
       end
     }
 
-    @graph = JSON.parse(nodes + links)
-    gon.graph = @graph
+    finalStr = nodes + links
+
+    render :json => finalStr
+
   end
 
 end

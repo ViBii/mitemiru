@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   get 'datasamples/index'
   get 'comments_counter/index'
+  post 'comments_counter/comments_ajax'
   get 'commit_counter/index'
   post 'commit_counter/commits_ajax'
 
