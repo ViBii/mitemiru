@@ -1,17 +1,14 @@
 Rails.application.routes.draw do
-  root 'base#top'
+  root 'portfolio#top'
 
-  get 'comp/index'
-
+  get 'portfolio/top'
+  get 'portfolio/setting'
   get 'portfolio/index'
   post 'portfolio/show_projects'
   post 'portfolio/select_function'
   post 'portfolio/ticket_digestion'
   get 'portfolio/productivity_info'
   get 'portfolio/productivity'
-
-  get 'base/top'
-  get 'base/setting'
 
   get 'datasamples/index'
   get 'comments_counter/index'
@@ -25,8 +22,5 @@ Rails.application.routes.draw do
   devise_for :users
   resources :projects
   resources :developers
-  resources :ticket_repositories
-  resources :version_repositories
-  resources :redmine_keys
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end

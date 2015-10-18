@@ -1,7 +1,4 @@
 class PortfolioController < ApplicationController
-  def index
-  end
-
   def select_function
     if params[:id] == '1' then
       redirect_to '/commit_counter/index'
@@ -21,7 +18,7 @@ class PortfolioController < ApplicationController
   def show_projects
     @info = Hash.new
     @info[:status] = true
-    
+
     # プロジェクト情報を取得
     @project = Project.find_by_sql("SELECT projects.id, projects.name FROM projects, assign_logs WHERE assign_logs.project_id = projects.id AND assign_logs.developer_id = "+params[:developer_info][:id])
     if (@project.empty?)

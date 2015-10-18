@@ -20,12 +20,22 @@ ja:
       user:
         current_password: "現在のパスワード"
         email: "メールアドレス"
-        login_id: "ユーザーID"
+        login_id: "ログインID"
         password: "パスワード"
         password_confirmation: "確認用パスワード"
         remember_me: "ログインを記憶"
     models:
-      user: "ユーザ"
+      assign_log: "所属情報"
+      version_repository: "Redmine情報"
+      ticket_repository: "GitHub情報"
+      role: "権限情報"
+      redmine_key: "Redmine認証情報"
+      redmine_authority: "Redmine認証権限情報"
+      github_key: "GitHub認証情報"
+      github_authoritie: "GitHub認証権限情報"
+      project: "プロジェクト情報"
+      developer: "開発者情報"
+      user: "ユーザー"
   devise:
     confirmations:
       new:

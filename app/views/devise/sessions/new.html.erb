@@ -1,13 +1,17 @@
+<%= render(:partial => "./layouts/header", :locals => {:selected_value => "", :show_header => false}) %>
+
 <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: {role: 'form', class: 'form-signin'}) do |f| %>
   <h2>ログイン</h2>
-  <%= f.text_field :login_id, autofocus: true, class: 'form-control', required: true, placeholder: 'ログインID' %>
-  <%= f.password_field :password, class: 'form-control', required: true, placeholder: 'パスワード' %>
+  <p><%= f.text_field :login_id, autofocus: true, class: 'form-control',
+    required: true, placeholder: 'ログインID' %></p>
+  <p><%= f.password_field :password, class: 'form-control',
+    required: true, placeholder: 'パスワード' %></p>
 
   <% if devise_mapping.rememberable? -%>
-    <div><%= f.check_box :remember_me %> <%= f.label :remember_me %></div>
+    <p><div><%= f.check_box :remember_me %> <%= f.label :remember_me %></div></p>
   <% end -%>
 
-  <div><%= f.submit "ログイン", class: 'btn btn-lg btn-primary btn-block' %></div>
+  <div><%= f.submit "ログインする", class: 'btn btn-lg btn-primary' %></div>
 
   <%= render "devise/shared/links" %>
 <% end %>
