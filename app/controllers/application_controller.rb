@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
-  # Prevent CSRF attacks by raising an exception.
-  # For APIs, you may want to use :null_session instead.
+  helper_method :has_admin?
+
   protect_from_forgery with: :exception
 
   before_action :authenticate_user!
@@ -31,5 +31,9 @@ class ApplicationController < ActionController::Base
   def include_gon
     gon.controller = params[:controller]
     gon.action     = params[:action]
+  end
+
+  def has_admin?
+    current_user.login_id == "admin"
   end
 end
