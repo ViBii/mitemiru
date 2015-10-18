@@ -1,0 +1,124 @@
+ja:
+  errors:
+    messages:
+      already_confirmed: "は既に登録済みです。ログインしてください"
+      confirmation_period_expired: "%{period}以内に確認する必要がありますので、新しくリクエストしてください。"
+      expired: "有効期限切れです。新規登録してください。"
+      not_found: "は見つかりませんでした。"
+      not_locked: "ロックされていません。"
+      taken: "は既に使用されています。"
+      blank: "が入力されていません。"
+      too_short: "は%{count}文字以上に設定して下さい。"
+      too_long: "は%{count}文字以下に設定して下さい。"
+      invalid: "は有効でありません。"
+      confirmation: "が内容とあっていません。"
+      not_saved:
+        one: "エラーにより、この %{resource} を保存できません："
+        other: "%{count} 個のエラーにより、この %{resource} を保存できません："
+  activerecord:
+    attributes:
+      user:
+        current_password: "現在のパスワード"
+        email: "メールアドレス"
+        login_id: "ログインID"
+        password: "パスワード"
+        password_confirmation: "確認用パスワード"
+        remember_me: "ログインを記憶"
+    models:
+      assign_log: "所属情報"
+      version_repository: "Redmine情報"
+      ticket_repository: "GitHub情報"
+      role: "権限情報"
+      redmine_key: "Redmine認証情報"
+      redmine_authority: "Redmine認証権限情報"
+      github_key: "GitHub認証情報"
+      github_authoritie: "GitHub認証権限情報"
+      project: "プロジェクト情報"
+      developer: "開発者情報"
+      user: "ユーザー"
+  devise:
+    confirmations:
+      new:
+        resend_confirmation_instructions: "アカウント確認メール再送"
+      confirmed: "アカウントが確認されました。ログインしています。"
+      send_instructions: "アカウントの確認方法を数分以内にメールでご連絡します。"
+      send_paranoid_instructions: "ご登録のメールアドレスが保存されている場合、アカウントの確認方法をメールでご連絡します。"
+    mailer:
+      confirmation_instructions:
+        action: "アカウント確認"
+        greeting: "ようこそ、%{recipient}さん!"
+        instruction: "次のリンクでメールアドレスの確認が完了します:"
+      reset_password_instructions:
+        action: "パスワード変更"
+        greeting: "こんにちは、%{recipient}さん!"
+        instruction: "誰かがパスワードの再設定を希望しました。次のリンクでパスワードの再設定が出来ます。"
+        instruction_2: "あなたが希望したのではないのなら、このメールは無視してください。"
+        instruction_3: "上のリンクにアクセスして新しいパスワードを設定するまで、パスワードは変更されません。"
+      unlock_instructions:
+        action: "アカウントのロック解除"
+        greeting: "こんにちは、%{recipient}さん!"
+        instruction: "アカウントのロックを解除するには下のリンクをクリックしてください。"
+        message: "ログイン失敗が繰り返されたため、アカウントはロックされています。"
+    passwords:
+      edit:
+        change_my_password: "パスワードを変更する"
+        change_your_password: "パスワードを変更"
+        confirm_new_password: "確認用新しいパスワード"
+        new_password: "新しいパスワード"
+      new:
+        forgot_your_password: "パスワードを忘れましたか?"
+        send_me_reset_password_instructions: "パスワードの再設定方法を送信する"
+      no_token: "このページにアクセスする事が出来ません。正しいURLでアクセスしている事を確認して下さい。"
+      send_instructions: "パスワードのリセット方法を数分以内にメールでご連絡します。"
+      send_paranoid_instructions: ""
+      updated: "パスワードを変更しました。"
+      updated_not_active: "パスワードを変更しました。"
+    registrations:
+      destroyed: "アカウントを削除しました。またのご利用をお待ちしております。"
+      signed_up: "アカウント登録を受け付けました。"
+      signed_up_but_inactive: "アカウントは登録されていますが、アクティブになっていないため利用できません。"
+      signed_up_but_locked: "アカウントは登録されていますが、ロックされているため利用できません。"
+      signed_up_but_unconfirmed: "確認メールを登録したメールアドレス宛に送信しました。リンクを開いてアカウントを有効にして下さい。"
+      update_needs_confirmation: "アカウント情報が更新されました。更新の確認メールを新しいメールアドレス宛に送信しましたので、リンクを開いて更新を有効にして下さい。"
+      updated: "アカウントが更新されました。"
+      edit:
+        are_you_sure: "本当によろしいですか？"
+        cancel_my_account: "アカウント削除"
+        currently_waiting_confirmation_for_email: "%{email} の確認待ち"
+        leave_blank_if_you_don_t_want_to_change_it: "空欄のままなら変更しません"
+        title: "%{resource}編集"
+        unhappy: "気に入りません"
+        update: "更新"
+        we_need_your_current_password_to_confirm_your_changes: "変更を反映するには現在のパスワードを入力してください"
+      new:
+        sign_up: "アカウント登録"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      new:
+        sign_in: "ログイン"
+    shared:
+      links:
+        back: "戻る"
+        didn_t_receive_confirmation_instructions: "アカウント確認のメールを受け取っていませんか?"
+        didn_t_receive_unlock_instructions: "アカウントの凍結解除方法のメールを受け取っていませんか?"
+        forgot_your_password: "パスワードを忘れましたか?"
+        sign_in: "ログイン"
+        sign_in_with_provider: "%{provider}でログイン"
+        sign_up: "アカウント登録"
+    unlocks:
+      new:
+        resend_unlock_instructions: "アカウントの凍結解除方法を再送する"
+      send_instructions: "アカウントのロックを解除する方法を数分以内にメールでご連絡します。"
+      send_paranoid_instructions: "アカウントが存在する場合、ロックを解除する方法をメールでご連絡します。"
+      unlocked: "アカウントのロックが解除されました。ログインしています。"
+    failure:
+      already_authenticated: "既にログインしています。"
+      inactive: "Your account is not activated yet."
+      invalid: "Invalid email or password."
+      locked: "アカウントがロックされています。"
+      last_attempt: "あなたのアカウントがロックされる前に、もう1つの試みを持っています。"
+      not_found_in_database: "ログインIDまたはパスワードが無効です。"
+      timeout: "一定時間が経過したため、再度ログインが必要です"
+      unauthenticated: "ログインまたは登録が必要です。"
+      unconfirmed: "本登録を行ってください。"
