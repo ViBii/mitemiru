@@ -12,9 +12,16 @@
           <%= link_to "メトリクスを見る", '/portfolio/index', data: { no_turbolink: true } %>
         </li>
         <li>
-          <%= link_to '/portfolio/setting', data: { no_turbolink: true } do %>
-            <span class="glyphicon glyphicon-cog"></span>
-            各種管理
+          <% if has_admin? %>
+            <%= link_to '/admin', data: { no_turbolink: true } do %>
+              <span class="glyphicon glyphicon-cog"></span>
+              各種管理
+            <% end %>
+          <% else %>
+            <%= link_to '/portfolio/setting', data: { no_turbolink: true } do %>
+              <span class="glyphicon glyphicon-cog"></span>
+              各種管理
+            <% end %>
           <% end %>
         </li>
       </ul>
