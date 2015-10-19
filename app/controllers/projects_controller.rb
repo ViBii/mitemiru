@@ -78,10 +78,6 @@ class ProjectsController < ApplicationController
     @scope_projects.uniq!
   end
 
-  def authen
-
-  end
-
 
   def create
     begin

@@ -25,7 +25,9 @@
         <td><%= link_to project.name, project %></td>
         <td><%= project.project_start_date %></td>
         <td><%= project.project_end_date %></td>
-        <td></td>
+        <%= if authen(project.id) %>
+        <td><%= '認証済み' %></td>
+            <%=end %>
         <td><%= link_to image_tag('blue_edit.png', { :border => '0', :alt => 'change'}), edit_project_path(project) %></td>
         <td><%= link_to '編集', edit_project_path(project) %></td>
         <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
