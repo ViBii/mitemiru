@@ -16,9 +16,9 @@ Rails.application.routes.draw do
   get 'commit_counter/index'
   post 'commit_counter/commits_ajax'
 
-  get 'projects/select_developer'
-  post 'projects/select_developer'
-  post 'projects/auth_github'
+  # get 'projects/select_developer'
+  # post 'projects/select_developer'
+  # post 'projects/auth_github'
 
   devise_for :users
   resources :projects
