@@ -33,6 +33,9 @@ Vibi.load = function(e) {
   if(gon.controller === 'commit_counter'){
       commitAjax();
   }
+  if(gon.controller === 'comments_counter'){
+      commentAjax();
+  }
 
 };
 
