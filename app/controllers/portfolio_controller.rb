@@ -39,10 +39,6 @@ class PortfolioController < ApplicationController
     if request.xhr?
       projectId   = params['projectId']
       developerId = params['developerId']
-      puts 'ajax projectId:' + projectId
-      puts
-      puts 'ajax developerId:' + developerId
-      puts
       ######################
       # チケット情報の取得 #
       ######################
@@ -139,12 +135,8 @@ class PortfolioController < ApplicationController
       end
       gon.ticket_num_all = @issue_info[:total_count]
 
-      puts 'ticket_num:' + @issue_info[:count].to_s
-      puts
-      puts 'tracker:' + @tracker[:name].to_s
-      puts
-      puts 'ticket_num_all:' + @issue_info[:total_count].to_s
-      finalStr = "{\"a\":\"a\"}"
+      finalStr = "{\"ticket_num\":" + @issue_info[:count].to_s + ",\"tracker\":" + @tracker[:name].to_s + ",\"ticket_num_all\":" + @issue_info[:total_count].to_s + ",\"projectName\":\"" + @project[:name] + "\",\"firstName\":\"" + @developer[:firstname] + "\",\"lastName\":\"" + @developer[:lastname] + "\"}"
+
       render :json => finalStr
     end
   end

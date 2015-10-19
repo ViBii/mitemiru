@@ -1,7 +1,7 @@
-var create_ticket_digestion_graph = function(){
-  var tracker = gon.tracker;
-  var ticket_num = gon.ticket_num;
-  var ticket_num_all = gon.ticket_num_all;
+var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
+  var tracker = tracker;
+  var ticket_num = ticket_num;
+  var ticket_num_all = ticket_num_all;
   var color = d3.scale.category20();
 
   var width = 960,

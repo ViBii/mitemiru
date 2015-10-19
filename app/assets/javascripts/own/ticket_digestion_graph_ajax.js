@@ -8,12 +8,13 @@ var ticketDigestionAjax = function() {
       developerId: $('#selected_developer_id').val()
     },
     success: function(ticket_data) {
-        alert("success " + ticket_data.a);
+        //alert("success " + ticket_data.firstName);
     }
   })
   .done(function(ticket_data) {
-          //$('#detail').html("開発者の人数は合計" + commit_data.total_developers + "人です。<br>コミット率は" + commit_data.commit_rate +"%です。");
-          //create_commit_graph(commit_data.all_commit,commit_data.own_commit,commit_data.developer_name);
+          $('#ticket_digestion_graph_h1').html(ticket_data.lastName + " " + ticket_data.firstName + "さんのチケット消化数");
+          $('#ticket_digestion_graph_p').html("開発者名: " + ticket_data.lastName + " " + ticket_data.firstName + "<br />" + "プロジェクト名: " + ticket_data.projectName + "<br />");
+          create_ticket_digestion_graph(ticket_data.tracker,ticket_data.ticket_num,ticket_data.ticket_num_all);
   });
 }
 
