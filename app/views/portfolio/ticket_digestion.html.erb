@@ -1,9 +1,8 @@
-<h1><%= @developer[:firstname]+' '+@developer[:lastname] %>さんのチケット消化数</h1>
+<h1 id="ticket_digestion_graph_h1"></h1>
 
-<p>
-開発者名: <%= @developer[:firstname]+' '+@developer[:lastname] %> <br />
-プロジェクト名: <%= @project[:name] %> <br />
+<p id="ticket_digestion_graph_p">
 </p>
+<%= hidden_field_tag 'selected_project_id', @project_id %>
+<%= hidden_field_tag 'selected_developer_id', @developer_id %>
 
-<%= include_gon %>
 <%= javascript_include_tag "ticket_digestion_graph" %>
