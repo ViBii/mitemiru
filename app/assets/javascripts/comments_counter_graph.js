@@ -1,6 +1,6 @@
 var create_comment_graph = function(nodes,links){
-    var width = 960,
-        height = 350
+    var width = 500,
+        height = 700
 
     var svg = d3.select("body").append("svg")
         .attr("width", width)
