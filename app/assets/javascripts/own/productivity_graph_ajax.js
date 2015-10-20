@@ -3,7 +3,10 @@ var costAjax = function() {
     type: 'post',
     url: 'productivity_ajax',
     dataType: "json",
-    data: "",
+    data: {
+        projectId: $('#selected_project_id').val(),
+        developerId: $('#selected_developer_id').val()
+    },
     success: function(commit_data) {
 
     }
