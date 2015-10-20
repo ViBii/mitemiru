@@ -31,6 +31,7 @@ Vibi.load = function(e) {
     }
     if(gon.action === "ticket_digestion") {
         ticketDigestionAjax();
+        commitAjax();
     }
   }
   if(gon.controller === 'commit_counter'){

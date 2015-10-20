@@ -9,7 +9,7 @@ var commitAjax = function() {
     }
   })
   .done(function(commit_data) {
-          $('#detail').html("開発者の人数は合計" + commit_data.total_developers + "人です。<br>コミット率は" + commit_data.commit_rate +"%です。");
+          //$('#detail').html("開発者の人数は合計" + commit_data.total_developers + "人です。<br>コミット率は" + commit_data.commit_rate +"%です。");
           create_commit_graph(commit_data.all_commit,commit_data.own_commit,commit_data.developer_name);
   });
 }
