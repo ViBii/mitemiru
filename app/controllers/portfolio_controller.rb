@@ -322,12 +322,15 @@ class PortfolioController < ApplicationController
       repo_url = VersionRepository.find(@version_repo_id)[:url]
       githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
 
-      #チーム内開発者のコミット情報を取る
+      #開発者メールアドレスの取得
+      developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
+
+      #チーム内開発者の全て開発者名前とコミット情報を取る
       Octokit.auto_paginate = true
       contributors = Octokit.contribs(githubRepo)
 
       #対象開発者の名前
-      developer_name = "Altairzym"
+      developer_name = ""
 
       #全員のコミット数
       total_commits = 0
@@ -338,10 +341,13 @@ class PortfolioController < ApplicationController
       #チーム内開発者総数
       total_developers = contributors.length
 
+      #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
       contributors.each do |contributor|
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
         total_commits = total_commits + contributor['contributions']
-        if contributor['login'] == developer_name then
-          developer_commits = contributor['contributions']
+        if developer_email == developer_detail['email'] then
+          developer_name = developer_detail['login']
+          developer_commits = developer_commits + contributor['contributions']
         end
       end
 
