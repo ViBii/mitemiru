@@ -21,10 +21,9 @@ Rails.application.routes.draw do
   post 'projects/select_developer'
   post 'projects/auth_github'
 
-
   resources :projects do
-    get '/authen_git' => 'authen_git#index'
-    get '/authen_red' => 'authen_red#index'
+    get '/authen_git' => 'projects#authen_git'
+    get '/authen_red' => 'projects#authen_red'
   end
   resources :developers
   resources :ticket_repositories

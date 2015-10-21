@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [:show, :edit, :update, :destroy, :authen_git, :authen_red]
+  before_action :set_project, only: [:show, :edit, :update, :destroy]
 
   def index
     @projects = Project.all
@@ -80,8 +80,14 @@ class ProjectsController < ApplicationController
 
 
   def authen_git
+    @project = Project.find(params[:project_id])
+    @version_repository = VersionRepository.where(:id => @project.version_repository_id)
+    @url = @version_repository.url
+    #@github_key = Github_key.where(:version_repository_id=>@version_repository)
+
   end
   def authen_red
+    @project = Project.find(params[:project_id])
   end
 
   def create
