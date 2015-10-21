@@ -13,8 +13,8 @@
         <th>プロジェクト名前</th>
         <th>プロジェクト開始日</th>
         <th>プロジェクト終了日</th>
-        <th>認証状態</th>
-        <th></th>
+        <th>github認証状態</th>
+        <th>redmin認証状態</th>
         <th></th>
         <th></th>
       </tr>
@@ -25,14 +25,20 @@
         <td><%= link_to project.name, project %></td>
         <td><%= project.project_start_date %></td>
         <td><%= project.project_end_date %></td>
-        <% if authen(project.id) %>
-            <td><%= project.version_repository_id %></td>
-            <td><%= project.ticket_repository_id %></td>
+
+        <% if auth_git(project.id) %>
+            <td><%= link_to '認証済み',project_authen_git_path(project)%></td>
         <% else %>
-            <td>未認証</td>
-            <td><%= project.ticket_repository_id %></td>
+            <td><%= link_to '未認証',project_authen_git_path(project)%></td>
         <% end %>
-        <td><%= link_to image_tag('blue_edit.png', { :border => '0', :alt => 'change'}), edit_project_path(project) %></td>
+
+        <% if auth_red(project.id) %>
+            <td><%= link_to '認証済み',project_authen_red_path(project)%></td>
+        <% else %>
+            <td><%= link_to '未認証',project_authen_red_path(project)%></td>
+        <% end %>
+
+        <td><%= link_to '編集', edit_project_path(project) %></td>
         <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>

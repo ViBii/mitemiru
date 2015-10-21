@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [:show, :edit, :update, :destroy]
+  before_action :set_project, only: [:show, :edit, :update, :destroy, :authen_git, :authen_red]
 
   def index
     @projects = Project.all
@@ -78,6 +78,11 @@ class ProjectsController < ApplicationController
     @scope_projects.uniq!
   end
 
+
+  def authen_git
+  end
+  def authen_red
+  end
 
   def create
     begin
@@ -223,4 +228,6 @@ class ProjectsController < ApplicationController
         :commit_volume
       )
     end
+
+
 end
