@@ -178,6 +178,7 @@ class ProjectsController < ApplicationController
   end
 
   def new
+    @project = Project.new
 
   end
 
@@ -219,15 +220,8 @@ class ProjectsController < ApplicationController
         :name,
         :version_repository_id,
         :ticket_repository_id,
-        :file,
         :project_start_date,
         :project_end_date,
-      )
-    end
-
-    def version_repository_params
-      params.require(:version_repository).permit(
-        :commit_volume
       )
     end
 end

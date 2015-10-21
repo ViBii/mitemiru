@@ -19,6 +19,17 @@ Vibi.load = function(e) {
         signUpRedmine();
       });
     }
+    if(gon.action === "new") {
+      datetimepickerJapanese();
+
+      $('.date').datepicker({
+        format: "yyyy/mm",
+        language: 'ja',
+        autoclose: true,
+        orientation: "bottom",
+        minViewMode: 1
+      });
+    }
   };
 
   if(gon.controller === "comp") {

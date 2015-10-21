@@ -1,42 +1,72 @@
-<div class="page-header">
-  <%= link_to projects_path, class: 'btn btn-default' do %>
-    <span class="glyphicon glyphicon-list-alt"></span>
-    戻る
-  <% end %>
-  <h1>新規プロジェクト作成</h1>
-</div>
-
-<p>
-  Redmineへの認証に必要な情報をを入力してください。
-  APIキーは任意で入力してください。
-</p>
+<p>プロジェクト名・開始日を入力して下さい。</p>
+<p>各種ツールへの認証に必要な情報を入力してください。(任意)</p>
+<br>
+<br>
 <div class="form-group">
   <div class="table-responsive">
+    <label class="col-sm-2 control-label">プロジェクト名</label>
+    <div class="col-sm-5">
+      <input type="text" name="name" class="form-control" id="name" />
+    </div>
     <div class="form-group">
-      <label class="col-sm-2 control-label" for="url_ＵＲＬ">ＵＲＬ</label>
+      <label class="col-sm-2 control-label">プロジェクト開始日</label>
+      <div class="col-sm-2 input-group date">
+        <input type="text" name="start_date" class="form-control" id="start_date" readonly="readonly"/>
+        <span class="input-group-addon datetimepicker"><span class="glyphicon glyphicon-calendar"></span></span>
+      </div>
+    </div>
+    <%# TODO: プロジェクト終了日不必要説ある %>
+    <br>
+    <h4>Redmine</h4>
+    <br>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">ＵＲＬ</label>
       <div class="col-sm-8">
-        <input type="text" name="url" class="form-control" id="url" />
+        <input type="text" name="redmine_url" class="form-control" id="redmine_url" />
       </div>
     </div>
     <br>
     <div class="form-group">
       <label class="col-sm-2 control-label">ログイン名</label>
       <div class="col-sm-5">
-        <input type="text" name="login_id" class="form-control" id="login_id" />
+        <input type="text" name="redmine_login_id" class="form-control" id="redmine_login_id" />
       </div>
     </div>
     <br>
     <div class="form-group">
       <label class="col-sm-2 control-label">パスワード</label>
       <div class="col-sm-5">
-        <input type="text" name="password_digest" class="form-control" id="password_digest" />
+        <input type="text" name="redmine_password_digest" class="form-control" id="password_digest" />
       </div>
     </div>
     <br>
     <div class="form-group">
       <label class="col-sm-2 control-label">ＡＰＩキー</label>
       <div class="col-sm-5">
-        <input type="text" name="api_key" class="form-control" id="api_key" />
+        <input type="text" name="redmine_api_key" class="form-control" id="api_key" />
+      </div>
+    </div>
+    <br>
+    <h4>GitHub</h4>
+    <br>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">ＵＲＬ</label>
+      <div class="col-sm-8">
+        <input type="text" name="github_url" class="form-control" id="github_url" />
+      </div>
+    </div>
+    <br>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">ログイン名</label>
+      <div class="col-sm-5">
+        <input type="text" name="github_login_id" class="form-control" id="github_login_id" />
+      </div>
+    </div>
+    <br>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">パスワード</label>
+      <div class="col-sm-5">
+        <input type="text" name="github_password_digest" class="form-control" id="password_digest" />
       </div>
     </div>
     <br>
@@ -45,37 +75,3 @@
     </div>
   </div>
 </div>
-
-
-<%= form_for(@project) do |f| %>
-  <% if @project.errors.any? %>
-    <div class="alert alert-danger alert-dismissable" role="alert">
-      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-      <h4><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h4>
-
-      <ul>
-        <% @project.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="form-group">
-    <%= f.label "名前", class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :name, class: "form-control" %>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <%= f.file_field :file %>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <%= f.submit "作成", class: "btn btn-primary" %>
-    </div>
-  </div>
-<% end %>
