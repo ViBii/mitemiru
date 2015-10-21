@@ -345,7 +345,7 @@ class PortfolioController < ApplicationController
       contributors.each do |contributor|
         developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
         total_commits = total_commits + contributor['contributions']
-        if developer_email == developer_detail['email'] then
+        if nil != developer_detail['email'] && developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
           developer_commits = developer_commits + contributor['contributions']
         end
