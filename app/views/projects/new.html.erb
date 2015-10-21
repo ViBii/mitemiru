@@ -2,76 +2,77 @@
 <p>各種ツールへの認証に必要な情報を入力してください。(任意)</p>
 <br>
 <br>
-<div class="form-group">
-  <div class="table-responsive">
-    <label class="col-sm-2 control-label">プロジェクト名</label>
-    <div class="col-sm-5">
-      <input type="text" name="name" class="form-control" id="name" />
-    </div>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">プロジェクト開始日</label>
-      <div class="col-sm-2 input-group date">
-        <input type="text" name="start_date" class="form-control" id="start_date" readonly="readonly"/>
-        <span class="input-group-addon datetimepicker"><span class="glyphicon glyphicon-calendar"></span></span>
-      </div>
-    </div>
-    <%# TODO: プロジェクト終了日不必要説ある %>
-    <br>
-    <h4>Redmine</h4>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">ＵＲＬ</label>
-      <div class="col-sm-8">
-        <input type="text" name="redmine_url" class="form-control" id="redmine_url" />
-      </div>
-    </div>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">ログイン名</label>
+<%= form_tag '/projects/confirm' do %>
+  <div class="form-group">
+    <div class="table-responsive">
+      <label class="col-sm-2 control-label">プロジェクト名</label>
       <div class="col-sm-5">
-        <input type="text" name="redmine_login_id" class="form-control" id="redmine_login_id" />
+        <input type="text" name="name" class="form-control" id="name" />
       </div>
-    </div>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">パスワード</label>
-      <div class="col-sm-5">
-        <input type="text" name="redmine_password_digest" class="form-control" id="password_digest" />
+      <div class="form-group">
+        <label class="col-sm-2 control-label">プロジェクト開始日</label>
+        <div class="col-sm-2 input-group date">
+          <input type="text" name="start_date" class="form-control" id="start_date" readonly="readonly"/>
+          <span class="input-group-addon datetimepicker"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
       </div>
-    </div>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">ＡＰＩキー</label>
-      <div class="col-sm-5">
-        <input type="text" name="redmine_api_key" class="form-control" id="api_key" />
+      <%# TODO: プロジェクト終了日不必要説ある %>
+      <h4>Redmine</h4>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">ＵＲＬ</label>
+        <div class="col-sm-8">
+          <input type="text" name="redmine_url" class="form-control" id="redmine_url" />
+        </div>
       </div>
-    </div>
-    <br>
-    <h4>GitHub</h4>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">ＵＲＬ</label>
-      <div class="col-sm-8">
-        <input type="text" name="github_url" class="form-control" id="github_url" />
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">ログイン名</label>
+        <div class="col-sm-5">
+          <input type="text" name="redmine_login_id" class="form-control" id="redmine_login_id" />
+        </div>
       </div>
-    </div>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">ログイン名</label>
-      <div class="col-sm-5">
-        <input type="text" name="github_login_id" class="form-control" id="github_login_id" />
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">パスワード</label>
+        <div class="col-sm-5">
+          <input type="text" name="redmine_password_digest" class="form-control" id="password_digest" />
+        </div>
       </div>
-    </div>
-    <br>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">パスワード</label>
-      <div class="col-sm-5">
-        <input type="text" name="github_password_digest" class="form-control" id="password_digest" />
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">ＡＰＩキー</label>
+        <div class="col-sm-5">
+          <input type="text" name="redmine_api_key" class="form-control" id="api_key" />
+        </div>
       </div>
-    </div>
-    <br>
-    <div class="col-sm-10">
-      <input type="submit" value="認証" id="redmine_auth_button" class="btn btn-primary" />
+      <br>
+      <h4>GitHub</h4>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">ＵＲＬ</label>
+        <div class="col-sm-8">
+          <input type="text" name="github_url" class="form-control" id="github_url" />
+        </div>
+      </div>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">ログイン名</label>
+        <div class="col-sm-5">
+          <input type="text" name="github_login_id" class="form-control" id="github_login_id" />
+        </div>
+      </div>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">パスワード</label>
+        <div class="col-sm-5">
+          <input type="text" name="github_password_digest" class="form-control" id="password_digest" />
+        </div>
+      </div>
+      <br>
+      <div class="col-sm-10">
+        <input type="submit" value="認証" id="new_project_button" class="btn btn-primary" />
+      </div>
     </div>
   </div>
-</div>
+<% end %>

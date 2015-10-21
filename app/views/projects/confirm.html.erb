@@ -1,0 +1,21 @@
+<%= form_tag '/projects/create' do %>
+  <h4>プロジェクト名: <%= @confirm_data[:name] %><h4>
+  <br>
+  <h4>プロジェクト開始日: <%= @confirm_data[:start_date] %></h4>
+  <br>
+  <h4>RedmineURL: <%= @confirm_data[:redmine_url] %></h4>
+  <br>
+  <h4>GitHubURL: <%= @confirm_data[:github_url] %></h4>
+  <%= hidden_field_tag :, @url %>
+  <%= hidden_field_tag :name, @confirm_data[:] %>
+  <%= hidden_field_tag :name, @confirm_data[:start_date] %>
+  <%= hidden_field_tag :redmine_url, @confirm_data[:redmine_url] %>
+  <%= hidden_field_tag :redmine_login_id, @confirm_data[:redmine_login_id] %>
+  <%= hidden_field_tag :redmine_password_digest, @confirm_data[:redmine_password_digest] %>
+  <%= hidden_field_tag :redmine_api_key, @confirm_data[:redmine_api_key] %>
+  <%= hidden_field_tag :github_url, @confirm_data[:github_url] %>
+  <%= hidden_field_tag :github_login_id, @confirm_data[:github_login_id] %>
+  <%= hidden_field_tag :github_password_digest, @confirm_data[:github_password_digest] %>
+  <%= button_tag '登録する', class: 'btn btn-primary' %>
+<% end %>
+

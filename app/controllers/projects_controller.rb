@@ -78,6 +78,20 @@ class ProjectsController < ApplicationController
     @scope_projects.uniq!
   end
 
+  def confirm
+    @confirm_data = {
+      name:                    params['name'],
+      start_date:              params['start_date'],
+      redmine_url:             params['redmine_url'],
+      redmine_login_id:        params['redmine_login_id'],
+      redmine_password_digest: params['redmine_password_digest'],
+      redmine_api_key:         params['redmine_api_key'],
+      github_url:              params['github_url'],
+      github_login_id:         params['github_login_id'],
+      github_password_digest:  params['github_password_digest']
+    }
+  end
+
   def create
     begin
       # Save
@@ -176,16 +190,6 @@ class ProjectsController < ApplicationController
       end
     end
   end
-
-  def new
-    @project = Project.new
-
-  end
-
-  def confirm
-
-  end
-
   def edit
   end
 

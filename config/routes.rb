@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   # get 'projects/select_developer'
   # post 'projects/select_developer'
-  # post 'projects/auth_github'
+  post 'projects/confirm'
 
   devise_for :users
   resources :projects

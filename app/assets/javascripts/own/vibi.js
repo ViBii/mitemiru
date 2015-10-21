@@ -14,11 +14,6 @@ function jump(action, method) {
 
 Vibi.load = function(e) {
   if(gon.controller === "projects") {
-    if(gon.action === "select_developer") {
-      $('#redmine_auth_button').click(function() {
-        signUpRedmine();
-      });
-    }
     if(gon.action === "new") {
       datetimepickerJapanese();
 
@@ -28,6 +23,10 @@ Vibi.load = function(e) {
         autoclose: true,
         orientation: "bottom",
         minViewMode: 1
+      });
+
+      $('#new_project_button').click(function() {
+        signUpRedmine();
       });
     }
   };

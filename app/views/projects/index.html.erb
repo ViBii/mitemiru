@@ -21,8 +21,13 @@
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
         <td><%= link_to project.name, project %></td>
-        <td><%= project.version_repository_id %></td>
-        <td><%= project.ticket_repository_id %></td>
+        <% if authen(project.id) %>
+          <td><%= project.version_repository_id %></td>
+          <td><%= project.ticket_repository_id %></td>
+        <% else %>
+          <td>未認証</td>
+          <td><%= project.ticket_repository_id %></td>
+        <% end %>
         <td><%= link_to '編集', edit_project_path(project) %></td>
         <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
