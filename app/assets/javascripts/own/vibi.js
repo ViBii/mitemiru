@@ -25,7 +25,21 @@ Vibi.load = function(e) {
   };
   if(gon.controller === 'portfolio'){
     $('.flexslider').flexslider();
+    //工数グラフの生成function
+    if(gon.action === "productivity") {
+        costAjax();
+    }
+    if(gon.action === "ticket_digestion") {
+        ticketDigestionAjax();
+    }
   }
+  if(gon.controller === 'commit_counter'){
+      commitAjax();
+  }
+  if(gon.controller === 'comments_counter'){
+      commentAjax();
+  }
+
 };
 
 //Windowの読込が完了したらVibi.loadを実行する

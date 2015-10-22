@@ -1,25 +1,27 @@
 Rails.application.routes.draw do
-  root 'base#top'
+  root 'portfolio#top'
 
-  get 'comp/index'
-
+  get 'portfolio/top'
+  get 'portfolio/setting'
   get 'portfolio/index'
   post 'portfolio/show_projects'
   post 'portfolio/select_function'
   post 'portfolio/ticket_digestion'
+  post 'portfolio/ticket_digestion_ajax'
   get 'portfolio/productivity_info'
   get 'portfolio/productivity'
-
-  get 'base/top'
-  get 'base/setting'
+  post 'portfolio/productivity_ajax'
 
   get 'datasamples/index'
   get 'comments_counter/index'
+  post 'comments_counter/comments_ajax'
   get 'commit_counter/index'
+  post 'commit_counter/commits_ajax'
 
   get 'projects/select_developer'
   post 'projects/select_developer'
   post 'projects/auth_github'
+
 
   resources :projects do
     get '/authen_git' => 'projects#authen_git'
@@ -27,9 +29,9 @@ Rails.application.routes.draw do
     get '/add_git' => 'projects#add_git'
     get '/add_red' => 'projects#add_red'
   end
+
+  devise_for :users
+
   resources :developers
-  resources :ticket_repositories
-  resources :version_repositories
-  resources :redmine_keys
-  resources :users
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end

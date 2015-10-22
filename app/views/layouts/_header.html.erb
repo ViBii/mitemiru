@@ -3,30 +3,42 @@
     <div class="navbar-header">
       <a href='/' class="navbar-brand">MITEMIRU</a>
     </div>
-    <ul class="nav navbar-nav">
-      <li>
-        <%= link_to '/', data: { no_turbolink: true } do %>
-          <span class="glyphicon glyphicon-home"></span>
-          トップに戻る
+    <% if show_header %>
+      <ul class="nav navbar-nav">
+        <li>
+          <%= link_to "プロジェクト登録", '/projects/select_developer', data: { no_turbolink: true } %>
+        </li>
+        <li>
+          <%= link_to "メトリクスを見る", '/portfolio/index', data: { no_turbolink: true } %>
+        </li>
+        <li>
+          <% if has_admin? %>
+            <%= link_to '/admin', data: { no_turbolink: true } do %>
+              <span class="glyphicon glyphicon-cog"></span>
+              各種管理
+            <% end %>
+          <% else %>
+            <%= link_to '/portfolio/setting', data: { no_turbolink: true } do %>
+              <span class="glyphicon glyphicon-cog"></span>
+              各種管理
+            <% end %>
+          <% end %>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <% if user_signed_in? %>
+          <li><%= link_to current_user.login_id, edit_user_registration_path, :class => "navbar-link" %></li>
+          <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete, :class => "navbar-link" %></li>
+        <% else %>
+          <li><%= link_to "ユーザー登録", new_user_registration_path, :class => 'navbar-link' %></li>
+          <li><%= link_to "ログイン", new_user_session_path, :class => 'navbar-link' %></li>
         <% end %>
-      </li>
-      <li>
-        <%= link_to "プロジェクト登録", '/projects/select_developer', data: { no_turbolink: true } %>
-      </li>
-      <li>
-        <%= link_to "ポートフォリオを見る", '/portfolio/index', data: { no_turbolink: true } %>
-      </li>
-      <li>
-        <%= link_to "比較する", '/comp/index', data: { no_turbolink: true } %>
-      </li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li>
-        <%= link_to '/base/setting', data: { no_turbolink: true } do %>
-          <span class="glyphicon glyphicon-cog"></span>
-          各種管理
-        <% end %>
-      </li>
-    </ul>
+      </ul>
+    <% else %>
+      <ul class="nav navbar-nav navbar-right">
+        <li><%= link_to "ユーザー登録", new_user_registration_path, :class => 'navbar-link' %></li>
+        <li><%= link_to "ログイン", new_user_session_path, :class => 'navbar-link' %></li>
+      </ul>
+    <% end %>
   </div>
 </nav>

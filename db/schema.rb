@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150911203105) do
+ActiveRecord::Schema.define(version: 20151014164009) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -68,11 +68,40 @@ ActiveRecord::Schema.define(version: 20150911203105) do
     t.datetime "updated_at",                       null: false
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "roles_users", id: false, force: :cascade do |t|
+    t.integer "user_id", limit: 4, null: false
+    t.integer "role_id", limit: 4, null: false
+  end
+
   create_table "ticket_repositories", force: :cascade do |t|
     t.string   "url",        limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "users", force: :cascade do |t|
+    t.string   "login_id",               limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "reset_password_token",   limit: 255
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip",     limit: 255
+    t.string   "last_sign_in_ip",        limit: 255
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+  end
+
+  add_index "users", ["login_id"], name: "index_users_on_login_id", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "version_repositories", force: :cascade do |t|
     t.string   "url",        limit: 255
