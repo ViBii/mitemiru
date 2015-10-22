@@ -318,9 +318,19 @@ class PortfolioController < ApplicationController
       developerId = params['developerId']
 
       #repo設定
-      @version_repo_id = projectId
+      @version_repo_id = Project.find(projectId)[:version_repository_id]
       repo_url = VersionRepository.find(@version_repo_id)[:url]
       githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
+
+      #システム利用者github認証
+      githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
+      githubUserPW = GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first
+
+      #認証を取る
+      Octokit.configure do |c|
+        c.login = githubUserName
+        c.password = githubUserPW
+      end
 
       #開発者メールアドレスの取得
       developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
@@ -345,8 +355,6 @@ class PortfolioController < ApplicationController
       contributors.each do |contributor|
         developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
         total_commits = total_commits + contributor['contributions']
-        puts developer_email + ' ' + developer_detail['email']
-        puts
         if developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
           developer_commits = developer_commits + contributor['contributions']
@@ -374,27 +382,14 @@ class PortfolioController < ApplicationController
       #開発者メールアドレスの取得
       developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
 
-      #チーム内開発者の全て開発者名前を取る
-      Octokit.auto_paginate = true
-      contributors = Octokit.contribs(githubRepo)
-
-      #見たい開発者のGithub上のUserName
-      @assigneeArg = ""
-
-      contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
-        if developer_email == developer_detail['email'] then
-          @assigneeArg = developer_detail['login']
-        end
-      end
+      #repo設定
+      @version_repo_id = Project.find(projectId)[:version_repository_id]
+      repo_url = VersionRepository.find(@version_repo_id)[:url]
 
       #システム利用者github認証
-      githubUserName = ENV['Github_UserName']
-      githubUserPW = ENV['Github_UserPW']
+      githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
+      githubUserPW = GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first
 
-      #repo設定
-      @version_repo_id = projectId
-      repo_url = VersionRepository.find(@version_repo_id)[:url]
       githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
 
       #認証を取る
@@ -408,6 +403,20 @@ class PortfolioController < ApplicationController
       ratelimit_remaining = Octokit.ratelimit_remaining
       puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
       puts
+
+      #チーム内開発者の全て開発者名前を取る
+      Octokit.auto_paginate = true
+      contributors = Octokit.contribs(githubRepo)
+
+      #見たい開発者のGithub上のUserName
+      @assigneeArg = ""
+
+      contributors.each do |contributor|
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        if developer_email == developer_detail['email'] then
+          @assigneeArg = developer_detail['login']
+        end
+      end
 
       #同じリポジトリの中の他の開発者名前を取得する
       contributors = Octokit.contribs(githubRepo)
