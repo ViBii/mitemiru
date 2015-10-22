@@ -345,7 +345,9 @@ class PortfolioController < ApplicationController
       contributors.each do |contributor|
         developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
         total_commits = total_commits + contributor['contributions']
-        if nil != developer_detail['email'] && developer_email == developer_detail['email'] then
+        puts developer_email + ' ' + developer_detail['email']
+        puts
+        if developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
           developer_commits = developer_commits + contributor['contributions']
         end
@@ -369,8 +371,22 @@ class PortfolioController < ApplicationController
       #issuesの状態
       stateArg = "all"
 
+      #開発者メールアドレスの取得
+      developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
+
+      #チーム内開発者の全て開発者名前を取る
+      Octokit.auto_paginate = true
+      contributors = Octokit.contribs(githubRepo)
+
       #見たい開発者のGithub上のUserName
-      @assigneeArg = "Altairzym"
+      @assigneeArg = ""
+
+      contributors.each do |contributor|
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        if developer_email == developer_detail['email'] then
+          @assigneeArg = developer_detail['login']
+        end
+      end
 
       #システム利用者github認証
       githubUserName = ENV['Github_UserName']
