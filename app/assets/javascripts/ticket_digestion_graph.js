@@ -13,14 +13,15 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     
     var width = 960,
         height = 500;
-   
+  
+    var padding = {top: 10, right: 50, bottom: 10, left: 50};
+
     var svg = d3.select("body")
                 .append("svg")
                 .attr("width", width)
                 .attr ("height", height);
 
     var bar_svg = svg.append("g")
-                     .attr("class", "bar_chart")
                      .attr("transform", "translate(0,0)");
 
     var base_radius = Math.min(width, height) / 3;
@@ -42,7 +43,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
            });
     
     var circle_svg = svg.append("g")
-                        .attr("class", "circle")
                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
     
     var pros_g = circle_svg.selectAll(".prospect")
@@ -73,17 +73,21 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             })
   
     var draw_bar_chart = function(id) {
+      circle_svg.selectAll("g")
+                .remove();
+
       bar_svg.selectAll(".bar")
              .data(test_productivity_data)
              .enter()
              .append("rect")
              .attr("x", function(d, i) {
-               return i*20;
+               return padding.left + i*40;
              })
-             .attr("width", 10)
-             .attr("y", 0)
+             .attr("width", 30)
+             .attr("y", padding.top)
              .attr("height", function(d) {
-               return d;
-             });
+               return d*3;
+             })
+             .attr("fill", base_color[id]);
     }
 }
