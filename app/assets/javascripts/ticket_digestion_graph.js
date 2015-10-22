@@ -40,7 +40,19 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       .attr("d", arc)
       .style("fill", function(d,i) {
           return bright_color[i%bright_color.length];
+      })
+      .transition()
+      .duration(1000)
+      .attrTween("d", function(d) {
+        var interpolate = d3.interpolate(
+          { startAngle : 0, endAngle : 0 },
+          { startAngle : d.startAngle, endAngle : d.endAngle }
+        );
+        return function(t) {
+          return arc(interpolate(t));
+        }
       });
+
 
 //  g.append("text")
 //      .attr("transform", function(d) {
