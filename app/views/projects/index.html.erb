@@ -29,13 +29,13 @@
         <% if auth_git(project.id) %>
             <td><%= link_to '認証済み',project_authen_git_path(project)%></td>
         <% else %>
-            <td><%= link_to '未認証',project_authen_git_path(project)%></td>
+            <td><%= link_to '未認証',project_add_git_path(project)%></td>
         <% end %>
 
         <% if auth_red(project.id) %>
             <td><%= link_to '認証済み',project_authen_red_path(project)%></td>
         <% else %>
-            <td><%= link_to '未認証',project_authen_red_path(project)%></td>
+            <td><%= link_to '未認証',project_add_red_path(project)%></td>
         <% end %>
 
         <td><%= link_to '編集', edit_project_path(project) %></td>
