@@ -2,11 +2,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
   var tracker = tracker;
   var ticket_num = ticket_num;
   var ticket_num_all = ticket_num_all;
-  var color = d3.scale.category20();
+  var base_color = ['#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646'];
+  var bright_color = ['#99b6d9', '#db9a98', '#c7d9a1', '#b4a4c8', '#98d0df', '#fbcda8'];
+  var dark_color = ['#2d5079', '#7b2e2c', '#647c33', '#4e3c64', '#296f82', '#ce6209'];
 
   var width = 960,
-      height = 500,
-      radius = Math.min(width, height) / 2;
+      height = 640,
+      radius = Math.min(width, height)/3;
 
   var arc = d3.svg.arc()
       .outerRadius(radius - 10)
@@ -18,10 +20,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           return d;
       });
 
-  var svg = d3.select("body").append("svg")
+  var svg = d3.select("body")
+      .append("svg")
       .attr("width", width)
       .attr ("height", height)
-      .append("g")
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   var g = svg.selectAll(".arc")
@@ -33,7 +35,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
   g.append("path")
       .attr("d", arc)
       .style("fill", function(d,i) {
-          return color(i);
+          return base_color[i];
       });
 
   g.append("text")
