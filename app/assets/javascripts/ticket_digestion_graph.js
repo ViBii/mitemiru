@@ -11,47 +11,37 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
   var dark_color = ['#2d5079', '#7b2e2c', '#647c33', '#4e3c64', '#296f82', '#ce6209'];
 
   var width = 960,
-      height = 640,
-      radius = Math.min(width, height)/2;
-
-  var arc = d3.svg.arc()
-      .outerRadius(radius)
-      .innerRadius(0);
-
+      height = 500,
+      radius = Math.min(width, height) / 2;
+    
+  var pros_arc = d3.svg.arc()
+              .outerRadius(radius)
+              .innerRadius(0);
+    
   var pie = d3.layout.pie()
-      .sort(null)
-      .value(function(d) {
-          return d;
-      });
-
+              .sort(null)
+              .value(function(d) {
+                return d;
+              });
+    
   var svg = d3.select("body")
-      .append("svg")
-      .attr("width", width)
-      .attr ("height", height)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-  var g = svg.selectAll(".arc")
-      .data(pie(test_prospect_time))
-      .enter()
-      .append("g")
-      .attr("class", "arc");
-
-  g.append("path")
-      .attr("d", arc)
-      .style("fill", function(d,i) {
-          return bright_color[i%bright_color.length];
-      })
-      .transition()
-      .duration(1000)
-      .attrTween("d", function(d) {
-        var interpolate = d3.interpolate(
-          { startAngle : 0, endAngle : 0 },
-          { startAngle : d.startAngle, endAngle : d.endAngle }
-        );
-        return function(t) {
-          return arc(interpolate(t));
-        }
-      });
+              .append("svg")
+              .attr("width", width)
+              .attr ("height", height)
+              .append("g")
+              .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    
+  var pros_g = svg.selectAll(".prospect")
+                  .data(pie(test_prospect_time))
+                  .enter()
+                  .append("g")
+                  .attr("class", "prospect");
+    
+  pros_g.append("path")
+        .attr("d", pros_arc)
+        .style("fill", function(d,i) {
+          return bright_color[i];
+        });
 
 
 //  g.append("text")
