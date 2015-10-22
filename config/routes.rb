@@ -7,12 +7,14 @@ Rails.application.routes.draw do
   post 'portfolio/show_projects'
   post 'portfolio/select_function'
   post 'portfolio/ticket_digestion'
+  post 'portfolio/ticket_digestion_ajax'
   get 'portfolio/productivity_info'
   get 'portfolio/productivity'
   post 'portfolio/productivity_ajax'
 
   get 'datasamples/index'
   get 'comments_counter/index'
+  post 'comments_counter/comments_ajax'
   get 'commit_counter/index'
   post 'commit_counter/commits_ajax'
 
@@ -20,8 +22,16 @@ Rails.application.routes.draw do
   # post 'projects/select_developer'
   post 'projects/confirm'
 
+
+  resources :projects do
+    get '/authen_git' => 'projects#authen_git'
+    get '/authen_red' => 'projects#authen_red'
+    get '/add_git' => 'projects#add_git'
+    get '/add_red' => 'projects#add_red'
+  end
+
   devise_for :users
-  resources :projects
+
   resources :developers
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end

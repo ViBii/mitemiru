@@ -67,7 +67,7 @@ class ProjectsController < ApplicationController
     params[:developer][:id].each do |developer_id|
       project_req = RestClient::Request.execute method: :get,
         url:      params['url'] + "/users/#{developer_id}.json?include=memberships,groups",
-        user:     params['login_id'],
+      user:     params['login_id'],
         password: params['password_digest']
       redmine_projects = JSON.parse(project_req)
 
@@ -90,130 +90,147 @@ class ProjectsController < ApplicationController
       github_login_id:         params['github_login_id'],
       github_password_digest:  params['github_password_digest']
     }
-  end
 
-  def create
-    begin
-      # Save
-      developer_info = Hash.new { |h,k| h[k] = {} }
+    def authen_git
+      @project = Project.find(params[:project_id])
+      @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
+      @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
+    end
 
-      session[:developers_id].each do |developer_id|
-        project_req = RestClient::Request.execute method: :get,
-          url:      params['url'] + "/users/#{developer_id}.json?include=memberships,groups",
+    def authen_red
+      @project = Project.find(params[:project_id])
+      @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
+      @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
+    end
+
+    def add_git
+      @project = Project.find(params[:project_id])
+    end
+
+    def add_red
+      @project = Project.find(params[:project_id])
+    end
+
+    def create
+      begin
+        # Save
+        developer_info = Hash.new { |h,k| h[k] = {} }
+
+        session[:developers_id].each do |developer_id|
+          project_req = RestClient::Request.execute method: :get,
+            url:      params['url'] + "/users/#{developer_id}.json?include=memberships,groups",
           user:     params['login_id'],
-          password: params['password_digest']
-        redmine_projects = JSON.parse(project_req)
+            password: params['password_digest']
+          redmine_projects = JSON.parse(project_req)
 
-        # RedmineのloginIDを開発者の名前とする
-        developer_info[redmine_projects['user']['login']][:email] = redmine_projects["user"]["mail"]
-        developer_info[redmine_projects['user']['login']][:project] = []
+          # RedmineのloginIDを開発者の名前とする
+          developer_info[redmine_projects['user']['login']][:email] = redmine_projects["user"]["mail"]
+          developer_info[redmine_projects['user']['login']][:project] = []
 
-        redmine_projects["user"]["memberships"].each do |project|
-          developer_info[redmine_projects['user']['login']][:project] << project["project"]["name"]
-        end
-      end
-
-      # version_repositories, github_keys, projects
-      params["github_info"].each do |github_info|
-        version_repository = VersionRepository.new(
-          :url => github_info['url']
-        )
-        version_repository.save unless VersionRepository.exists?(url: github_info['url'])
-
-        if VersionRepository.where(url: github_info['url']).select(:id).present?
-          version_repository_id = VersionRepository.where(url: github_info['url']).pluck(:id).first
-        else
-          version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
-        end
-        unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: github_info['login_id'])
-          github_key = GithubKey.new(
-            :version_repository_id => version_repository_id,
-            :login_id              => github_info['login_id'],
-            :password_digest       => github_info['password_digest'],
-          )
-          github_key.save
-        end
-
-        if Project.where(name: github_info["name"]).present?
-          same_project = Project.where(name: github_info["name"]).first
-          same_project.update(
-            :id                    => same_project.id,
-            :version_repository_id => version_repository_id,
-            :ticket_repository_id  => session["ticket_repository_id"],
-            :name                  => github_info["name"],
-            :project_start_date    => nil,
-            :project_end_date      => nil
-          )
-        else
-          project = Project.new(
-            :version_repository_id => version_repository_id,
-            :ticket_repository_id  => session["ticket_repository_id"],
-            :name                  => github_info["name"],
-            :project_start_date    => nil,
-            :project_end_date      => nil
-          )
-          project.save
-        end
-      end
-
-      # developers, assign_logs
-      developer_info.each do |developer_info|
-        developer = Developer.new(
-          :name  => developer_info.first,
-          :email => developer_info.second[:email]
-        )
-        developer.save unless Developer.exists?(email: developer_info.second[:email])
-
-        developer_id = Developer.where(email: developer_info.second[:email]).pluck(:id).first
-        developer_info.second[:project].each do |project_name|
-          project_id = Project.where(name: project_name).pluck(:id).first
-          unless AssignLog.exists?(developer_id: developer_id, project_id: project_id)
-            assign_log = AssignLog.new(
-              :developer_id      => developer_id,
-              :project_id        => project_id,
-              :assign_start_date => nil,
-              :assign_end_date   => nil
-            )
-            assign_log.save
+          redmine_projects["user"]["memberships"].each do |project|
+            developer_info[redmine_projects['user']['login']][:project] << project["project"]["name"]
           end
         end
-      end
-      session[:ticket_repository_id] = nil
-      session[:developers_id]        = nil
 
+        # version_repositories, github_keys, projects
+        params["github_info"].each do |github_info|
+          version_repository = VersionRepository.new(
+            :url => github_info['url']
+          )
+          version_repository.save unless VersionRepository.exists?(url: github_info['url'])
+
+          if VersionRepository.where(url: github_info['url']).select(:id).present?
+            version_repository_id = VersionRepository.where(url: github_info['url']).pluck(:id).first
+          else
+            version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
+          end
+          unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: github_info['login_id'])
+            github_key = GithubKey.new(
+              :version_repository_id => version_repository_id,
+              :login_id              => github_info['login_id'],
+              :password_digest       => github_info['password_digest'],
+            )
+            github_key.save
+          end
+
+          if Project.where(name: github_info["name"]).present?
+            same_project = Project.where(name: github_info["name"]).first
+            same_project.update(
+              :id                    => same_project.id,
+              :version_repository_id => version_repository_id,
+              :ticket_repository_id  => session["ticket_repository_id"],
+              :name                  => github_info["name"],
+              :project_start_date    => nil,
+              :project_end_date      => nil
+            )
+          else
+            project = Project.new(
+              :version_repository_id => version_repository_id,
+              :ticket_repository_id  => session["ticket_repository_id"],
+              :name                  => github_info["name"],
+              :project_start_date    => nil,
+              :project_end_date      => nil
+            )
+            project.save
+          end
+        end
+
+        # developers, assign_logs
+        developer_info.each do |developer_info|
+          developer = Developer.new(
+            :name  => developer_info.first,
+            :email => developer_info.second[:email]
+          )
+          developer.save unless Developer.exists?(email: developer_info.second[:email])
+
+          developer_id = Developer.where(email: developer_info.second[:email]).pluck(:id).first
+          developer_info.second[:project].each do |project_name|
+            project_id = Project.where(name: project_name).pluck(:id).first
+            unless AssignLog.exists?(developer_id: developer_id, project_id: project_id)
+              assign_log = AssignLog.new(
+                :developer_id      => developer_id,
+                :project_id        => project_id,
+                :assign_start_date => nil,
+                :assign_end_date   => nil
+              )
+              assign_log.save
+            end
+          end
+        end
+        session[:ticket_repository_id] = nil
+        session[:developers_id]        = nil
+
+        respond_to do |format|
+          format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
+        end
+      rescue
+        respond_to do |format|
+          format.html { redirect_to projects_path, notice: 'プロジェクト作成に失敗しました...' }
+        end
+      end
+    end
+
+    def update
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: 'プロジェクトが作成されました!' }
+        if @project.update(project_params)
+          format.html { redirect_to @project, notice: 'Project was successfully updated.' }
+          format.json { render :show, status: :ok, location: @project }
+        else
+          format.html { render :edit }
+          format.json { render json: @project.errors, status: :unprocessable_entity }
+        end
       end
-    rescue
+    end
+
+    def destroy
+      @project.destroy
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: 'プロジェクト作成に失敗しました...' }
+        format.html { redirect_to projects_url, notice: 'Project was successfully destroyed.' }
+        format.json { head :no_content }
       end
     end
-  end
-  def edit
-  end
 
-  def update
-    respond_to do |format|
-      if @project.update(project_params)
-        format.html { redirect_to @project, notice: 'Project was successfully updated.' }
-        format.json { render :show, status: :ok, location: @project }
-      else
-        format.html { render :edit }
-        format.json { render json: @project.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @project.destroy
-    respond_to do |format|
-      format.html { redirect_to projects_url, notice: 'Project was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
-
-  private
+    private
     # Use callbacks to share common setup or constraints between actions.
     def set_project
       @project = Project.find(params[:id])
@@ -228,4 +245,5 @@ class ProjectsController < ApplicationController
         :project_end_date,
       )
     end
+  end
 end
