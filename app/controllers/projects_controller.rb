@@ -78,6 +78,27 @@ class ProjectsController < ApplicationController
     @scope_projects.uniq!
   end
 
+
+  def authen_git
+    @project = Project.find(params[:project_id])
+    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
+    @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
+  end
+
+  def authen_red
+    @project = Project.find(params[:project_id])
+    @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
+    @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
+  end
+
+  def add_git
+    @project = Project.find(params[:project_id])
+  end
+
+  def add_red
+    @project = Project.find(params[:project_id])
+  end
+
   def create
     begin
       # Save
@@ -222,4 +243,6 @@ class ProjectsController < ApplicationController
         :commit_volume
       )
     end
+
+
 end
