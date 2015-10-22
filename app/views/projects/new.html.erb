@@ -1,28 +1,36 @@
-<p>プロジェクト名・開始日を入力して下さい。</p>
-<p>各種ツールへの認証に必要な情報を入力してください。(任意)</p>
+<p>プロジェクト名・開始月を入力して下さい。</p>
+<p>各種ツールへの認証に必要な情報を入力してください。(どちらかは必須)</p>
 <br>
 <br>
 <%= form_tag '/projects/confirm' do %>
   <div class="form-group">
     <div class="table-responsive">
-      <label class="col-sm-2 control-label">プロジェクト名</label>
+      <label class="col-sm-2 control-label">プロジェクト名<font color='red'>(必須)</font></label>
       <div class="col-sm-5">
         <input type="text" name="name" class="form-control" id="name" />
       </div>
       <div class="form-group">
-        <label class="col-sm-2 control-label">プロジェクト開始日</label>
+        <label class="col-sm-2 control-label">プロジェクト開始月<br><font color="red">(必須)</font></label>
         <div class="col-sm-2 input-group date">
-          <input type="text" name="start_date" class="form-control" id="start_date" readonly="readonly"/>
+          <input type="text" name="project_start_date" class="form-control" id="project_start_date" readonly="readonly"/>
           <span class="input-group-addon datetimepicker"><span class="glyphicon glyphicon-calendar"></span></span>
         </div>
       </div>
-      <%# TODO: プロジェクト終了日不必要説ある %>
+      <%# TODO: プロジェクト終了月不必要説ある %>
+      <%# TODO: RedmineAPIキー不必要説ある %>
       <h4>Redmine</h4>
       <br>
       <div class="form-group">
-        <label class="col-sm-2 control-label">ＵＲＬ</label>
-        <div class="col-sm-8">
-          <input type="text" name="redmine_url" class="form-control" id="redmine_url" />
+        <label class="col-sm-2 control-label">ホスト名</label>
+        <div class="col-sm-5">
+          <input type="text" name="redmine_host" class="form-control" id="redmine_host" />
+        </div>
+      </div>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">プロジェクト名</label>
+        <div class="col-sm-5">
+          <input type="text" name="redmine_project_name" class="form-control" id="redmine_project_name" />
         </div>
       </div>
       <br>
@@ -40,19 +48,19 @@
         </div>
       </div>
       <br>
-      <div class="form-group">
-        <label class="col-sm-2 control-label">ＡＰＩキー</label>
-        <div class="col-sm-5">
-          <input type="text" name="redmine_api_key" class="form-control" id="api_key" />
-        </div>
-      </div>
-      <br>
       <h4>GitHub</h4>
       <br>
       <div class="form-group">
-        <label class="col-sm-2 control-label">ＵＲＬ</label>
-        <div class="col-sm-8">
-          <input type="text" name="github_url" class="form-control" id="github_url" />
+        <label class="col-sm-2 control-label">プロジェクト名</label>
+        <div class="col-sm-5">
+          <input type="text" name="github_project_name" class="form-control" id="github_project_name" />
+        </div>
+      </div>
+      <br>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">リポジトリ名</label>
+        <div class="col-sm-5">
+          <input type="text" name="github_repo" class="form-control" id="github_repo" />
         </div>
       </div>
       <br>

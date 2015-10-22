@@ -1,19 +1,33 @@
-<%= form_tag '/projects/create' do %>
+<div class="page-header">
+  <%= link_to '/projects/new', class: 'btn btn-default' do %>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      入力を訂正する
+  <% end %>
+  <h3>以下の内容で登録してよろしいですか？</h3>
+</div>
+
+<%= form_tag '/projects' do %>
   <h4>プロジェクト名: <%= @confirm_data[:name] %><h4>
   <br>
-  <h4>プロジェクト開始日: <%= @confirm_data[:start_date] %></h4>
+  <h4>プロジェクト開始日: <%= @confirm_data[:project_start_date] %></h4>
   <br>
-  <h4>RedmineURL: <%= @confirm_data[:redmine_url] %></h4>
+  <h4>Redmineホスト名: <%= @confirm_data[:redmine_host] %></h4>
   <br>
-  <h4>GitHubURL: <%= @confirm_data[:github_url] %></h4>
-  <%= hidden_field_tag :, @url %>
-  <%= hidden_field_tag :name, @confirm_data[:] %>
-  <%= hidden_field_tag :name, @confirm_data[:start_date] %>
-  <%= hidden_field_tag :redmine_url, @confirm_data[:redmine_url] %>
+  <h4>Redmineプロジェクト名: <%= @confirm_data[:redmine_project_name] %></h4>
+  <br>
+  <h4>GitHubプロジェクト名: <%= @confirm_data[:github_project_name] %></h4>
+  <br>
+  <h4>GitHubリポジトリ名: <%= @confirm_data[:github_repo] %></h4>
+  <%= hidden_field_tag :url, @url %>
+  <%= hidden_field_tag :name, @confirm_data[:name] %>
+  <%= hidden_field_tag :project_start_date, @confirm_data[:project_start_date] %>
+  <%= hidden_field_tag :redmine_host, @confirm_data[:redmine_host] %>
+  <%= hidden_field_tag :redmine_project_name, @confirm_data[:redmine_project_name] %>
   <%= hidden_field_tag :redmine_login_id, @confirm_data[:redmine_login_id] %>
   <%= hidden_field_tag :redmine_password_digest, @confirm_data[:redmine_password_digest] %>
   <%= hidden_field_tag :redmine_api_key, @confirm_data[:redmine_api_key] %>
-  <%= hidden_field_tag :github_url, @confirm_data[:github_url] %>
+  <%= hidden_field_tag :github_project_name, @confirm_data[:github_project_name] %>
+  <%= hidden_field_tag :github_repo, @confirm_data[:github_repo] %>
   <%= hidden_field_tag :github_login_id, @confirm_data[:github_login_id] %>
   <%= hidden_field_tag :github_password_digest, @confirm_data[:github_password_digest] %>
   <%= button_tag '登録する', class: 'btn btn-primary' %>
