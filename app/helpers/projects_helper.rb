@@ -9,8 +9,6 @@ module ProjectsHelper
     project = Project.where(:id=>project_id)
     return true if project.first.ticket_repository_id.present?
     false
-
-
   end
 end
 
