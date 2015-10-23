@@ -50,14 +50,9 @@ class ProjectsController < ApplicationController
       @confirm_data[:github_repo] = UNAUTH
     end
 
-    unless @confirm_data[:name].present? && @confirm_data[:project_start_date].present?
+    if @confirm_data[:redmine_project_name] == UNAUTH && @confirm_data[:github_project_name] == UNAUTH
       respond_to do |format|
-        format.html { redirect_to new_project_path, notice: 'プロジェクト名と開始月は必須です!' }
-      end
-      if @confirm_data[:redmine_project_name] == UNAUTH && @confirm_data[:github_project_name] == UNAUTH
-        respond_to do |format|
-          format.html { redirect_to new_project_path, notice: 'Redmine or GitHubどちらかは認証してください！' }
-        end
+        format.html { redirect_to new_project_path, notice: 'Redmine or GitHubどちらかは認証してください' }
       end
     end
   end
