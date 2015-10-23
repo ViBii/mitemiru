@@ -290,23 +290,23 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def authen_git
+  def authen_github
     @project = Project.find(params[:project_id])
     @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
     @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
   end
 
-  def authen_red
+  def authen_redmine
     @project = Project.find(params[:project_id])
     @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
     @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
   end
 
-  def add_git
+  def add_github
     @project = Project.find(params[:project_id])
   end
 
-  def add_red
+  def add_redmine
     @project = Project.find(params[:project_id])
   end
 
