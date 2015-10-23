@@ -7,9 +7,6 @@ class RedmineKey < ActiveRecord::Base
     self.password_digest = encrypt(self.password_digest)
   end
 
-  SECURE = 'HOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGEHOGE'
-  CIPHER = 'aes-256-cbc'
-
   # 暗号化
   def encrypt(password)
     crypt = ActiveSupport::MessageEncryptor.new(SECURE, CIPHER)
