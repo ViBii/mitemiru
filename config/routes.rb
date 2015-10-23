@@ -18,10 +18,7 @@ Rails.application.routes.draw do
   get 'commit_counter/index'
   post 'commit_counter/commits_ajax'
 
-  get 'projects/select_developer'
-  post 'projects/select_developer'
-  post 'projects/auth_github'
-
+  post 'projects/confirm'
 
   resources :projects do
     get '/authen_github' => 'projects#authen_github'
