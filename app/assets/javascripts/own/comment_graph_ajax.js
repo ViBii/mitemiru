@@ -3,7 +3,10 @@ var commentAjax = function() {
     type: 'post',
     url: 'comments_ajax',
     dataType: "json",
-    data: "",
+    data: {
+        projectId: $('#selected_project_id').val(),
+        developerId: $('#selected_developer_id').val()
+    },
     success: function(comment_data) {
         //alert("success" + comment_data.nodes);
     }

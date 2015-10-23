@@ -4,7 +4,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
   var ticket_num_all = ticket_num_all;
   var color = d3.scale.category20();
 
-  var width = 960,
+  var width = 500,
       height = 500,
       radius = Math.min(width, height) / 2;
 
