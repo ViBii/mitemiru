@@ -84,13 +84,44 @@ class PortfolioController < ApplicationController
         end
       end
 
-      # 存在するチケット数を取得
-      total_issue_count = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*',
-                                                                 user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['total_count']
+      #*************************************Redmineアカウント情報の取得
+      #redmine上のアカウントID
+      developer_redmineId = @developer[:id]
 
-      # すべてのチケット情報を取得
-      all_ticket_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects/'+@project[:identifier]+'/issues.json?status_id=*&limit='+total_issue_count.to_s,
-                                                               user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
+      #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
+      redmine_url = @redmine_info[:url] + "projects/" + @project[:name].downcase
+
+      #redmine上の該当開発者の全てのissue情報を取得する
+
+      #全てのissue情報を保存するarray、最後json形式に変更する
+      issuesArr = []
+
+      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+      first_issues_json = JSON.parse(first_issues_req)
+
+      #第一回問い合わせしてもらった情報をarrayに保存
+      first_issues_json['issues'].each do |issue|
+        issuesArr.push(issue)
+      end
+
+      #最初のデータのindex
+      issue_offset = 0
+      #総数
+      total_count = first_issues_json['total_count']
+      #一回問い合わせする最大値
+      limit = first_issues_json['limit']
+
+      #issueのpagination処理
+      while total_count > limit do
+        issue_offset = issue_offset + limit
+        issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset + '&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+        total_count = total_count - limit
+        JSON.parse(issues_req)['issues'].each do |issue|
+          issuesArr.push(issue)
+        end
+      end
+
+      all_ticket_info = JSON.parse(issuesArr.to_json)
 
       # トラッカーの一覧を取得
       tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
@@ -115,7 +146,7 @@ class PortfolioController < ApplicationController
         @issue_info[:count][i-1] = 0
       end
 
-      for i in all_ticket_info['issues'] do
+      for i in all_ticket_info do
         if (!(i['assigned_to'].nil?))
           if (i['assigned_to']['id'] == @developer[:id])
             @issue_info[:count][i['tracker']['id']-1] += 1
@@ -176,8 +207,6 @@ class PortfolioController < ApplicationController
       end
 
       #*************************************Redmineアカウント情報、tracker情報の取得
-      #redmine上のアカウント名
-      @developer_name = "SYU"
       #redmine上のアカウントID
       developer_redmineId = @developer[:id]
 
@@ -289,7 +318,7 @@ class PortfolioController < ApplicationController
 
       end
 
-      finalStr = "{\"developer_name\":\"" + @developer_name + "\",\"estimated_hours_result\":"
+      finalStr = "{\"estimated_hours_result\":"
 
       #予定工数Arrayの設定
       estimated_hours_result = []
