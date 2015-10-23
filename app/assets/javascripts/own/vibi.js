@@ -34,7 +34,7 @@ Vibi.load = function(e) {
   if(gon.controller === "comp") {
   };
   if(gon.controller === 'portfolio'){
-    $('.flexslider').flexslider();
+    //$('.flexslider').flexslider();
     //工数グラフの生成function
     if(gon.action === "productivity") {
         costAjax();
