@@ -24,10 +24,10 @@ Rails.application.routes.draw do
 
 
   resources :projects do
-    get '/authen_git' => 'projects#authen_git'
-    get '/authen_red' => 'projects#authen_red'
-    get '/add_git' => 'projects#add_git'
-    get '/add_red' => 'projects#add_red'
+    get '/authen_github' => 'projects#authen_github'
+    get '/authen_redmine' => 'projects#authen_redmine'
+    get '/add_github' => 'projects#add_github'
+    get '/add_redmine' => 'projects#add_redmine'
   end
 
   devise_for :users

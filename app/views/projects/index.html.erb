@@ -27,18 +27,18 @@
         <td><%= project.project_end_date %></td>
 
         <% if auth_git(project.id) %>
-            <td><%= link_to '認証済み',project_authen_git_path(project)%>
+            <td><%= link_to '認証済み',project_authen_github_path(project)%>
               <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
         <% else %>
-            <td><%= link_to '未認証',project_add_git_path(project)%>
+            <td><%= link_to '未認証',project_add_github_path(project)%>
             <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
         <% end %>
 
         <% if auth_red(project.id) %>
-            <td><%= link_to '認証済み',project_authen_red_path(project)%>
+            <td><%= link_to '認証済み',project_authen_redmine_path(project)%>
               <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
         <% else %>
-            <td><%= link_to '未認証',project_add_red_path(project)%>
+            <td><%= link_to '未認証',project_add_redmine_path(project)%>
             <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
         <% end %>
 
