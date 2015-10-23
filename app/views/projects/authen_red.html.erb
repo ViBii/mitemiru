@@ -1,0 +1,19 @@
+<div class="page-header">
+  <%= link_to projects_path, class: 'btn btn-default' do %>
+      <span class="glyphicon glyphicon-list-alt"></span>
+      戻る
+  <% end %>
+  <h1>redmineリポジトリの確認</h1>
+</div>
+
+<dl class="dl-horizontal">
+
+  <dt>名前:</dt>
+  <dd><%= @project.name %></dd>
+  <dt>redmineのURL:</dt>
+  <dd><%= @ticket_repository.url%></dd>
+  <dt>ログインID:</dt>
+  <dd><%= @redmine_key.login_id %></dd>
+
+
+</dl>

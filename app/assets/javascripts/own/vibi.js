@@ -14,8 +14,18 @@ function jump(action, method) {
 
 Vibi.load = function(e) {
   if(gon.controller === "projects") {
-    if(gon.action === "select_developer") {
-      $('#redmine_auth_button').click(function() {
+    if(gon.action === "new") {
+      datetimepickerJapanese();
+
+      $('.date').datepicker({
+        format: "yyyy/mm",
+        language: 'ja',
+        autoclose: true,
+        orientation: "bottom",
+        minViewMode: 1
+      });
+
+      $('#new_project_button').click(function() {
         signUpRedmine();
       });
     }
@@ -24,13 +34,14 @@ Vibi.load = function(e) {
   if(gon.controller === "comp") {
   };
   if(gon.controller === 'portfolio'){
-    $('.flexslider').flexslider();
+    //$('.flexslider').flexslider();
     //工数グラフの生成function
     if(gon.action === "productivity") {
         costAjax();
     }
     if(gon.action === "ticket_digestion") {
         ticketDigestionAjax();
+        commitAjax();
     }
   }
   if(gon.controller === 'commit_counter'){

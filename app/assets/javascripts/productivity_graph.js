@@ -10,7 +10,7 @@ var create_productivity_graph = function (tracker, task_result,task_estimate){
   var leftPadding = 150;
   var rightPadding = 100;
 
-  var w = 860;
+  var w = 620;
   var h = 200 + topPadding + bottomPadding + 70*tracker.length;
 
   var maxScale = Math.max(d3.max(task_result), d3.max(task_estimate));
