@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151014164009) do
+ActiveRecord::Schema.define(version: 20151022205940) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -29,19 +29,19 @@ ActiveRecord::Schema.define(version: 20151014164009) do
     t.datetime "updated_at",             null: false
   end
 
-  create_table "github_authorities", force: :cascade do |t|
-    t.integer  "user_id",       limit: 4
-    t.integer  "github_key_id", limit: 4
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-  end
-
   create_table "github_keys", force: :cascade do |t|
     t.integer  "version_repository_id", limit: 4
     t.string   "login_id",              limit: 255
     t.string   "password_digest",       limit: 255
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
+  end
+
+  create_table "github_keys_users", force: :cascade do |t|
+    t.integer  "user_id",       limit: 4
+    t.integer  "github_key_id", limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "projects", force: :cascade do |t|
@@ -54,11 +54,6 @@ ActiveRecord::Schema.define(version: 20151014164009) do
     t.datetime "updated_at",                        null: false
   end
 
-  create_table "redmine_authorities", force: :cascade do |t|
-    t.integer "user_id",        limit: 4
-    t.integer "redmine_key_id", limit: 4
-  end
-
   create_table "redmine_keys", force: :cascade do |t|
     t.integer  "ticket_repository_id", limit: 4
     t.string   "login_id",             limit: 255
@@ -66,6 +61,11 @@ ActiveRecord::Schema.define(version: 20151014164009) do
     t.string   "api_key",              limit: 255
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+  end
+
+  create_table "redmine_keys_users", force: :cascade do |t|
+    t.integer "user_id",        limit: 4
+    t.integer "redmine_key_id", limit: 4
   end
 
   create_table "roles", force: :cascade do |t|
