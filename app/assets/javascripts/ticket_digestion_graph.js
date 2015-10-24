@@ -57,10 +57,11 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     
       var result_arc = d3.svg.arc()
                          .outerRadius(function(d, i) {
-                           if (prospect[id][i]/result[id][i] < 1.5) {
-                             base_radius*(prospect[id][i]/result[id][i]);
+                           if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
+                             return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
                            } else {
-                             return base_radius*1.5;
+                             // 最大半径は2倍までに設定
+                             return base_radius*2;
                            }
                          })
                          .innerRadius(0);
