@@ -2,7 +2,24 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var tracker = tracker;
     var ticket_num = ticket_num;
     var ticket_num_all = ticket_num_all;
-    
+   
+    // テストデータ(Redmineと連携後に削除)
+    var developers = ['devA', 'devB', 'devC', 'devD', 'devE'];
+    var trackers = ['DESIGN', 'IMPLEMENTATION', 'TEST', 'BUG'];
+    var prospect = [
+      [30, 10, 20, 10],
+      [25, 25, 0, 10],
+      [10, 10, 10, 10],
+      [10, 15, 20, 25],
+      [0, 30, 30, 5]
+    ];
+    var result = [
+      [25, 15, 20, 5],
+      [20, 20, 0, 20],
+      [30, 5, 5, 10],
+      [15, 20, 5, 5],
+      [0, 40, 10, 15]
+    ];
     var test_prospect_time = [20, 15, 8, 30];
     var test_result_time = [25, 10, 8, 40];
     var test_productivity_data = [89, 105, 72, 90, 100];
@@ -13,9 +30,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
    
     // SVG領域の範囲設定
     var width = 960,
-        height = 500;
-  
-    var padding = {top: 10, right: 50, bottom: 10, left: 300};
+        height = 480;
+
+    var box_width = 240,
+        box_height = 240;
+
+    var margin = {top: 10, right: 10, bottom: 10, left: 10}
+    var padding = {top: 10, right: 50, bottom: 10, left: 30};
 
     var svg = d3.select("body")
                 .append("svg")
@@ -23,7 +44,67 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                 .attr ("height", height);
 
     var bar_svg;
+    var box_circle_svg;
     var circle_svg;
+
+    // 円グラフの一覧表示
+    var draw_box_pi_chart = function(id) {
+      var base_radius = box_width/4;
+    
+      var pros_arc = d3.svg.arc()
+                       .outerRadius(base_radius)
+                       .innerRadius(0);
+    
+      var result_arc = d3.svg.arc()
+                         .outerRadius(function(d, i) {
+                           if (prospect[id][i]/result[id][i] < 1.5) {
+                             base_radius*(prospect[id][i]/result[id][i]);
+                           } else {
+                             return base_radius*1.5;
+                           }
+                         })
+                         .innerRadius(0);
+    
+      var pie = d3.layout.pie()
+                  .sort(null)
+                  .value(function(d) {
+                    return d;
+                  });
+   
+      circle_svg = svg.append("g")
+          .attr("class", developers[id])
+          .attr("transform", "translate("+((box_width/2)+box_width*(id%4))+", "+((box_height/2)+box_height*Math.floor(id/4))+")");
+    
+      var pros_g = circle_svg.selectAll(".prospect")
+                             .data(pie(prospect[id]))
+                             .enter()
+                             .append("g")
+                             .attr("class", "prospect");
+    
+      pros_g.append("path")
+            .attr("d", pros_arc)
+            .style("fill", function(d,i) {
+              return bright_color[i];
+            });
+   
+      var result_g = circle_svg.selectAll(".productivity")
+                               .data(pie(prospect[id]))
+                               .enter()
+                               .append("g")
+                               .attr("class", "productivity");
+    
+      result_g.append("path")
+              .attr("d", result_arc)
+              .style("fill", function(d,i) {
+                return base_color[i];
+              });
+    };
+
+
+    // 初期画面表示
+    for (var i=0; i<developers.length; i++) {
+      draw_box_pi_chart(i);
+    }
 
     // 円グラフの描画
     var draw_pi_chart = function(id) {
@@ -124,5 +205,5 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     };
 
     // 初期グラフの描画
-    draw_pi_chart(0);
+    //draw_pi_chart(0);
 }
