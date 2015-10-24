@@ -51,21 +51,26 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var draw_box_pi_chart = function(id) {
       var base_radius = box_width/4;
     
-      var pros_arc = d3.svg.arc()
-                       .outerRadius(base_radius)
-                       .innerRadius(0);
-    
-      var result_arc = d3.svg.arc()
-                         .outerRadius(function(d, i) {
-                           if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
-                             return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
-                           } else {
-                             // 最大半径は2倍までに設定
-                             return base_radius*2;
-                           }
-                         })
-                         .innerRadius(0);
-    
+      
+      var pros_arc = function(outer_radius, inner_radius) {
+        return d3.svg.arc()
+                 .outerRadius(outer_radius)
+                 .innerRadius(inner_radius);
+      }
+      
+      var result_arc = function(base_radius, inner_radius) {
+        return d3.svg.arc()
+                 .outerRadius(function(d, i) {
+                   if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
+                     return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
+                   } else {
+                     // 最大半径は2倍までに設定
+                     return base_radius*2;
+                   }
+                 })
+                 .innerRadius(inner_radius);
+      }
+
       var pie = d3.layout.pie()
                   .sort(null)
                   .value(function(d) {
@@ -74,8 +79,11 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
    
       circle_svg = svg.append("g")
           .attr("class", developers[id])
-          .attr("transform", "translate("+((box_width/2)+box_width*(id%4))+", "+((box_height/2)+box_height*Math.floor(id/4))+")");
-    
+          .attr("transform", "translate("+((box_width/2)+box_width*(id%4))+", "+((box_height/2)+box_height*Math.floor(id/4))+")")
+          .on("click", function() {
+            zoom(id);
+          });
+
       var pros_g = circle_svg.selectAll(".prospect")
                              .data(pie(prospect[id]))
                              .enter()
@@ -83,7 +91,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                              .attr("class", "prospect");
     
       pros_g.append("path")
-            .attr("d", pros_arc)
+            .attr("d", pros_arc(base_radius, 0))
             .style("fill", function(d,i) {
               return bright_color[i];
             });
@@ -95,12 +103,19 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                                .attr("class", "productivity");
     
       result_g.append("path")
-              .attr("d", result_arc)
+              .attr("d", result_arc(base_radius, 0))
               .style("fill", function(d,i) {
                 return base_color[i];
               });
-    };
 
+      // イベントグラフのズーム
+      zoom = function(id) {
+          svg.selectAll("."+developers[id])
+             .selectAll("path")
+             .transition()
+             .attr("d", result_arc(2*base_radius, 0));
+      }
+    };
 
     // 初期画面表示
     for (var i=0; i<developers.length; i++) {
@@ -204,7 +219,4 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                draw_pi_chart(id);
              });
     };
-
-    // 初期グラフの描画
-    //draw_pi_chart(0);
 }
