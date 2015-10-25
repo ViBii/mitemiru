@@ -83,6 +83,25 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .transition()
               .duration(2000)
               .attr("transform", "translate("+(width/2)+", "+(height/2)+")");
+
+            // 他のグラフを削除する
+            for (var j=0; j<developers.length; j++) {
+              if (j != id) {
+                svg.selectAll("."+developers[j])
+                   .selectAll(".prospect")
+                   .selectAll("path")
+                   .transition()
+                   .duration(2000)
+                   .style("fill", "#ededed");
+
+                 svg.selectAll("."+developers[j])
+                   .selectAll(".result")
+                   .selectAll("path")
+                   .transition()
+                   .duration(2000)
+                   .style("fill", "#ededed");
+              }
+            }
           });
 
       var pros_g = circle_svg.selectAll(".prospect")
