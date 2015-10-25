@@ -11,6 +11,11 @@ class PortfolioController < ApplicationController
     end
   end
 
+  def index
+    @project_id = params[:project_info][:project_id]
+    @developer_id = params[:developer_id]
+  end
+
   def productivity_info
     @developer = Developer.all
   end

@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   get 'portfolio/top'
   get 'portfolio/setting'
-  get 'portfolio/index'
+  post 'portfolio/index'
   post 'portfolio/show_projects'
   post 'portfolio/select_function'
   post 'portfolio/ticket_digestion'

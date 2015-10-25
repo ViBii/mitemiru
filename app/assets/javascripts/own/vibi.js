@@ -39,7 +39,7 @@ Vibi.load = function(e) {
     if(gon.action === "productivity") {
         costAjax();
     }
-    if(gon.action === "ticket_digestion") {
+    if(gon.action === "index") {
         ticketDigestionAjax();
         commitAjax();
     }

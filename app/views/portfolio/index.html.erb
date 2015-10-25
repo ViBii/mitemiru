@@ -1,13 +1,11 @@
-<div class="page-header">
-  <%= link_to '/', class: 'btn btn-default' do %>
-    <span class="glyphicon glyphicon-list-alt"></span>
-    トップに戻る
-  <% end %>
+<h1 id="ticket_digestion_graph_h1"></h1>
 
-  <h1>ポートフォリオ</h1>
-  <p>参照したい情報を選択してください。</p>
-</div>
+<p id="ticket_digestion_graph_p">
+</p>
+<%= hidden_field_tag 'selected_project_id', @project_id %>
+<%= hidden_field_tag 'selected_developer_id', @developer_id %>
 
-<div class="form">
-  <%= render 'function_form' %>
-</div>
+<%= javascript_include_tag "ticket_digestion_graph" %>
+<%= javascript_include_tag "commit_counter_graph" %>
+<%= javascript_include_tag "productivity_graph" %>
+<%= javascript_include_tag "comments_counter_graph" %>
