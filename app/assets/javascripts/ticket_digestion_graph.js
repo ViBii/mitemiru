@@ -99,7 +99,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                    .selectAll("path")
                    .transition()
                    .duration(2000)
-                   .style("fill", "#ededed");
+                   .style("fill", "#ededed")
+                   .each("end", function() {
+                     d3.select(this).remove();
+                   });
               }
             }
           });
