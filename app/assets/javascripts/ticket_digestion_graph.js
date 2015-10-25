@@ -46,12 +46,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var bar_svg;
     var box_circle_svg;
     var circle_svg;
+    var base_radius = box_width/4;
 
     // 円グラフの一覧表示
     var draw_box_pi_chart = function(id) {
-      var base_radius = box_width/4;
-    
-      
       var pros_arc = function(outer_radius, inner_radius) {
         return d3.svg.arc()
                  .outerRadius(outer_radius)
@@ -81,7 +79,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           .attr("class", developers[id])
           .attr("transform", "translate("+((box_width/2)+box_width*(id%4))+", "+((box_height/2)+box_height*Math.floor(id/4))+")")
           .on("click", function() {
-            zoom(id);
+            d3.select(this)
+              .transition()
+              .duration(2000)
+              .attr("transform", "translate("+(width/2)+", "+(height/2)+")");
           });
 
       var pros_g = circle_svg.selectAll(".prospect")
@@ -96,26 +97,24 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               return bright_color[i];
             });
    
-      var result_g = circle_svg.selectAll(".productivity")
+      var result_g = circle_svg.selectAll(".result")
                                .data(pie(prospect[id]))
                                .enter()
                                .append("g")
-                               .attr("class", "productivity");
+                               .attr("class", "result");
     
-      result_g.append("path")
+      var com = result_g.append("path")
               .attr("d", result_arc(base_radius, 0))
               .style("fill", function(d,i) {
                 return base_color[i];
-              });
-
-      // イベントグラフのズーム
-      zoom = function(id) {
-          svg.selectAll("."+developers[id])
-             .selectAll("path")
-             .transition()
-             .attr("d", result_arc(2*base_radius, 0));
-      }
-    };
+              })
+          
+      /* 半径の可変(要検討)
+      com.transition()
+         .duration(2000)
+         .attr("d", result_arc(2*base_radius, 0))
+      */
+    }
 
     // 初期画面表示
     for (var i=0; i<developers.length; i++) {
