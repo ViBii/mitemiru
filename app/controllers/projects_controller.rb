@@ -170,6 +170,13 @@ class ProjectsController < ApplicationController
         end
       end
 
+      if data[:redmine_project_name] == UNAUTH
+        ticket_repository_id = nil
+      end
+      if data[:github_project_name] == UNAUTH
+        version_repository_id = nil
+      end
+
       # projects
       if Project.where(name: data[:name]).present?
         same_project = Project.where(name: data[:name]).first
