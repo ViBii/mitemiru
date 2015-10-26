@@ -4,7 +4,7 @@
       戻る
   <% end %>
   <h1>githubリポジトリの新規追加</h1>
-
+  <%= form_tag '/projects/index' do %>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">プロジェクト名</label>
@@ -40,3 +40,4 @@
 </div>
 </div>
 
+  <% end %>

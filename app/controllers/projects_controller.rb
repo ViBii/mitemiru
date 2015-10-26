@@ -279,10 +279,102 @@ class ProjectsController < ApplicationController
 
   def add_github
     @project = Project.find(params[:project_id])
+
+    begin
+    data = {
+
+        github_project_name:     params['github_project_name'],
+        github_repo:             params['github_repo'],
+        github_login_id:         params['github_login_id'],
+        github_password_digest:  params['github_password_digest']
+    }
+
+    if data[:github_project_name] != UNAUTH
+      github_url = 'https://github.com/' + data[:github_project_name] + '/' + data[:github_repo]
+
+      # version_repositories
+      unless VersionRepository.exists?(url: github_url)
+        version_repository = VersionRepository.new(
+            url: github_url
+        )
+        version_repository.save
+      end
+
+      # github_keys
+      if VersionRepository.where(url: github_url).select(:id).present?
+        version_repository_id = VersionRepository.where(url: github_url).pluck(:id).first
+      else
+        version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
+      end
+      unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        github_key = GithubKey.new(
+            :version_repository_id => version_repository_id,
+            :login_id             => data[:github_login_id],
+            :password_digest      => data[:github_password_digest]
+        )
+        github_key.save
+      end
+
+      # github_authorities
+      unless current_user.github_keys.present?
+        current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+      end
+    end
+
+
+    end
+
   end
 
   def add_redmine
     @project = Project.find(params[:project_id])
+
+    begin
+    data = {
+
+        redmine_host:            params['redmine_host'],
+        redmine_project_name:    params['redmine_project_name'],
+        redmine_login_id:        params['redmine_login_id'],
+        redmine_password_digest: params['redmine_password_digest'],
+        redmine_api_key:         params['redmine_api_key'],
+    }
+
+    if data[:redmine_project_name] != UNAUTH
+      redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
+
+      # ticket_repositories
+      unless TicketRepository.exists?(url: redmine_url)
+        ticket_repository = TicketRepository.new(
+            url: redmine_url
+        )
+        ticket_repository.save
+      end
+
+      # redmine_keys
+      if TicketRepository.where(url: redmine_url).select(:id).present?
+        ticket_repository_id = TicketRepository.where(url: redmine_url).pluck(:id).first
+      else
+        ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
+      end
+      unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        redmine_key = RedmineKey.new(
+            :ticket_repository_id => ticket_repository_id,
+            :login_id             => data[:redmine_login_id],
+            :password_digest      => data[:redmine_password_digest],
+            :api_key              => data[:redmine_api_key]
+        )
+        redmine_key.save
+      end
+
+      # redmine_authorities
+      unless current_user.redmine_keys.present?
+        current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+      end
+    end
+
+
+    end
+
   end
 
   def update
@@ -303,26 +395,6 @@ class ProjectsController < ApplicationController
       format.html { redirect_to projects_url, notice: 'Project was successfully destroyed.' }
       format.json { head :no_content }
     end
-  end
-
-  def authen_git
-    @project = Project.find(params[:project_id])
-    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
-    @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
-  end
-
-  def authen_red
-    @project = Project.find(params[:project_id])
-    @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
-    @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
-  end
-
-  def add_git
-    @project = Project.find(params[:project_id])
-  end
-
-  def add_red
-    @project = Project.find(params[:project_id])
   end
 
   private
