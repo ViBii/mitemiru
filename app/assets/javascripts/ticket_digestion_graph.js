@@ -48,6 +48,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var circle_svg;
     var base_radius = box_width/4;
 
+    var arc = function(outer_radius, inner_radius) {
+      return d3.svg.arc()
+               .outerRadius(outer_radius)
+               .innerRadius(inner_radius);
+    }
+
     // 円グラフの一覧表示
     var draw_box_pi_chart = function(id, page_from) {
       if (page_from == 0) {
@@ -77,13 +83,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                     });
    
         circle_svg = svg.append("g")
-            .attr("class", developers[id])
+            .attr("class", "developer_"+developers[id])
             .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
             // グラフクリック時のイベント
             .on("click", function() {
-              // 選択グラフの入れ替え
               // 縮小グラフの削除
-              svg.selectAll("."+developers[id])
+              svg.selectAll(".developer_"+developers[id])
                 .selectAll("path")
                 .remove();
 
@@ -94,28 +99,27 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               for (var j=0; j<developers.length; j++) {
                 if (j != id) {
                   // 見積もりグラフ
-                  svg.selectAll("."+developers[j])
+                  svg.selectAll(".developer_"+developers[j])
                      .selectAll(".prospect")
                      .selectAll("path")
                      .transition()
                      .duration(1000)
-                     .style("fill", "#ededed")
-                     .each("end", function() {
-                       d3.select(this).remove();
-                     });
+                     .style("fill", "#ededed");
 
                    // 実績グラフ
-                   svg.selectAll("."+developers[j])
+                   svg.selectAll(".developer_"+developers[j])
                      .selectAll(".result")
                      .selectAll("path")
                      .transition()
                      .duration(1000)
-                     .style("fill", "#ededed")
-                     .each("end", function() {
-                       d3.select(this).remove();
-                     });
+                     .style("fill", "#ededed");
+                   
+                   svg.selectAll(".developer"+developers[j]).remove();
                 }
               }
+
+              // 戻るボタンの設置
+              addReturnButton(1);
             });
 
         var pros_g = circle_svg.selectAll(".prospect")
@@ -175,7 +179,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                   });
    
       circle_svg = svg.append("g")
-        .attr("class", developers[id]);
+        .attr("class", "developer_"+developers[id]);
          
       circle_svg.transition()
         .duration(1000)
@@ -222,6 +226,72 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .duration(800)
         .ease("bounce")
         .attr("d", result_arc(2*base_radius, 0));
+    };
+
+    var addReturnButton = function(page_from) {
+      var mark_colors = ['#99b6d9', '#4f81bd'];
+      var mark_radius = [10, 8];
+
+      return_button = svg.append("g")
+                        .attr("class", "return_button")
+                        .attr("transform", "translate("+(margin.left)+", "+(margin.top)+")");
+
+      // マークの追加
+      svg.selectAll(".return_button")
+        .selectAll(".mark")
+        .data(mark_colors)
+        .enter()
+        .append("g")
+        .attr("class", "mark")
+        .append("circle")
+        .transition()
+        .duration(500)
+        .delay(2000)
+        .each("start", function() {
+          d3.select(this)
+            .attr({
+              cx: 10,
+              cy: 10,
+              r: 0,
+              fill: "#ededed"
+            });
+        })
+        .attr({
+          r: function(d,i) {
+            return mark_radius[i];
+          },
+          fill: function(d,i) {
+            return mark_colors[i];
+          }
+        });
+        
+      // テキストの表示
+      svg.selectAll(".return_button")
+        .append("text")
+        .transition()
+        .duration(500)
+        .delay(2000)
+        .each("start", function() {
+          d3.select(this)
+            .attr({
+              fill: "#ededed"
+            });
+        })
+        .text("Return")
+        .attr("x", 25)
+        .attr("y", 12)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "15px")
+        .attr("text-anchor", "start")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#777777");
+
+      // クリック時遷移
+      svg.selectAll(".return_button")
+        .selectAll(".mark")
+        .on("click", function() {
+          console.log("onClick");
+        });
     };
 
     // 棒グラフの描画
