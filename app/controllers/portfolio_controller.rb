@@ -1,15 +1,4 @@
 class PortfolioController < ApplicationController
-  def select_function
-    if params[:id] == '1' then
-      redirect_to '/commit_counter/index'
-    elsif params[:id] == '2' then
-      redirect_to '/comments_counter/index'
-    elsif params[:id] == '3' then
-      redirect_to '/portfolio/productivity_info'
-    elsif params[:id] == '4' then
-      redirect_to '/portfolio/productivity'
-    end
-  end
 
   def index
     @project_id = params[:project_info][:project_id]
@@ -387,7 +376,7 @@ class PortfolioController < ApplicationController
 
       #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         total_commits = total_commits + contributor['contributions']
         if developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
@@ -446,7 +435,7 @@ class PortfolioController < ApplicationController
       @assigneeArg = ""
 
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         if developer_email == developer_detail['email'] then
           @assigneeArg = developer_detail['login']
         end
