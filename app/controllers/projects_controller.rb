@@ -104,9 +104,21 @@ class ProjectsController < ApplicationController
         github_password_digest:  params['github_password_digest']
       }
 
-      if data[:redmine_project_name] != UNAUTH
-        redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
+      redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
+      github_url = 'github.com/' + data[:github_project_name] + '/' + data[:github_repo]
 
+      if TicketRepository.where(url: redmine_url).select(:id).present?
+        ticket_repository_id = TicketRepository.where(url: redmine_url).pluck(:id).first
+      else
+        ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
+      end
+      if VersionRepository.where(url: github_url).select(:id).present?
+        version_repository_id = VersionRepository.where(url: github_url).pluck(:id).first
+      else
+        version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
+      end
+
+      if data[:redmine_project_name] != UNAUTH
         # ticket_repositories
         unless TicketRepository.exists?(url: redmine_url)
           ticket_repository = TicketRepository.new(
@@ -116,11 +128,6 @@ class ProjectsController < ApplicationController
         end
 
         # redmine_keys
-        if TicketRepository.where(url: redmine_url).select(:id).present?
-          ticket_repository_id = TicketRepository.where(url: redmine_url).pluck(:id).first
-        else
-          ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
-        end
         unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
           redmine_key = RedmineKey.new(
             :ticket_repository_id => ticket_repository_id,
@@ -138,7 +145,6 @@ class ProjectsController < ApplicationController
       end
 
       if data[:github_project_name] != UNAUTH
-        github_url = 'https://github.com/' + data[:github_project_name] + '/' + data[:github_repo]
 
         # version_repositories
         unless VersionRepository.exists?(url: github_url)
@@ -149,11 +155,6 @@ class ProjectsController < ApplicationController
         end
 
         # github_keys
-        if VersionRepository.where(url: github_url).select(:id).present?
-          version_repository_id = VersionRepository.where(url: github_url).pluck(:id).first
-        else
-          version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
-        end
         unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
           github_key = GithubKey.new(
             :version_repository_id => version_repository_id,
@@ -172,7 +173,6 @@ class ProjectsController < ApplicationController
       # projects
       if Project.where(name: data[:name]).present?
         same_project = Project.where(name: data[:name]).first
-        binding.pry
         same_project.update(
           :id                    => same_project.id,
           :version_repository_id => version_repository_id,

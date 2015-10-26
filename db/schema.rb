@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151022205940) do
+ActiveRecord::Schema.define(version: 20151026030930) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
     t.integer  "project_id",        limit: 4
-    t.time     "assign_start_date"
-    t.time     "assign_end_date"
+    t.datetime "assign_start_date"
+    t.datetime "assign_end_date"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
   end
@@ -48,8 +48,8 @@ ActiveRecord::Schema.define(version: 20151022205940) do
     t.integer  "version_repository_id", limit: 4
     t.integer  "ticket_repository_id",  limit: 4
     t.string   "name",                  limit: 255
-    t.time     "project_start_date"
-    t.time     "project_end_date"
+    t.datetime "project_start_date"
+    t.datetime "project_end_date"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
   end
