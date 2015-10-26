@@ -50,6 +50,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
 
     var event_time = 700;
 
+    // 半径の設定(見積もり円グラフ)
     var arc = function(outer_radius, inner_radius) {
       return d3.svg.arc()
                .outerRadius(outer_radius)
@@ -57,129 +58,107 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     }
 
     // 円グラフの一覧表示
-        var drawBoxPiChart = function(id, page_from, emerge_after) {
-        // page_from ->
-        //   0: 初期表示
-        //   1: 拡大円グラフからのReturn
+    var drawBoxPiChart = function(id, page_from, emerge_after) {
+      // page_from ->
+      //   0: 初期表示
+      //   1: 拡大円グラフからのReturn
 
-          var pros_arc = function(outer_radius, inner_radius) {
-            return d3.svg.arc()
-                     .outerRadius(outer_radius)
-                     .innerRadius(inner_radius);
-          }
-      
-          var result_arc = function(base_radius, inner_radius) {
-            return d3.svg.arc()
-                     .outerRadius(function(d, i) {
-                       if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
-                         return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
-                       } else {
-                         // 最大半径は2倍までに設定
-                         return base_radius*2;
-                       }
-                     })
-                     .innerRadius(inner_radius);
-          }
-
-          var pie = d3.layout.pie()
-                      .sort(null)
-                      .value(function(d) {
-                        return d;
-                      });
-
-          circle_svg = svg.append("g")
-              .attr("class", "developer_"+developers[id])
-              .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
-              // グラフクリック時のイベント
-              .on("click", function() {
-                // 縮小グラフの削除
-                svg.selectAll(".developer_"+developers[id])
-                  .selectAll("path")
-                  .remove();
-
-                // 拡大グラフの描画
-                drawPiChart(id);
-
-                // 他のグラフを削除する
-                for (var j=0; j<developers.length; j++) {
-                  if (j != id) {
-                    // 見積もりグラフ
-                    svg.selectAll(".developer_"+developers[j])
-                      .selectAll(".prospect")
-                      .selectAll("path")
-                      .transition()
-                      .duration(event_time)
-                      .style("fill", "#ededed");
-
-                    // 実績グラフ
-                    svg.selectAll(".developer_"+developers[j])
-                      .selectAll(".result")
-                      .selectAll("path")
-                      .transition()
-                      .duration(event_time)
-                      .style("fill", "#ededed");
-                   
-                    svg.selectAll(".developer_"+developers[j])
-                      .transition()
-                      .delay(event_time)
-                      .remove();
-                  }
-                }
-
-                // 戻るボタンの設置
-                addReturnButton(id,1);
-              });
-
-          // 見積もり部分の表示
-          var pros_g = circle_svg.selectAll(".prospect")
-                .data(pie(prospect[id]))
-                .enter()
-                .append("g")
-                .attr("class", "prospect");
-    
-          pros_g.append("path")
-            .transition()
-            .duration(event_time)
-            .delay(emerge_after)
-            .each("start", function() {
-              d3.select(this)
-                .style("fill", "#ededed"); 
-            })
-            .attr("d", pros_arc(base_radius, 0))
-            .style("fill", function(d,i) {
-              return bright_color[i];
-            });
-   
-          // 実績部分の表示
-          var result_g = circle_svg.selectAll(".result")
-                .data(pie(prospect[id]))
-                .enter()
-                .append("g")
-                .attr("class", "result");
-      
-          result_g.append("path")
-            .transition()
-            .duration(event_time)
-            .delay(emerge_after)
-            .each("start", function() {
-              d3.select(this)
-                .style("fill", "#ededed");
-            })
-            .attr("d", result_arc(base_radius, 0))
-            .style("fill", function(d,i) {
-              return base_color[i];
-            });
-    };
-
-    // 拡大円グラフの作成
-    var drawPiChart = function(id) {
-      // 見積もり円グラフの半径設定
-      var pros_arc = function(outer_radius, inner_radius) {
+      var result_arc = function(base_radius, inner_radius) {
         return d3.svg.arc()
-                 .outerRadius(outer_radius)
+                 .outerRadius(function(d, i) {
+                   if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
+                     return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
+                   } else {
+                     // 最大半径は2倍までに設定
+                     return base_radius*2;
+                   }
+                 })
                  .innerRadius(inner_radius);
       }
-      
+
+      var pie = d3.layout.pie()
+                  .sort(null)
+                  .value(function(d) {
+                    return d;
+                  });
+
+      svg.append("g")
+        .attr("class", "developer_"+developers[id])
+        .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+        // グラフクリック時のイベント
+        .on("click", function() {
+          // 縮小グラフの削除
+          svg.selectAll(".developer_"+developers[id])
+          .remove();
+
+          // 拡大グラフの描画
+          drawPiChart(id);
+
+          // 他のグラフを削除する
+          for (var j=0; j<developers.length; j++) {
+            if (j != id) {
+              // 見積もりグラフ
+              svg.selectAll(".developer_"+developers[j])
+                .selectAll("path")
+                .transition()
+                .duration(event_time)
+                .style("fill", "#ededed");
+
+              svg.selectAll(".developer_"+developers[j])
+                .transition()
+                .delay(event_time)
+                .remove();
+            }
+          }  
+
+          // 戻るボタンの設置
+          addReturnButton(id,1);
+        });
+
+        var base_pi = svg.selectAll(".developer_"+developers[id])
+                        .selectAll(".tracker")
+                        .data(pie(prospect[id]))
+                        .enter()
+                        .append("g")
+                        .attr("class", function(d,i) {
+                          return "tracker_"+trackers[i];
+                        });
+   
+        // 見積もり円グラフの作成
+        base_pi.append("path")
+          .attr("class", "prospect")
+          .transition()
+          .duration(event_time)
+          .delay(emerge_after)
+          .each("start", function() {
+            d3.select(this)
+              .style("fill", "#ededed");
+          })
+          .attr("d", arc(base_radius, 0))
+          .style("fill", function(d,i) {
+            return bright_color[i];
+          });
+   
+        // 実績円グラフの生成
+        base_pi.append("path")
+          .attr("class", "result")
+          .transition()
+          .duration(event_time)
+          .delay(emerge_after)
+          .each("start", function() {
+            d3.select(this)
+              .style("fill", "#ededed");
+          })
+          .attr("d", result_arc(base_radius, 0))
+          .style("fill", function(d,i) {
+            return base_color[i];
+          });
+    };
+
+    //
+    // 拡大円グラフの作成
+    //
+    var drawPiChart = function(id) {
       // 実績円グラフの半径設定
       var result_arc = function(base_radius, inner_radius) {
         return d3.svg.arc()
@@ -201,10 +180,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                     return d;
                   });
    
-      circle_svg = svg.append("g")
-        .attr("class", "developer_"+developers[id]);
          
-      circle_svg.transition()
+      svg.append("g")
+        .attr("class", "developer_"+developers[id])
+        .transition()
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
@@ -214,32 +193,39 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .each("end", function() {
         });     
 
-      // 見積もり円グラフの生成
-      var pros_g = circle_svg.selectAll(".prospect")
-                             .data(pie(prospect[id]))
-                             .enter()
-                             .append("g")
-                             .attr("class", "prospect");
-    
-      pros_g.append("path")
-            .attr("d", pros_arc(base_radius, 0))
-            .style("fill", function(d,i) {
-              return bright_color[i];
-            })
+      var base_pi = svg.selectAll(".developer_"+developers[id])
+                      .selectAll(".tracker")
+                      .data(pie(prospect[id]))
+                      .enter()
+                      .append("g")
+                      .attr("class", function(d,i) {
+                        return "tracker_"+trackers[i];
+                      });
+   
+      // 見積もり円グラフの作成
+      base_pi.append("path")
+        .attr("class", "prospect")
+        .attr("d", arc(base_radius, 0))
+        .style("fill", function(d,i) {
+          return bright_color[i];
+        })
         .transition()
         .delay(event_time)
         .duration(event_time)
         .ease("bounce")
-        .attr("d", pros_arc(2*base_radius, 0));
+        .attr("d", arc(2*base_radius, 0));
+
+        for (var j=0; j<trackers.length; j++) {
+          svg.selectAll(".developer_"+developers[id])
+            .selectAll(".tracker_"+trackers[j])
+            .on("click", function() {
+              console.log("onClick");
+            });
+        }
    
       // 実績円グラフの生成
-      var result_g = circle_svg.selectAll(".result")
-                               .data(pie(prospect[id]))
-                               .enter()
-                               .append("g")
-                               .attr("class", "result");
-    
-      result_g.append("path")
+      base_pi.append("path")
+        .attr("class", "result")
         .attr("d", result_arc(base_radius, 0))
         .style("fill", function(d,i) {
           return base_color[i];
@@ -342,17 +328,8 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .on("click", function() {
           console.log("onClick");
 
-          // 見積もりグラフ
+          // 拡大円グラフの消滅
           svg.selectAll(".developer_"+developers[id])
-            .selectAll(".prospect")
-            .selectAll("path")
-            .transition()
-            .duration(event_time)
-            .style("fill", "#ededed");
-
-          // 実績グラフ
-          svg.selectAll(".developer_"+developers[id])
-            .selectAll(".result")
             .selectAll("path")
             .transition()
             .duration(event_time)
@@ -407,7 +384,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .remove();
 
           for (var j=0; j<developers.length; j++) {
-            drawBoxPiChart(j, 0, event_time);
+            drawBoxPiChart(j, 0, event_time+200);
           }
         });
     }; 
