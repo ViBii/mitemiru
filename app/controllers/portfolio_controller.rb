@@ -338,7 +338,6 @@ class PortfolioController < ApplicationController
           estimated_hours_result[arr_index] = -1
           result_hours_result[arr_index] = -1
           @productivity_info[:tracker][arr_index] = 'unshow'
-          puts 'equal index ' + arr_index.to_s
         end
         arr_index = arr_index + 1
       end
