@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   get 'portfolio/productivity_info'
   get 'portfolio/productivity'
   post 'portfolio/productivity_ajax'
+  post 'portfolio/commits_ajax'
+  post 'portfolio/comments_ajax'
 
   get 'datasamples/index'
   get 'comments_counter/index'
