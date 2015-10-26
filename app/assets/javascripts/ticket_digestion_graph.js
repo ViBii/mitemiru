@@ -113,6 +113,9 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
 
           // 戻るボタンの設置
           addReturnButton(id,1);
+
+          // 凡例の表示
+          drawLegend();
         });
 
         var base_pi = svg.selectAll(".developer_"+developers[id])
@@ -236,6 +239,108 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .ease("bounce")
         .attr("d", result_arc(2*base_radius, 0));
     };
+
+    //
+    // 凡例の生成
+    //
+    var drawLegend = function() {
+      svg.append("g")
+        .attr("class", "legend");
+
+      svg.selectAll(".legend")
+        .selectAll("tracker_id")
+        .data(trackers)
+        .enter()
+        .append("g")
+        .attr("class", function(d,i) {
+          return "tracker_"+i;
+        });
+
+      svg.selectAll(".legend")
+          .append("text")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+          d3.select(this)
+            .attr({
+              fill: "#ededed"
+            });
+          })
+          .text("Trackers")
+          .attr("x", margin.left+600)
+          .attr("y", margin.top+70+10)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "30px")
+          .attr("text-anchor", "start")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", "#777777");
+
+      // 凡例の一覧表示
+      for (var i=0; i<trackers.length; i++) {
+        svg.selectAll(".legend")
+          .selectAll(".tracker_"+i)
+          .append("rect")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+            d3.select(this)
+              .attr({
+                fill: "#ededed"
+              });
+          })
+          .attr({
+            x: margin.left+600,
+            y: margin.top+100+(i*30),
+            width: 20,
+            height: 20,
+            fill: bright_color[i]
+          });
+
+        svg.selectAll(".legend")
+          .selectAll(".tracker_"+i)
+          .append("rect")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+            d3.select(this)
+              .attr({
+                fill: "#ededed"
+              });
+          })
+          .attr({
+            x: margin.left+600+2,
+            y: margin.top+100+(i*30)+2,
+            width: 16,
+            height: 16,
+            fill: base_color[i]
+          });
+
+        svg.selectAll(".legend")
+          .selectAll(".tracker_"+i)
+          .append("text")
+          .attr("class", "label")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+          d3.select(this)
+            .attr({
+              fill: "#ededed"
+            });
+          })
+          .text(trackers[i])
+          .attr("x", margin.left+600+25)
+          .attr("y", margin.top+100+(i*30)+10)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "30px")
+          .attr("text-anchor", "start")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", "#777777");
+      }
+    }
 
     //
     // Returnボタンの追加
@@ -371,6 +476,19 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .duration(event_time)
             .attr("fill", "#ededed");
 
+         // 凡例の消滅
+         svg.selectAll(".legend")
+           .selectAll("rect")
+           .transition()
+           .duration(event_time)
+           .attr("fill", "#ededed");
+
+         svg.select(".legend")
+           .selectAll("text")
+           .transition()
+           .duration(event_time)
+           .attr("fill", "#ededed");
+          
           // returnボタンの削除
           svg.selectAll(".return_button")
             .transition()
@@ -379,6 +497,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
 
           //拡大グラフの削除
           svg.selectAll(".developer_"+developers[id])
+            .transition()
+            .delay(event_time)
+            .remove();
+
+          // 凡例の削除
+          svg.selectAll(".legend")
             .transition()
             .delay(event_time)
             .remove();
