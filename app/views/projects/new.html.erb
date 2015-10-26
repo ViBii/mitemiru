@@ -12,7 +12,7 @@
       <div class="form-group">
         <label class="col-sm-2 control-label">プロジェクト開始月<br><font color="red">(必須)</font></label>
         <div class="col-sm-2 input-group date">
-          <input type="text" name="project_start_date" class="form-control" id="project_start_date" readonly="readonly"/>
+          <input type="text" name="project_start_date" class="form-control" id="project_start_date" readonly="readonly" value=<%= @today %>/>
           <span class="input-group-addon datetimepicker"><span class="glyphicon glyphicon-calendar"></span></span>
         </div>
       </div>
@@ -35,7 +35,7 @@
       </div>
       <br>
       <div class="form-group">
-        <label class="col-sm-2 control-label">ログイン名</label>
+        <label class="col-sm-2 control-label">ログインID</label>
         <div class="col-sm-5">
           <input type="text" name="redmine_login_id" class="form-control" id="redmine_login_id" />
         </div>
@@ -65,7 +65,7 @@
       </div>
       <br>
       <div class="form-group">
-        <label class="col-sm-2 control-label">ログイン名</label>
+        <label class="col-sm-2 control-label">ログインID</label>
         <div class="col-sm-5">
           <input type="text" name="github_login_id" class="form-control" id="github_login_id" />
         </div>

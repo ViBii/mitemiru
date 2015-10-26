@@ -5,6 +5,10 @@ class ProjectsController < ApplicationController
     @projects = Project.all
   end
 
+  def new
+    @today = Time.now.strftime("%Y/%m/%d ")
+  end
+
   def confirm
     @confirm_data = {
       name:                    params['name'],
@@ -20,6 +24,14 @@ class ProjectsController < ApplicationController
       github_password_digest:  params['github_password_digest']
     }
 
+    # Redmineホスト名の整形
+    if @confirm_data[:redmine_host].match(/https:\/\//)
+      @confirm_data[:redmine_host].slice!(/https:\/\//)
+    elsif @confirm_data[:redmine_host].match(/http:\/\//)
+      @confirm_data[:redmine_host].slice!(/http:\/\//)
+    end
+
+    # Validate
     if params['redmine_host'].present?
       begin
         req = RestClient::Request.execute method: :get,
@@ -50,9 +62,17 @@ class ProjectsController < ApplicationController
       @confirm_data[:github_repo] = UNAUTH
     end
 
+    validate_text = ""
+    if @confirm_data[:name].blank? || @confirm_data[:project_start_date].blank?
+      validate_text += VALIDATE_PROJECT_NAME + "　"
+    end
     if @confirm_data[:redmine_project_name] == UNAUTH && @confirm_data[:github_project_name] == UNAUTH
+      validate_text += VALIDATE_REDMINE_GITHUB_AUTH
+    end
+
+    if validate_text.present?
       respond_to do |format|
-        format.html { redirect_to new_project_path, notice: 'Redmine or GitHubどちらかは認証してください' }
+        format.html { redirect_to new_project_path, notice: validate_text }
       end
     end
   end
@@ -152,19 +172,20 @@ class ProjectsController < ApplicationController
       # projects
       if Project.where(name: data[:name]).present?
         same_project = Project.where(name: data[:name]).first
+        binding.pry
         same_project.update(
           :id                    => same_project.id,
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => data[:project_start_date]
+          :project_start_date    => Date.parse(data[:project_start_date])
         )
       else
         project = Project.new(
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => data[:project_start_date]
+          :project_start_date    => Date.parse(data[:project_start_date])
         )
         project.save
       end
