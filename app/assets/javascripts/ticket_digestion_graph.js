@@ -4,7 +4,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var ticket_num_all = ticket_num_all;
    
     // テストデータ(Redmineと連携後に削除)
-    var developers = ['devA', 'devB', 'devC', 'devD', 'devE'];
+    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', 'DeveloperE'];
     var trackers = ['DESIGN', 'IMPLEMENTATION', 'TEST', 'BUG'];
     var prospect = [
       [30, 10, 20, 10],
@@ -111,8 +111,11 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             }
           }  
 
-          // 戻るボタンの設置
+          // Returnボタンの表示
           addReturnButton(id,1);
+
+          // 開発者名の表示
+          showDeveloperName(id);
 
           // 凡例の表示
           drawLegend();
@@ -241,7 +244,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     };
 
     //
-    // 凡例の生成
+    // 凡例の表示
     //
     var drawLegend = function() {
       svg.append("g")
@@ -255,26 +258,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("class", function(d,i) {
           return "tracker_"+i;
         });
-
-      svg.selectAll(".legend")
-          .append("text")
-          .transition()
-          .duration(event_time)
-          .delay(event_time)
-          .each("start", function() {
-          d3.select(this)
-            .attr({
-              fill: "#ededed"
-            });
-          })
-          .text("Trackers")
-          .attr("x", margin.left+600)
-          .attr("y", margin.top+70+10)
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "30px")
-          .attr("text-anchor", "start")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#777777");
 
       // 凡例の一覧表示
       for (var i=0; i<trackers.length; i++) {
@@ -340,6 +323,32 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           .attr("dominant-baseline", "middle")
           .attr("fill", "#777777");
       }
+    }
+
+    //
+    // 開発者名の表示
+    //
+    var showDeveloperName = function(developer_id) {
+      svg.append("g")
+        .attr("class", "developer_name")
+        .append("text")
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+        d3.select(this)
+          .attr({
+            fill: "#ededed"
+          });
+        })
+        .text(developers[developer_id])
+        .attr("x", margin.left+600)
+        .attr("y", margin.top+70+10)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "30px")
+        .attr("text-anchor", "start")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#777777");
     }
 
     //
@@ -488,7 +497,14 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
            .transition()
            .duration(event_time)
            .attr("fill", "#ededed");
-          
+         
+          // 開発者名の消滅
+          svg.select(".developer_name")
+            .select("text")
+            .transition()
+            .duration(event_time)
+            .attr("fill", "#ededed");
+
           // returnボタンの削除
           svg.selectAll(".return_button")
             .transition()
@@ -503,6 +519,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
 
           // 凡例の削除
           svg.selectAll(".legend")
+            .transition()
+            .delay(event_time)
+            .remove();
+
+          // 開発者名の削除
+          svg.selectAll(".developer_name")
             .transition()
             .delay(event_time)
             .remove();
