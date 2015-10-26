@@ -19,6 +19,7 @@
 
     <tbody>
       <%= content_tag_for(:tr, @developers) do |developer| %>
+        <% if de
         <td><%= link_to developer.name, developer %></td>
         <td><%= developer.email %></td>
         <td><%= link_to '編集', edit_developer_path(developer) %></td>
