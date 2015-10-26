@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151026030930) do
+ActiveRecord::Schema.define(version: 20151026101239) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -80,9 +80,10 @@ ActiveRecord::Schema.define(version: 20151026030930) do
   end
 
   create_table "ticket_repositories", force: :cascade do |t|
-    t.string   "url",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.string   "project_name", limit: 255
+    t.string   "host_name",    limit: 255
   end
 
   create_table "users", force: :cascade do |t|
@@ -104,9 +105,10 @@ ActiveRecord::Schema.define(version: 20151026030930) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "version_repositories", force: :cascade do |t|
-    t.string   "url",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.string   "project_name",    limit: 255
+    t.string   "repository_name", limit: 255
   end
 
 end

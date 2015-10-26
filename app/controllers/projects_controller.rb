@@ -10,25 +10,19 @@ class ProjectsController < ApplicationController
   end
 
   def confirm
-    @confirm_data = {
-      name:                    params['name'],
-      project_start_date:      params['project_start_date'],
-      redmine_host:            params['redmine_host'],
-      redmine_project_name:    params['redmine_project_name'],
-      redmine_login_id:        params['redmine_login_id'],
-      redmine_password_digest: params['redmine_password_digest'],
-      redmine_api_key:         params['redmine_api_key'],
-      github_project_name:     params['github_project_name'],
-      github_repo:             params['github_repo'],
-      github_login_id:         params['github_login_id'],
-      github_password_digest:  params['github_password_digest']
-    }
+    redmine_host         = params[:redmine_host]
+    redmine_project_name = params[:redmine_project_name]
+    github_project_name  = params[:github_project_name]
+    github_repo          = params[:github_repo]
 
     # Redmineホスト名の整形
-    if @confirm_data[:redmine_host].match(/https:\/\//)
-      @confirm_data[:redmine_host].slice!(/https:\/\//)
-    elsif @confirm_data[:redmine_host].match(/http:\/\//)
-      @confirm_data[:redmine_host].slice!(/http:\/\//)
+    if redmine_host.match(/https:\/\//)
+      redmine_host.slice!(/https:\/\//)
+    elsif redmine_host.match(/http:\/\//)
+      redmine_host.slice!(/http:\/\//)
+    end
+    if redmine_host.match(/\//)
+      redmine_host.slice!(/\//)
     end
 
     # Validate
@@ -39,12 +33,12 @@ class ProjectsController < ApplicationController
           user:     params['redmine_login_id'],
           password: params['redmine_password_digest']
       rescue
-        @confirm_data[:redmine_host] = UNAUTH
-        @confirm_data[:redmine_project_name] = UNAUTH
+        redmine_host = UNAUTH
+        redmine_project_name = UNAUTH
       end
     else
-      @confirm_data[:redmine_host] = UNAUTH
-      @confirm_data[:redmine_project_name] = UNAUTH
+      redmine_host = UNAUTH
+      redmine_project_name = UNAUTH
     end
 
     if params['github_project_name'].present?
@@ -54,19 +48,19 @@ class ProjectsController < ApplicationController
           user:     params['github_login_id'],
           password: params['github_password_digest']
       rescue
-        @confirm_data[:github_project_name] = UNAUTH
-        @confirm_data[:github_repo] = UNAUTH
+        github_project_name = UNAUTH
+        github_repo = UNAUTH
       end
     else
-      @confirm_data[:github_project_name] = UNAUTH
-      @confirm_data[:github_repo] = UNAUTH
+      github_project_name = UNAUTH
+      github_repo = UNAUTH
     end
 
     validate_text = ""
-    if @confirm_data[:name].blank? || @confirm_data[:project_start_date].blank?
+    if params['name'].blank? || params['project_start_date'].blank?
       validate_text += VALIDATE_PROJECT_NAME + "　"
     end
-    if @confirm_data[:redmine_project_name] == UNAUTH && @confirm_data[:github_project_name] == UNAUTH
+    if redmine_project_name == UNAUTH && github_project_name == UNAUTH
       validate_text += VALIDATE_REDMINE_GITHUB_AUTH
     end
 
@@ -75,6 +69,21 @@ class ProjectsController < ApplicationController
         format.html { redirect_to new_project_path, notice: validate_text }
       end
     end
+
+    @confirm_data = {
+      name:                    params['name'],
+      project_start_date:      params['project_start_date'],
+      redmine_host:            redmine_host,
+      redmine_project_name:    redmine_project_name,
+      redmine_login_id:        params['redmine_login_id'],
+      redmine_password_digest: params['redmine_password_digest'],
+      redmine_api_key:         params['redmine_api_key'],
+      github_project_name:     github_project_name,
+      github_repo:             github_repo,
+      github_login_id:         params['github_login_id'],
+      github_password_digest:  params['github_password_digest']
+    }
+
   end
 
   def create
@@ -104,25 +113,25 @@ class ProjectsController < ApplicationController
         github_password_digest:  params['github_password_digest']
       }
 
-      redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
-      github_url = 'github.com/' + data[:github_project_name] + '/' + data[:github_repo]
-
-      if TicketRepository.where(url: redmine_url).select(:id).present?
-        ticket_repository_id = TicketRepository.where(url: redmine_url).pluck(:id).first
+      if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
+        ticket_repository_id = TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).pluck(:id).first
       else
         ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
       end
-      if VersionRepository.where(url: github_url).select(:id).present?
-        version_repository_id = VersionRepository.where(url: github_url).pluck(:id).first
+      if VersionRepository.where(repository_name: data[:github_repo], project_name: data[:github_project_name]).select(:id).present?
+        version_repository_id = VersionRepository.where(
+          repository_name: data[:github_repo],
+          project_name: data[:github_project_name]).pluck(:id).first
       else
         version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
       end
 
       if data[:redmine_project_name] != UNAUTH
         # ticket_repositories
-        unless TicketRepository.exists?(url: redmine_url)
+        unless TicketRepository.exists?(host_name: data[:redmine_host], project_name: data[:redmine_project_name])
           ticket_repository = TicketRepository.new(
-            url: redmine_url
+            host_name: data[:redmine_host],
+            project_name: data[:redmine_project_name]
           )
           ticket_repository.save
         end
@@ -147,9 +156,10 @@ class ProjectsController < ApplicationController
       if data[:github_project_name] != UNAUTH
 
         # version_repositories
-        unless VersionRepository.exists?(url: github_url)
+        unless VersionRepository.exists?(repository_name: data[:github_repo], project_name: data[:github_project_name])
           version_repository = VersionRepository.new(
-            url: github_url
+            repository_name: data[:github_repo],
+            project_name: data[:github_project_name]
           )
           version_repository.save
         end
