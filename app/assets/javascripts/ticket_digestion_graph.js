@@ -24,10 +24,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var test_result_time = [25, 10, 8, 40];
     var test_productivity_data = [89, 105, 72, 90, 100];
 
+    // Concentration: deep > base > pale > faint
+    var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
     var base_color = ['#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646'];
-    var bright_color = ['#99b6d9', '#db9a98', '#c7d9a1', '#b4a4c8', '#98d0df', '#fbcda8'];
-    var dark_color = ['#2d5079', '#7b2e2c', '#647c33', '#4e3c64', '#296f82', '#ce6209'];
-   
+    var pale_color = ['#749ccb', '#cd7573', '#b1ca7d', '#9a84b5', '#72bed2', '#f9b277'];
+    var faint_color = ['#a5bfdd', '#dfa6a5', '#cedead', '#bdaecf', '#a5d6e3', '#fcd7b8'];
+    var low_faint_color = ['#cbd9eb', '#eccbca', '#e4ecd1', '#d7cee2', '#cce7ef', '#fef2e9']
+
     // SVG領域の範囲設定
     var margin = {top: 0, right: 100, bottom: 0, left: 100};
     var width = 960 + margin.right + margin.left;
@@ -140,7 +143,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           })
           .attr("d", arc(base_radius, 0))
           .style("fill", function(d,i) {
-            return bright_color[i];
+            return pale_color[i];
           });
    
         // 実績円グラフの生成
@@ -214,7 +217,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("class", "prospect")
         .attr("d", arc(base_radius, 0))
         .style("fill", function(d,i) {
-          return bright_color[i];
+          return pale_color[i];
         })
         .transition()
         .delay(event_time)
@@ -257,7 +260,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       base_pi.append("path")
         .attr("class", "prospect")
         .style("fill", function(d,i) {
-          return bright_color[i];
+          return pale_color[i];
         })
         .transition()
         .delay(2*event_time)
@@ -274,16 +277,127 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("d", result_arc(2*base_radius, 0));
 
       // 操作用円グラフのマウスイベント
-      base_pi
+      svg.selectAll(".developer_"+developers[id])
+        .selectAll(".circle")
+        .selectAll(".pi")
+        .data(trackers)
         .on("mouseover", function(d,i) {
-          console.log("Mouseover "+i); 
+          //console.log("Mouseover "+i);
+          highlight(i);
         })
         .on("mouseout", function(d,i) {
-          console.log("Mouseout "+i)
+          //console.log("Mouseout "+i)
+          normalize();
         })
         .on("click", function(d,i) {
-          console.log("Click "+i);
+          //console.log("Click "+i);
         });
+
+      // ハイライト
+      var highlight = function(mouse_over) {
+        // グラフのハイライト
+        var highlight_pi = svg.selectAll(".developer_"+developers[id])
+                      .selectAll(".circle")
+                      .selectAll(".pi")
+                      .data(trackers);
+       
+        highlight_pi.select(".prospect")
+          .style("fill", function(d, i) {
+            if (i != mouse_over) {
+              return low_faint_color[i];
+            } else {
+              return pale_color[i];
+            }
+          });
+
+        highlight_pi.select(".result")
+          .style("fill", function(d, i) {
+            if (i != mouse_over) {
+              return faint_color[i];
+            } else {
+              return base_color[i];
+            }
+          });
+
+        // 凡例のハイライト
+        for (var i=0; i<trackers.length; i++) {
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .selectAll(".prospect")
+            .attr("fill", function() {
+              if (mouse_over == i) {
+                return pale_color[i];
+              } else {
+                return low_faint_color[i];
+              }
+            });
+
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .selectAll(".result")
+            .attr("fill", function() {
+              if (mouse_over == i) {
+                return base_color[i];
+              } else {
+                return faint_color[i];
+              }
+            });
+
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .select(".label")
+            .attr("fill", function() {
+              if (mouse_over == i) {
+                return "#777777";
+              } else {
+                return "#aaaaaa";
+              }
+            });
+        }
+      };
+
+      // 通常化
+      var normalize = function() {
+        // 円グラフの通常化
+        var normal_pi = svg.selectAll(".developer_"+developers[id])
+                         .selectAll(".circle")
+                         .selectAll(".pi")
+                         .data(trackers);
+       
+        normal_pi.select(".prospect")
+          .style("fill", function(d,i) {
+            return pale_color[i];
+          });
+        
+        normal_pi.select(".result")
+          .style("fill", function(d,i) {
+            return base_color[i];
+          });
+
+        // 凡例の通常化
+        for (var i=0; i<trackers.length; i++) {
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .selectAll(".prospect")
+            .attr("fill", function() {
+              return pale_color[i];
+            });
+
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .selectAll(".result")
+            .attr("fill", function() {
+              return base_color[i];
+            });
+
+          svg.selectAll(".legend")
+            .selectAll(".tracker_"+i)
+            .select(".label")
+            .attr("fill", function() {
+              return "#777777";
+            });
+        }
+      };
     };
 
     //
@@ -307,6 +421,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         svg.selectAll(".legend")
           .selectAll(".tracker_"+i)
           .append("rect")
+          .attr("class", "prospect")
           .transition()
           .duration(event_time)
           .delay(event_time)
@@ -321,12 +436,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             y: margin.top+100+(i*30),
             width: 20,
             height: 20,
-            fill: bright_color[i]
+            fill: pale_color[i]
           });
 
         svg.selectAll(".legend")
           .selectAll(".tracker_"+i)
           .append("rect")
+          .attr("class", "result")
           .transition()
           .duration(event_time)
           .delay(event_time)
