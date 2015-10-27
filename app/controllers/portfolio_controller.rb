@@ -434,7 +434,7 @@ class PortfolioController < ApplicationController
 
       #システム利用者github認証
       githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
-      githubUserPW = GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first
+      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
 
       githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
 
