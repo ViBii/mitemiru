@@ -20,9 +20,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       [15, 20, 5, 5],
       [0, 40, 10, 15]
     ];
-    var test_prospect_time = [20, 15, 8, 30];
-    var test_result_time = [25, 10, 8, 40];
-    var test_productivity_data = [89, 105, 72, 90, 100];
 
     // Concentration: deep > base > pale > faint
     var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
@@ -296,8 +293,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
          
           // 円グラフの削除
           vanishPiChart(id);
+          svg.selectAll("g")
+            .transition()
+            .delay(event_time)
+            .remove();
 
           // 棒グラフの描画
+          drawBarChart(i);
         });
 
       //
@@ -828,48 +830,72 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     //
     // 棒グラフの描画
     //
-    var draw_bar_chart = function(id) {
-      svg.selectAll("g").remove();
+    var drawBarChart = function(tracker_id) {
+      // 生産性の集計
+      var productivity = [];
+      for (var i=0; i<developers.length; i++) {
+        for (var j=0; j<trackers.length; j++) {
+          if (j == tracker_id) {
+            if (prospect[i][j] != 0 && result[i][j] != 0) {
+              productivity.push(100*(prospect[i][j]/result[i][j]));
+            } else {
+              productivity.push(0);
+            }
+          }
+        }
+      }
 
-      bar_svg = svg.append("g")
-                   .attr("transform", "translate(0,0)");
+    var bar_width = width-margin.left-margin.right;
+    var bar_height = height-margin.top-margin.bottom-100;
 
-      /*
-      var maxScale = Math.max(test_productivity_data);
+      svg.append("g")
+        .attr("class", "bar_chart")
+        .attr("transform", "translate("+(margin.left)+", "+(margin.top)+")");
 
       var yScale = d3.scale.linear()
-                     .domain([0, maxScale])
-                     .range([padding.top, height-padding.bottom])
+                     .domain([0, d3.max(productivity)])
+                     .range([0, bar_height-100])
                      .nice();
 
-      var yAxis = d3.svg.axis()
-                    .scale(yScale)
-                    .orient("left");
-      // y軸の追加
-      bar_svg.append("g")
-             .attr("class", "y_axis")
-             .attr("transform", "translate(300, 100)")
-             .call(yAxis);
-      */
+      var bar = svg.selectAll(".bar_chart")
+                  .selectAll(".bar")
+                  .data(productivity)
+                  .enter()
+                  .append("rect")
+                  .attr("class", "bar")
+                  .transition()
+                  .duration(1000)
+                  .delay(event_time)
+                  .each("start", function() {
+                    svg.selectAll(".bar_chart")
+                      .selectAll(".bar")
+                      .data(productivity)
+                      .attr("width", 30)
+                      .attr("height", 0)
+                      .attr("x", function(d,i) {
+                        return i*40;
+                      })
+                      .attr("y", bar_height)
+                      .attr("fill", base_color[tracker_id]);
+                  })
+                  .attr("y", function(d) {
+                    return bar_height-yScale(d);
+                  })
+                  .attr("height", function(d) {
+                    return yScale(d);
+                  });
 
-      bar_svg.selectAll(".bar")
-             .data(test_productivity_data)
-             .enter()
-             .append("rect")
-             .attr("x", function(d, i) {
-               return padding.left + i*40;
-             })
-             .attr("width", 30)
-             .attr("y", function(d){
-               return height-(d*3);
-             })
-             .attr("height", function(d) {
-               return d*3;
-             })
-             .attr("fill", base_color[id])
-             .on("click", function(d, i) {
-               draw_pi_chart(id);
-             });
+        svg.selectAll(".bar_chart")
+          .selectAll(".bar")
+          .data(productivity)
+          .on("click", function(d, i) {
+            svg.selectAll(".bar_chart")
+              //.transition()
+              //.delay(event_time)
+              .remove();
+
+            drawPiChart(i);
+          });
     };
 
     // 描画処理
