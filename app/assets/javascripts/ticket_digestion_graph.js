@@ -285,6 +285,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .on("mouseover", function(d,i) {
           //console.log("Mouseover "+i);
           highlight(i);
+          displayInfo(i);
         })
         .on("mouseout", function(d,i) {
           //console.log("Mouseout "+i)
@@ -294,7 +295,9 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           //console.log("Click "+i);
         });
 
+      //
       // ハイライト
+      //
       var highlight = function(mouse_over) {
         // グラフのハイライト
         var highlight_pi = svg.selectAll(".developer_"+developers[id])
@@ -357,6 +360,68 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         }
       };
 
+      //
+      // 工数情報の表示
+      // 
+      var displayInfo = function(tracker_id) {
+        var info_list = svg.select(".developer_"+developers[id])
+              .select(".circle")
+              .selectAll(".pi")
+              .append("g")
+              .attr("class", "info");
+
+        // 背景の設定
+        info_list.append("rect")
+             .attr("x", 0)
+             .attr("width", 140)
+             .attr("y", 0)
+             .attr("height", 60)
+             .attr("transform", "translate(-75, -32)")
+             .attr("fill", faint_color[tracker_id])
+             .attr("opacity", "0.1");
+        
+
+        // 見積もり工数
+        info_list.append("text")
+          .text("見積もり:")
+          .attr("transform", "translate(-2, -20)")
+          .attr("text-anchor", "end");
+       
+        info_list.append("text")
+          .text(prospect[id][tracker_id].toFixed(1)+"h")
+          .attr("transform", "translate(2, -20)")
+          .attr("text-anchor", "start");
+
+        // 実績工数
+        info_list.append("text")
+          .text("実績:")
+          .attr("transform", "translate(-2, 0)")
+          .attr("text-anchor", "end");
+        
+        info_list.append("text")
+          .text(result[id][tracker_id].toFixed(1)+"h")
+          .attr("transform", "translate(2,0)")
+          .attr("text-anchor", "start");
+
+        // 生産性
+        info_list.append("text")
+          .text("生産性:")
+          .attr("transform", "translate(-2, 20)")
+          .attr("text-anchor", "end");
+
+        info_list.append("text")
+          .text(Math.round(100*(prospect[id][tracker_id]/result[id][tracker_id]))+"%")
+          .attr("transform", "translate(2, 20)")
+          .attr("text-anchor", "start");
+
+        // テキストの共通設定
+        info_list.selectAll("text")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "15px")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", "#ffffff");
+      };
+
       // 通常化
       var normalize = function() {
         // 円グラフの通常化
@@ -398,6 +463,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               return "#777777";
             });
         }
+
+        svg.selectAll(".developer_"+developers[id])
+          .selectAll(".info")
+          .remove();
       };
     };
 
