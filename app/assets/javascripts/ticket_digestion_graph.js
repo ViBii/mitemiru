@@ -293,6 +293,11 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         })
         .on("click", function(d,i) {
           //console.log("Click "+i);
+         
+          // 円グラフの削除
+          vanishPiChart(id,i);
+
+          // 棒グラフの描画
         });
 
       //
@@ -810,6 +815,150 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           }
         });
     }; 
+
+    //
+    // 円グラフの削除
+    //
+
+    var vanishPiChart = function(developer_id, tracker_id) {
+      var mark_event_colors = ['#db9a98', '#c0504d'];
+      var mark_radius = [10, 8];
+
+      // 円グラフの半径の設定(実績グラフ)
+      var result_arc = function(base_radius, inner_radius) {
+        return d3.svg.arc()
+                 .outerRadius(function(d, i) {
+                   if (Math.sqrt(prospect[developer_id][i]/result[developer_id][i]) < 2) {
+                     return base_radius*Math.sqrt(prospect[developer_id][i]/result[developer_id][i]);
+                   } else {
+                     // 最大半径は2倍までに設定
+                     return base_radius*2;
+                   }
+                 })
+                 .innerRadius(inner_radius);
+      }
+
+      // イベント用円グラフの生成
+      var base_pi = svg.selectAll(".developer_"+developers[developer_id])
+                      .append("g")
+                      .attr("class", "event_circle")
+                      .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
+                      .selectAll(".pi")
+                      .data(pie(prospect[developer_id]))
+                      .enter()
+                      .append("g")
+                      .attr("class", "pi");
+     
+      // イベント用見積もり円グラフの作成
+      base_pi.append("path")
+        .attr("class", "prospect")
+        .style("fill", function(d,i) {
+          return pale_color[i];
+        })
+       .attr("d", arc(2*base_radius, 0));
+
+      // イベント用実績円グラフの作成
+      base_pi.append("path")
+        .attr("class", "result")
+        .style("fill", function(d,i) {
+          return base_color[i];
+        })
+        .attr("d", result_arc(2*base_radius, 0));
+ 
+      // 操作用円グラフの削除
+      svg.selectAll(".developer_"+developers[developer_id])
+        .selectAll(".circle")
+        .remove();
+
+      // イベント用円グラフの消滅
+      svg.selectAll(".developer_"+developers[developer_id])
+        .selectAll(".event_circle")
+        .selectAll("path")
+        .transition()
+        .duration(event_time)
+        .style("fill", "#ededed");
+        
+      // Returnボタン(マーク)の消滅
+      svg.selectAll(".return_button")
+        .selectAll(".dummy_mark")
+        .data(mark_event_colors)
+        .enter()
+        .append("g")
+        .attr("class", "dummy_mark")
+        .append("circle")
+        .transition()
+        .duration(event_time)
+        .each("start", function(d,i) {
+          d3.select(this)
+            .attr({
+              cx: 10,
+              cy: 10,
+              r: function() {
+               return mark_radius[i];
+              },
+              fill: function() {
+                return mark_event_colors[i];
+              }
+            });
+
+          svg.selectAll(".return_button")
+            .selectAll(".mark")
+            .remove();
+        })
+        .attr("fill", "#ededed");
+
+      // Returnボタン(テキスト)の消滅
+      svg.selectAll(".return_button")
+        .select(".label")
+        .transition()
+        .duration(event_time)
+        .attr("fill", "#ededed");
+
+      // 凡例の消滅
+      svg.selectAll(".legend")
+        .selectAll("rect")
+        .transition()
+        .duration(event_time)
+        .attr("fill", "#ededed");
+
+      svg.select(".legend")
+        .selectAll("text")
+        .transition()
+        .duration(event_time)
+        .attr("fill", "#ededed");
+         
+      // 開発者名の消滅
+      svg.select(".developer_name")
+        .select("text")
+        .transition()
+        .duration(event_time)
+        .attr("fill", "#ededed");
+
+      // returnボタンの削除
+      svg.selectAll(".return_button")
+        .transition()
+        .delay(event_time)
+        .remove();
+
+      //拡大グラフの削除
+      svg.selectAll(".developer_"+developers[developer_id])
+        .transition()
+        .delay(event_time)
+        .remove();
+
+      // 凡例の削除
+      svg.selectAll(".legend")
+        .transition()
+        .delay(event_time)
+        .remove();
+
+      // 開発者名の削除
+      svg.selectAll(".developer_name")
+        .transition()
+        .delay(event_time)
+        .remove();
+    };
+
     //
     // 棒グラフの描画
     //
