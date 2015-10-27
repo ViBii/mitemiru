@@ -60,6 +60,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                .innerRadius(inner_radius);
     }
 
+    // Piの生成
+    var pie = d3.layout.pie()
+                .sort(null)
+                .value(function(d) {
+                  return d;
+                });
+
     // 円グラフの一覧表示
     var drawBoxPiChart = function(id, page_from, emerge_after) {
       // page_from ->
@@ -78,12 +85,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                  })
                  .innerRadius(inner_radius);
       }
-
-      var pie = d3.layout.pie()
-                  .sort(null)
-                  .value(function(d) {
-                    return d;
-                  });
 
       svg.append("g")
         .attr("class", "developer_"+developers[id])
@@ -601,8 +602,55 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .on("click", function() {
           console.log("onClick");
 
-          // 拡大円グラフの消滅
+          // 円グラフの半径の設定(実績グラフ)
+          var result_arc = function(base_radius, inner_radius) {
+            return d3.svg.arc()
+                     .outerRadius(function(d, i) {
+                       if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
+                         return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
+                       } else {
+                         // 最大半径は2倍までに設定
+                         return base_radius*2;
+                       }
+                     })
+                     .innerRadius(inner_radius);
+          }
+
+          // イベント用円グラフの生成
+          var base_pi = svg.selectAll(".developer_"+developers[id])
+                      .append("g")
+                      .attr("class", "event_circle")
+                      .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
+                      .selectAll(".pi")
+                      .data(pie(prospect[id]))
+                      .enter()
+                      .append("g")
+                      .attr("class", "pi");
+     
+          // イベント用見積もり円グラフの作成
+          base_pi.append("path")
+            .attr("class", "prospect")
+            .style("fill", function(d,i) {
+              return pale_color[i];
+            })
+            .attr("d", arc(2*base_radius, 0));
+
+          // イベント用実績円グラフの作成
+          base_pi.append("path")
+            .attr("class", "result")
+            .style("fill", function(d,i) {
+              return base_color[i];
+            })
+            .attr("d", result_arc(2*base_radius, 0));
+ 
+          // 操作用円グラフの削除
           svg.selectAll(".developer_"+developers[id])
+            .selectAll(".circle")
+            .remove();
+
+          // イベント用円グラフの消滅
+          svg.selectAll(".developer_"+developers[id])
+            .selectAll(".event_circle")
             .selectAll("path")
             .transition()
             .duration(event_time)
