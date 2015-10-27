@@ -20,6 +20,9 @@ Rails.application.routes.draw do
   get 'commit_counter/index'
   post 'commit_counter/commits_ajax'
 
+  post 'projects/add_github_in_DB'
+  post 'projects/add_redmine_in_DB'
+
   post 'projects/confirm'
 
   resources :projects do

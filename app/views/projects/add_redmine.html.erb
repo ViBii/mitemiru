@@ -4,7 +4,7 @@
       戻る
   <% end %>
   <h1>redmineリポジトリの新規追加</h1>
-
+  <%= form_tag '/projects/add_redmine_in_DB' do %>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">ホスト名</label>
@@ -39,3 +39,4 @@
 </div>
 </div>
 
+<% end %>
