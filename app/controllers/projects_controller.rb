@@ -114,7 +114,9 @@ class ProjectsController < ApplicationController
       }
 
       if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
-        ticket_repository_id = TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).pluck(:id).first
+        ticket_repository_id = TicketRepository.where(
+          host_name: data[:redmine_host],
+          project_name: data[:redmine_project_name]).pluck(:id).first
       else
         ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
       end
@@ -181,10 +183,12 @@ class ProjectsController < ApplicationController
       end
 
       if data[:redmine_project_name] == UNAUTH
-        ticket_repository_id = nil
+        ticket_repository_id  = nil
+        ticket_repository_id = Project.where(name: data[:name]).first.ticket_repository_id if Project.exists?(name: data[:name])
       end
       if data[:github_project_name] == UNAUTH
         version_repository_id = nil
+        version_repository_id = Project.where(name: data[:name]).first.version_repository_id if Project.exists?(name: data[:name])
       end
 
       # projects
