@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-  root 'portfolio#top'
+  root 'portfolio#index'
 
-  get 'portfolio/top'
   get 'portfolio/setting'
   get 'portfolio/index'
   post 'portfolio/show_projects'
@@ -15,6 +14,8 @@ Rails.application.routes.draw do
   post 'portfolio/comments_ajax'
 
   get 'datasamples/index'
+
+  # TODO: 以下消去しても大丈夫ですか？？
   get 'comments_counter/index'
   post 'comments_counter/comments_ajax'
   get 'commit_counter/index'
