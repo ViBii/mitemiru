@@ -331,6 +331,21 @@ class PortfolioController < ApplicationController
         result_hours_result.push(value)
       }
 
+      arr_index = 0
+
+      while arr_index < estimated_hours_result.length do
+        if estimated_hours_result[arr_index] == 0 && result_hours_result[arr_index] == 0
+          estimated_hours_result[arr_index] = -1
+          result_hours_result[arr_index] = -1
+          @productivity_info[:tracker][arr_index] = 'unshow'
+        end
+        arr_index = arr_index + 1
+      end
+      
+      estimated_hours_result.delete(-1)
+      result_hours_result.delete(-1)
+      @productivity_info[:tracker].delete('unshow')
+
       #****************************************************graph
 
       finalStr.concat(estimated_hours_result.to_s + ",\"result_hours_result\":" + result_hours_result.to_s + ",\"tracker\":" + @productivity_info[:tracker].to_s + "}");
@@ -382,7 +397,7 @@ class PortfolioController < ApplicationController
 
       #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         total_commits = total_commits + contributor['contributions']
         if developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
@@ -441,7 +456,7 @@ class PortfolioController < ApplicationController
       @assigneeArg = ""
 
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         if developer_email == developer_detail['email'] then
           @assigneeArg = developer_detail['login']
         end
