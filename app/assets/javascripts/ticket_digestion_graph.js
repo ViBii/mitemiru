@@ -122,14 +122,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         });
 
         var base_pi = svg.selectAll(".developer_"+developers[id])
-                        .selectAll(".tracker")
+                        .selectAll(".pi")
                         .data(pie(prospect[id]))
                         .enter()
                         .append("g")
-                        .attr("class", function(d,i) {
-                          return "tracker_"+trackers[i];
-                        });
-   
+                        .attr("class", "pi");
+
         // 見積もり円グラフの作成
         base_pi.append("path")
           .attr("class", "prospect")
@@ -187,8 +185,11 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                   });
    
          
+      // 拡大円グラフの基本クラス
       svg.append("g")
         .attr("class", "developer_"+developers[id])
+        .append("g")
+        .attr("class", "event_circle")
         .transition()
         .duration(event_time)
         .each("start", function() {
@@ -199,17 +200,17 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .each("end", function() {
         });     
 
-      var base_pi = svg.selectAll(".developer_"+developers[id])
-                      .selectAll(".tracker")
+      // Zoomイベント用Piのクラス設定
+      var zoom_event_pi = svg.selectAll(".developer_"+developers[id])
+                      .selectAll(".event_circle")
+                      .selectAll(".pi")
                       .data(pie(prospect[id]))
                       .enter()
                       .append("g")
-                      .attr("class", function(d,i) {
-                        return "tracker_"+trackers[i];
-                      });
-   
-      // 見積もり円グラフの作成
-      base_pi.append("path")
+                      .attr("class", "pi");
+     
+      // Zoomイベント用見積もり円グラフの作成
+      zoom_event_pi.append("path")
         .attr("class", "prospect")
         .attr("d", arc(base_radius, 0))
         .style("fill", function(d,i) {
@@ -221,16 +222,8 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .ease("bounce")
         .attr("d", arc(2*base_radius, 0));
 
-        for (var j=0; j<trackers.length; j++) {
-          svg.selectAll(".developer_"+developers[id])
-            .selectAll(".tracker_"+trackers[j])
-            .on("click", function() {
-              console.log("onClick");
-            });
-        }
-   
-      // 実績円グラフの生成
-      base_pi.append("path")
+      // Zoomイベント用実績円グラフの作成
+      zoom_event_pi.append("path")
         .attr("class", "result")
         .attr("d", result_arc(base_radius, 0))
         .style("fill", function(d,i) {
@@ -241,6 +234,56 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .duration(event_time)
         .ease("bounce")
         .attr("d", result_arc(2*base_radius, 0));
+
+      // Zoomイベント用円グラフの削除
+      svg.select(".developer_"+developers[id])
+        .select(".event_circle")
+        .transition()
+        .delay(2*event_time)
+        .remove();
+
+      // 操作用円グラフの作成
+      var base_pi = svg.selectAll(".developer_"+developers[id])
+                      .append("g")
+                      .attr("class", "circle")
+                      .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
+                      .selectAll(".pi")
+                      .data(pie(prospect[id]))
+                      .enter()
+                      .append("g")
+                      .attr("class", "pi");
+     
+      // 操作用見積もり円グラフの作成
+      base_pi.append("path")
+        .attr("class", "prospect")
+        .style("fill", function(d,i) {
+          return bright_color[i];
+        })
+        .transition()
+        .delay(2*event_time)
+        .attr("d", arc(2*base_radius, 0));
+
+      // 操作用実績円グラフの作成
+      base_pi.append("path")
+        .attr("class", "result")
+        .style("fill", function(d,i) {
+          return base_color[i];
+        })
+        .transition()
+        .delay(2*event_time)
+        .attr("d", result_arc(2*base_radius, 0));
+
+      // 操作用円グラフのマウスイベント
+      base_pi
+        .on("mouseover", function(d,i) {
+          console.log("Mouseover "+i); 
+        })
+        .on("mouseout", function(d,i) {
+          console.log("Mouseout "+i)
+        })
+        .on("click", function(d,i) {
+          console.log("Click "+i);
+        });
     };
 
     //
