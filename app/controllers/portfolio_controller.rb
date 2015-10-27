@@ -325,6 +325,21 @@ class PortfolioController < ApplicationController
         result_hours_result.push(value)
       }
 
+      arr_index = 0
+
+      while arr_index < estimated_hours_result.length do
+        if estimated_hours_result[arr_index] == 0 && result_hours_result[arr_index] == 0
+          estimated_hours_result[arr_index] = -1
+          result_hours_result[arr_index] = -1
+          @productivity_info[:tracker][arr_index] = 'unshow'
+        end
+        arr_index = arr_index + 1
+      end
+      
+      estimated_hours_result.delete(-1)
+      result_hours_result.delete(-1)
+      @productivity_info[:tracker].delete('unshow')
+
       #****************************************************graph
 
       finalStr.concat(estimated_hours_result.to_s + ",\"result_hours_result\":" + result_hours_result.to_s + ",\"tracker\":" + @productivity_info[:tracker].to_s + "}");
