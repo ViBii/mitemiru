@@ -28,4 +28,6 @@ Rails.application.routes.draw do
 
   resources :developers
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+
+  match '*path' => 'application#error404', via: :all
 end

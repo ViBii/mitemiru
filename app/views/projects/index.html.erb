@@ -21,7 +21,7 @@
 
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
-        <% if did_current_user_make_this_project?(project) %>
+        <% if show_project?(project) %>
           <td><%= link_to project.name, project %></td>
           <td><%= project.project_start_date %></td>
 
@@ -47,4 +47,5 @@
       <% end %>
     </tbody>
   </table>
+  <%= paginate @projects %>
 </div>
