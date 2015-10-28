@@ -1,15 +1,9 @@
 class PortfolioController < ApplicationController
 
   def index
-    @project_id = params[:project_info][:project_id]
-    @developer_id = params[:developer_id]
-  end
+    #@project_id = params[:project_info][:project_id]
+    @developer_id = params[:developer_info][:id]
 
-  def productivity_info
-    @developer = Developer.all
-  end
-
-  def show_projects
     @info = Hash.new
     @info[:status] = true
 
@@ -21,6 +15,11 @@ class PortfolioController < ApplicationController
 
     @developer_info= Hash.new
     @developer_info[:id] = params[:developer_info][:id]
+
+  end
+
+  def productivity_info
+    @developer = Developer.all
   end
 
   def ticket_digestion_ajax

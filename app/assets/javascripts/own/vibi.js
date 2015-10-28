@@ -33,22 +33,17 @@ Vibi.load = function(e) {
 
   if(gon.controller === "comp") {
   };
+
   if(gon.controller === 'portfolio'){
-    //$('.flexslider').flexslider();
-    //工数グラフの生成function
-    if(gon.action === "productivity") {
-        costAjax();
-    }
     if(gon.action === "index") {
-        ticketDigestionAjax();
-        commitAjax();
+        $('#selectProjectBtn').click(function() {
+            $('#selected_project_id').val($('#project_info_project_id').val());
+            ticketDigestionAjax();
+            commitAjax();
+        });
+        //ticketDigestionAjax();
+        //commitAjax();
     }
-  }
-  if(gon.controller === 'commit_counter'){
-      commitAjax();
-  }
-  if(gon.controller === 'comments_counter'){
-      commentAjax();
   }
 
 };
