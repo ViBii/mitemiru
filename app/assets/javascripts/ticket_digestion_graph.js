@@ -100,6 +100,52 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       svg.append("g")
         .attr("class", "developer_"+id)
         .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+        .on("mouseover", function() {
+          for (var j=0; j<developers.length; j++) {
+            svg.selectAll(".developer_"+j)
+              .selectAll(".pi")
+              .data(trackers)
+              .select(".prospect")
+              .style("fill", function(d,i) {
+                if (j == id) {
+                  return pale_color[i];
+                } else {
+                  return low_faint_color[i];
+                }
+              });
+
+            svg.selectAll(".developer_"+j)
+              .selectAll(".pi")
+              .data(trackers)
+              .select(".result")
+              .style("fill", function(d,i) {
+                if (j == id) {
+                  return base_color[i];
+                } else {
+                  return faint_color[i];
+                }
+              });
+          }
+        })
+        .on("mouseout", function() {
+          for (var j=0; j<developers.length; j++) {
+            svg.selectAll(".developer_"+j)
+              .selectAll(".pi")
+              .data(trackers)
+              .select(".prospect")
+              .style("fill", function(d,i) {
+                return pale_color[i];
+              });
+
+            svg.selectAll(".developer_"+j)
+              .selectAll(".pi")
+              .data(trackers)
+              .select(".result")
+              .style("fill", function(d,i) {
+                return base_color[i];
+              });
+          }
+        })
         // グラフクリック時のイベント
         .on("click", function() {
           // 縮小グラフの削除
