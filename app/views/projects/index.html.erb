@@ -1,7 +1,7 @@
 <div class="page-header">
   <%= link_to '/portfolio/setting', class: 'btn btn-default' do %>
-      <span class="glyphicon glyphicon-list-alt"></span>
-      戻る
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
   <% end %>
   <h1>プロジェクト一覧</h1>
 </div>
@@ -12,8 +12,8 @@
       <tr>
         <th>プロジェクト名前</th>
         <th>プロジェクト開始日</th>
-        <th>github認証状態</th>
         <th>redmine認証状態</th>
+        <th>github認証状態</th>
         <th></th>
         <th></th>
       </tr>
@@ -24,25 +24,30 @@
         <% if show_project?(project) %>
           <td><%= link_to project.name, project %></td>
           <td><%= project.project_start_date %></td>
-
-        <% if auth_git(project.id) %>
-            <td><%= link_to '認証済み',project_authen_github_path(project)%>
-              <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
-        <% else %>
-            <td><%= link_to '未認証',project_add_github_path(project)%>
-            <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
-        <% end %>
-
-        <% if auth_red(project.id) %>
-            <td><%= link_to '認証済み',project_authen_redmine_path(project)%>
-              <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
-        <% else %>
-            <td><%= link_to '未認証',project_add_redmine_path(project)%>
-
-            <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
+          <% if auth_red(project.id) %>
+            <td>
+              <%= link_to '認証済み', project_edit_redmine_path(project) %>
+              <%= image_tag('green.png', { :border => '0', :alt => 'green'}) %>
+            </td>
+          <% else %>
+            <td>
+              <%= link_to '未認証', project_new_redmine_path(project) %>
+              <%= image_tag('red.png', { :border => '0', :alt => 'red'}) %>
+            </td>
+          <% end %>
+          <% if auth_git(project.id) %>
+            <td>
+              <%= link_to '認証済み', project_edit_github_path(project) %>
+              <%= image_tag('green.png', { :border => '0', :alt => 'green'}) %>
+            </td>
+          <% else %>
+            <td>
+              <%= link_to '未認証', project_new_github_path(project)%>
+              <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %>
+            </td>
           <% end %>
           <td><%= link_to '編集', edit_project_path(project) %></td>
-          <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <td><%= link_to '削除', project, method: :delete, data: { confirm: '本当によろしいですか？' } %></td>
         <% end %>
       <% end %>
     </tbody>
