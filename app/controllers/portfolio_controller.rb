@@ -41,17 +41,7 @@ class PortfolioController < ApplicationController
       @project = Hash.new
 
       # プロジェクト名を取得
-      @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+projectId)[0].name
-
-      project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
-                                                            user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['projects']
-
-      # プロジェクトの識別子を取得
-      for project in project_info do
-        if (project['name'].downcase == @project[:name].downcase)
-          @project[:identifier] = project['identifier']
-        end
-      end
+      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
       # 開発者情報を取得
       @developer = Hash.new
@@ -78,7 +68,7 @@ class PortfolioController < ApplicationController
       developer_redmineId = @developer[:id]
 
       #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:identifier].downcase
+      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
 
       #redmine上の該当開発者の全てのissue情報を取得する
 
@@ -169,18 +159,7 @@ class PortfolioController < ApplicationController
 
       @project = Hash.new
       # プロジェクト名を取得
-      @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+projectId)[0].name
-
-      project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
-                                                            user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['projects']
-
-      # プロジェクトの識別子を取得
-      for project in project_info do
-        puts project['name'] + '   ' + @project[:name]
-        if (project['name'].downcase == @project[:name].downcase)
-          @project[:identifier] = project['identifier']
-        end
-      end
+      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
       # 開発者情報を取得
       @developer = Hash.new
@@ -207,7 +186,7 @@ class PortfolioController < ApplicationController
       developer_redmineId = @developer[:id]
 
       #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:identifier].downcase
+      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
 
       #redmine上の該当開発者の全てのissue情報を取得する
 

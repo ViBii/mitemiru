@@ -37,6 +37,10 @@ Vibi.load = function(e) {
   if(gon.controller === 'portfolio'){
     if(gon.action === "index") {
         $('#selectProjectBtn').click(function() {
+
+            //前回実行したグラフの削除
+            $("svg").remove();
+
             $('#selected_project_id').val($('#project_info_project_id').val());
             ticketDigestionAjax();
             commitAjax();
