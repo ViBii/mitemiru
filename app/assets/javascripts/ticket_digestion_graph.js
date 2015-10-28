@@ -912,6 +912,8 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       var bar_width = width-margin.left-margin.right;
       var bar_height = height-margin.top-margin.bottom-100;
 
+      var bar_margin = {top: margin.top, left: margin.left+50, right: margin.right, bottom: margin.bottom};
+
       svg.append("g")
         .attr("class", "bar_chart")
         .attr("transform", "translate("+(margin.left)+", "+(margin.top)+")");
@@ -927,7 +929,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .x(function(d){ return d[0]; })
             .y(function(d){ return d[1]; })
     
-      // Y座標軸
+      // 座標軸の表示
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
@@ -936,7 +938,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("d", line([[margin.left-20, bar_height], [margin.left-20, bar_height-yScale(320)]])) 
+            .attr("d", line([[bar_margin.left-20, bar_height], [bar_margin.left-20, bar_height-yScale(320)]])) 
             .attr("stroke", "#ededed");
         })
         .attr("stroke", "#aaaaaa");
@@ -950,7 +952,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("d", line([[margin.left-20, bar_height], [margin.left+developers.length*60, bar_height]])) 
+            .attr("d", line([[bar_margin.left-20, bar_height], [bar_margin.left+developers.length*60, bar_height]])) 
             .attr("stroke", "#ededed");
         })
         .attr("stroke", "#aaaaaa");
@@ -964,7 +966,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("d", line([[margin.left-20, bar_height-yScale(100)], [margin.left+developers.length*60, bar_height-yScale(100)]])) 
+            .attr("d", line([[bar_margin.left-20, bar_height-yScale(100)], [bar_margin.left+developers.length*60, bar_height-yScale(100)]])) 
             .attr("stroke", "#ededed")
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
@@ -980,7 +982,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("d", line([[margin.left-20, bar_height-yScale(200)], [margin.left+developers.length*60, bar_height-yScale(200)]])) 
+            .attr("d", line([[bar_margin.left-20, bar_height-yScale(200)], [bar_margin.left+developers.length*60, bar_height-yScale(200)]])) 
             .attr("stroke", "#ededed")
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
@@ -996,12 +998,33 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("d", line([[margin.left-20, bar_height-yScale(300)], [margin.left+developers.length*60, bar_height-yScale(300)]])) 
+            .attr("d", line([[bar_margin.left-20, bar_height-yScale(300)], [bar_margin.left+developers.length*60, bar_height-yScale(300)]])) 
             .attr("stroke", "#ededed")
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
         })
         .attr("stroke", "#aaaaaa");
+
+      // 座標項目名の表示
+      svg.selectAll(".bar_chart")
+        .append("text")
+        .attr("class", "yaxis_name")
+        .transition()
+        .delay(event_time)
+        .duration(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("fill", "#ededed");
+        })
+        .text("生産性")
+        .attr("x", bar_margin.left-100)
+        .attr("y", bar_height-yScale(150))
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("writing-mode", "tb")
+        .attr("fill", "#777777");
 
       // 座標軸ラベルの表示
       // 0%
@@ -1016,7 +1039,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .attr("fill", "#ededed");
         })
         .text("0%")
-        .attr("x", margin.left-30)
+        .attr("x", bar_margin.left-30)
         .attr("y", bar_height)
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
@@ -1036,7 +1059,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .attr("fill", "#ededed");
         })
         .text("100%")
-        .attr("x", margin.left-30)
+        .attr("x", bar_margin.left-30)
         .attr("y", bar_height-yScale(100))
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
@@ -1056,7 +1079,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .attr("fill", "#ededed");
         })
         .text("200%")
-        .attr("x", margin.left-30)
+        .attr("x", bar_margin.left-30)
         .attr("y", bar_height-yScale(200))
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
@@ -1076,7 +1099,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             .attr("fill", "#ededed");
         })
         .text("300%")
-        .attr("x", margin.left-30)
+        .attr("x", bar_margin.left-30)
         .attr("y", bar_height-yScale(300))
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
@@ -1102,7 +1125,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           return developers[i];
         })
         .attr("x", function(d,i) {
-          return i*60+20+100;
+          return bar_margin.left+i*60+20;
         })
         .attr("y", bar_height+10)
         .attr("font-family", "sans-serif")
@@ -1112,6 +1135,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("writing-mode", "tb")
         .attr("fill", "#777777");
 
+      // 棒の表示
       var bar = svg.selectAll(".bar_chart")
                   .selectAll(".bar")
                   .data(productivity)
@@ -1128,18 +1152,66 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                       .attr("width", 40)
                       .attr("height", 0)
                       .attr("x", function(d,i) {
-                        return i*60+100;
+                        return bar_margin.left+i*60;
                       })
                       .attr("y", bar_height)
                       .attr("fill", base_color[tracker_id]);
                   })
                   .attr("y", function(d) {
-                    return bar_height-yScale(d);
+                    if (d < 300) {
+                      return bar_height-yScale(d);
+                    } else {
+                      return bar_height-yScale(320);
+                    }
                   })
-                  .attr("height", function(d) {
-                    return yScale(d);
+                  .attr("height", function(d,i) {
+                    if (d < 300) {
+                      return yScale(d);
+                    } else {
+                      return yScale(320)
+                    }
                   });
 
+        // 生産性の数値表示
+        svg.selectAll(".bar_chart")
+          .selectAll(".bar_figure")
+          .data(productivity)
+          .enter()
+          .append("text")
+          .attr("class", "bar_figure")
+          .transition()
+          .delay(2*event_time)
+          .duration(event_time)
+          .each("start", function() {
+            d3.select(this)
+              .attr("fill", "#ededed");
+          })
+          .text(function(d,i) {
+            return Math.round(productivity[i]);
+          })
+          .attr("x", function(d,i) {
+            return bar_margin.left+i*60+20;
+          })
+          .attr("y", function(d) {
+            if (d < 300) {
+              return bar_height-yScale(d)-10;
+            } else {
+              return bar_height-yScale(320)-10;
+            }
+          })
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "15px")
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", function(d) {
+            if (d < 300) {
+              return "#777777";
+            } else {
+              return base_color[tracker_id];
+            }
+          });
+
+        // 棒のマウスイベント
         svg.selectAll(".bar_chart")
           .selectAll(".bar")
           .data(productivity)
@@ -1159,13 +1231,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .transition()
               .duration(event_time)
               .attr("stroke", "#ededed")
-           
-            // 座標軸ラベルの消滅
-            svg.selectAll(".bar_chart")
-              .selectAll(".yaxis_label")
-              .transition()
-              .duration(event_time)
-              .attr("fill", "#ededed");
 
             // 棒グラフの消滅
             svg.selectAll(".bar_chart")
@@ -1174,9 +1239,9 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .duration(event_time)
               .attr("fill", "#ededed");
 
-            // 開発者ラベルの消滅
-            svg.selectAll(".bar_chart")
-              .selectAll(".developer_label")
+            // 各テキストの削除
+            svg.select(".bar_chart")
+              .selectAll("text")
               .transition()
               .duration(event_time)
               .attr("fill", "#ededed");
