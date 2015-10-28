@@ -65,6 +65,10 @@ gem 'rails_admin'
 # seed
 gem 'seed-fu', '~> 2.3'
 
+# paginate
+gem 'kaminari'
+gem 'kaminari-bootstrap', '~> 3.0.1'
+
 group :development, :test do
   # ER_Chart
   # brew install graphviz

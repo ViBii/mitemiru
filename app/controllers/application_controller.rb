@@ -9,6 +9,10 @@ class ApplicationController < ActionController::Base
 
   layout :layout_by_resource
 
+  # ハンドリング
+  rescue_from Exception, with: :error500
+  rescue_from ActiveRecord::RecordNotFound, ActionController::RoutingError, with: :error404
+
   protected
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:sign_up){|u|
@@ -25,6 +29,15 @@ class ApplicationController < ActionController::Base
     else
       "application"
     end
+  end
+
+  def error404(e)
+    render 'error404', status: 404, formats: [:html]
+  end
+
+  def error500(e)
+    logger.error [e, *e.backtrace].join("\n")
+    render 'error500', status: 500, formats: [:html]
   end
 
   private

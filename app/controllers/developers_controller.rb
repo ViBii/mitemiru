@@ -8,7 +8,7 @@ class DevelopersController < ApplicationController
   # GET /developers
   # GET /developers.json
   def index
-    @developers = Developer.all
+    @developers = Developer.page(params[:page]).per(PER)
   end
 
   # GET /developers/1
