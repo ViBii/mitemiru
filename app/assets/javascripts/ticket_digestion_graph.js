@@ -913,8 +913,8 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         }
       }
 
-    var bar_width = width-margin.left-margin.right;
-    var bar_height = height-margin.top-margin.bottom-100;
+      var bar_width = width-margin.left-margin.right;
+      var bar_height = height-margin.top-margin.bottom-100;
 
       svg.append("g")
         .attr("class", "bar_chart")
@@ -938,10 +938,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                     svg.selectAll(".bar_chart")
                       .selectAll(".bar")
                       .data(productivity)
-                      .attr("width", 30)
+                      .attr("width", 40)
                       .attr("height", 0)
                       .attr("x", function(d,i) {
-                        return i*40;
+                        return i*60+100;
                       })
                       .attr("y", bar_height)
                       .attr("fill", base_color[tracker_id]);
@@ -956,6 +956,14 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         svg.selectAll(".bar_chart")
           .selectAll(".bar")
           .data(productivity)
+          .on("mouseover", function(d,i) {
+            barHighlight(i)
+          })
+          .on("mouseout", function() {
+            svg.selectAll(".bar_chart")
+              .selectAll(".bar")
+              .attr("fill", base_color[tracker_id]);
+          })
           .on("click", function(d, i) {
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
@@ -972,7 +980,27 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             emergePiChart(i);
             drawPiChart(i);
           });
+
+      //
+      // 棒グラフのハイライト
+      //
+      var barHighlight = function(mouse_over) {
+        // グラフのハイライト
+        svg.selectAll(".bar_chart")
+          .selectAll(".bar")
+          .data(productivity)
+          .attr("fill", function(d,i) {
+            if (i == mouse_over) {
+              return base_color[tracker_id];
+            } else {
+              return faint_color[tracker_id];
+            }
+          });
+      };
     };
+
+
+
 
     // 描画処理
 
