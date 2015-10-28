@@ -98,12 +98,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       }
 
       svg.append("g")
-        .attr("class", "developer_"+developers[id])
+        .attr("class", "developer_"+id)
         .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
         // グラフクリック時のイベント
         .on("click", function() {
           // 縮小グラフの削除
-          svg.selectAll(".developer_"+developers[id])
+          svg.selectAll(".developer_"+id)
           .remove();
 
           // 拡大グラフの描画
@@ -114,13 +114,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           for (var j=0; j<developers.length; j++) {
             if (j != id) {
               // 見積もりグラフ
-              svg.selectAll(".developer_"+developers[j])
+              svg.selectAll(".developer_"+j)
                 .selectAll("path")
                 .transition()
                 .duration(event_time)
                 .style("fill", "#ededed");
 
-              svg.selectAll(".developer_"+developers[j])
+              svg.selectAll(".developer_"+j)
                 .transition()
                 .delay(event_time)
                 .remove();
@@ -137,7 +137,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           drawLegend();
         });
 
-        var base_pi = svg.selectAll(".developer_"+developers[id])
+        var base_pi = svg.selectAll(".developer_"+id)
                         .selectAll(".pi")
                         .data(pie(prospect[id]))
                         .enter()
@@ -181,7 +181,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var zoomPiChart = function(developer_id) {
       // 拡大円グラフの基本クラス
       svg.append("g")
-        .attr("class", "developer_"+developers[developer_id])
+        .attr("class", "developer_"+developer_id)
         .append("g")
         .attr("class", "event_circle")
         .transition()
@@ -193,7 +193,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")");
 
       // Zoomイベント用Piのクラス設定
-      var zoom_event_pi = svg.selectAll(".developer_"+developers[developer_id])
+      var zoom_event_pi = svg.selectAll(".developer_"+developer_id)
                       .selectAll(".event_circle")
                       .selectAll(".pi")
                       .data(pie(prospect[developer_id]))
@@ -228,7 +228,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("d", result_arc(developer_id, 2*base_radius, 0));
 
       // 開発者クラスの削除 
-      svg.select(".developer_"+developers[developer_id])
+      svg.select(".developer_"+developer_id)
         .transition()
         .delay(2*event_time)
         .remove();
@@ -240,13 +240,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var emergePiChart = function(developer_id) {
       // 円グラフの基本クラスの生成
       svg.append("g")
-        .attr("class", "developer_"+developers[developer_id])
+        .attr("class", "developer_"+developer_id)
         .append("g")
         .attr("class", "emerge_event_circle")
         .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")");
 
       // 出現イベント用Piのクラス設定
-      var emerge_event_pi = svg.selectAll(".developer_"+developers[developer_id])
+      var emerge_event_pi = svg.selectAll(".developer_"+developer_id)
                       .selectAll(".emerge_event_circle")
                       .selectAll(".pi")
                       .data(pie(prospect[developer_id]))
@@ -261,7 +261,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .duration(event_time)
         .delay(event_time)
         .each("start", function() {
-          svg.select(".developer_"+developers[developer_id])
+          svg.select(".developer_"+developer_id)
             .selectAll(".pi")
             .data(pie(prospect[developer_id]))
             .select(".prospect")
@@ -279,7 +279,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .duration(event_time)
         .delay(event_time)
         .each("start", function() {
-          svg.select(".developer_"+developers[developer_id])
+          svg.select(".developer_"+developer_id)
             .selectAll(".pi")
             .data(pie(prospect[developer_id]))
             .select(".result")
@@ -291,7 +291,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         });
 
       // 開発者クラスの削除 
-      svg.select(".developer_"+developers[developer_id])
+      svg.select(".developer_"+developer_id)
         .transition()
         .delay(2*event_time)
         .remove();
@@ -303,10 +303,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var drawPiChart = function(id) {
       // 開発者クラスの生成
       svg.append("g")
-        .attr("class", "developer_"+developers[id]);
+        .attr("class", "developer_"+id);
 
       // 操作用円グラフの作成
-      var base_pi = svg.selectAll(".developer_"+developers[id])
+      var base_pi = svg.selectAll(".developer_"+id)
                       .append("g")
                       .attr("class", "circle")
                       .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
@@ -337,7 +337,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("d", result_arc(id, 2*base_radius, 0));
 
       // 操作用円グラフのマウスイベント
-      svg.selectAll(".developer_"+developers[id])
+      svg.selectAll(".developer_"+id)
         .selectAll(".circle")
         .selectAll(".pi")
         .data(trackers)
@@ -369,7 +369,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       //
       var highlight = function(mouse_over) {
         // グラフのハイライト
-        var highlight_pi = svg.selectAll(".developer_"+developers[id])
+        var highlight_pi = svg.selectAll(".developer_"+id)
                       .selectAll(".circle")
                       .selectAll(".pi")
                       .data(trackers);
@@ -433,7 +433,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       // 工数情報の表示
       // 
       var displayInfo = function(tracker_id) {
-        var info_list = svg.select(".developer_"+developers[id])
+        var info_list = svg.select(".developer_"+id)
               .select(".circle")
               .selectAll(".pi")
               .append("g")
@@ -494,7 +494,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       // 通常化
       var normalize = function() {
         // 円グラフの通常化
-        var normal_pi = svg.selectAll(".developer_"+developers[id])
+        var normal_pi = svg.selectAll(".developer_"+id)
                          .selectAll(".circle")
                          .selectAll(".pi")
                          .data(trackers);
@@ -533,7 +533,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             });
         }
 
-        svg.selectAll(".developer_"+developers[id])
+        svg.selectAll(".developer_"+id)
           .selectAll(".info")
           .remove();
       };
@@ -769,7 +769,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       }
 
       // イベント用円グラフの生成
-      var base_pi = svg.selectAll(".developer_"+developers[developer_id])
+      var base_pi = svg.selectAll(".developer_"+developer_id)
                       .append("g")
                       .attr("class", "event_circle")
                       .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
@@ -796,12 +796,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("d", result_arc(2*base_radius, 0));
  
       // 操作用円グラフの削除
-      svg.selectAll(".developer_"+developers[developer_id])
+      svg.selectAll(".developer_"+developer_id)
         .selectAll(".circle")
         .remove();
 
       // イベント用円グラフの消滅
-      svg.selectAll(".developer_"+developers[developer_id])
+      svg.selectAll(".developer_"+developer_id)
         .selectAll(".event_circle")
         .selectAll("path")
         .transition()
@@ -871,7 +871,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .remove();
 
       //拡大グラフの削除
-      svg.selectAll(".developer_"+developers[developer_id])
+      svg.selectAll(".developer_"+developer_id)
         .transition()
         .delay(event_time)
         .remove();
@@ -889,7 +889,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .remove();
 
       // 開発者グループの削除
-      svg.selectAll(".developer_"+developers[developer_id])
+      svg.selectAll(".developer_"+developer_id)
         .transition()
         .delay(event_time)
         .remove();
@@ -998,9 +998,6 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           });
       };
     };
-
-
-
 
     // 描画処理
 
