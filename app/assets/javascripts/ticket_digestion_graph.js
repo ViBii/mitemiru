@@ -57,6 +57,20 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                .innerRadius(inner_radius);
     }
 
+    // 実績円グラフの半径設定
+    var result_arc = function(developer_id, base_radius, inner_radius) {
+      return d3.svg.arc()
+               .outerRadius(function(d, i) {
+                 if (Math.sqrt(prospect[developer_id][i]/result[developer_id][i]) < 2) {
+                   return base_radius*Math.sqrt(prospect[developer_id][i]/result[developer_id][i]);
+                 } else {
+                   // 最大半径は2倍までに設定
+                   return base_radius*2;
+                 }
+               })
+               .innerRadius(inner_radius);
+    }
+
     // Piの生成
     var pie = d3.layout.pie()
                 .sort(null)
@@ -161,23 +175,16 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     };
 
     //
+    // 円グラフのズームイベント
+    //
+    var zoomPiChart = function(developer_id) {
+    }
+
+    //
     // 拡大円グラフの作成
     //
-    var drawPiChart = function(id) {
-      // 実績円グラフの半径設定
-      var result_arc = function(base_radius, inner_radius) {
-        return d3.svg.arc()
-                 .outerRadius(function(d, i) {
-                   if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
-                     return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
-                   } else {
-                     // 最大半径は2倍までに設定
-                     return base_radius*2;
-                   }
-                 })
-                 .innerRadius(inner_radius);
-      }
 
+    var drawPiChart = function(id) {
       // 扇形の設定
       var pie = d3.layout.pie()
                   .sort(null)
@@ -226,7 +233,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       // Zoomイベント用実績円グラフの作成
       zoom_event_pi.append("path")
         .attr("class", "result")
-        .attr("d", result_arc(base_radius, 0))
+        .attr("d", result_arc(id, base_radius, 0))
         .style("fill", function(d,i) {
           return base_color[i];
         })
@@ -234,7 +241,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .duration(event_time)
         .ease("bounce")
-        .attr("d", result_arc(2*base_radius, 0));
+        .attr("d", result_arc(id, 2*base_radius, 0));
 
       // Zoomイベント用円グラフの削除
       svg.select(".developer_"+developers[id])
@@ -272,7 +279,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         })
         .transition()
         .delay(2*event_time)
-        .attr("d", result_arc(2*base_radius, 0));
+        .attr("d", result_arc(id, 2*base_radius, 0));
 
       // 操作用円グラフのマウスイベント
       svg.selectAll(".developer_"+developers[id])
