@@ -14,7 +14,7 @@ class RedmineKey < ActiveRecord::Base
   end
 
   # 復号化
-  def decrypt(password)
+  def self.decrypt(password)
     crypt = ActiveSupport::MessageEncryptor.new(SECURE, CIPHER)
     crypt.decrypt_and_verify(password)
   end

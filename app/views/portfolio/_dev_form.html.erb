@@ -1,4 +1,4 @@
-<%= form_tag({:contoller => 'portfolio', :action => 'show_projects'}, remote: true) do %>
+<%= form_tag({:contoller => 'portfolio', :action => 'index'}) do %>
   <div class="control-group">
     <%= label_tag(:id, "開発者名") %>
     <%= collection_select(:developer_info, :id, @developer.all, :id, :name) %>
