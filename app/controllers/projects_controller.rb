@@ -307,6 +307,175 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def authen_github
+    @project = Project.find(params[:project_id])
+    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
+    @github_key = GithubKey.find_by(:version_repository_id => @version_repository)
+  end
+
+  def authen_redmine
+    @project = Project.find(params[:project_id])
+    @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
+    @redmine_key = RedmineKey.find_by(:ticket_repository_id => @ticket_repository)
+  end
+
+  def add_redmine_in_DB
+    data = {
+      name:                    params['name'],
+      redmine_host:            params['redmine_host'],
+      redmine_project_name:    params['redmine_project_name'],
+      redmine_login_id:        params['redmine_login_id'],
+      redmine_password_digest: params['redmine_password_digest']
+    }
+
+    if data[:redmine_host].present?
+      begin
+        req = RestClient::Request.execute method: :get,
+          url:      'https://' + data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
+          user:     data[:redmine_login_id],
+          password: data[:redmine_password_digest]
+      rescue
+        data[:redmine_hoparamsst] = UNAUTH
+        data[:redmine_project_name] = UNAUTH
+      end
+    else
+      data[:redmine_host] = UNAUTH
+      data[:redmine_project_name] = UNAUTH
+    end
+
+    if data[:redmine_project_name] != UNAUTH
+      # ticket_repositories
+      unless TicketRepository.exists?(host_name: data[:redmine_host], project_name: data[:redmine_project_name])
+        ticket_repository = TicketRepository.new(
+          host_name: data[:redmine_host],
+          project_name: data[:redmine_project_name]
+        )
+        ticket_repository.save
+      end
+
+      # TODO: 開発者関連も登録する必要あり
+      # redmine_keys
+      if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
+        ticket_repository_id = TicketRepository.where(
+          host_name: data[:redmine_host],
+          project_name: data[:redmine_project_name]).pluck(:id).first
+      else
+        ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
+      end
+      unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        redmine_key = RedmineKey.new(
+            :ticket_repository_id => ticket_repository_id,
+            :login_id             => data[:redmine_login_id],
+            :password_digest      => data[:redmine_password_digest],
+            :api_key              => data[:redmine_api_key]
+        )
+        redmine_key.save
+      end
+
+      # redmine_authorities
+      unless current_user.redmine_keys.present?
+        current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+      end
+
+      same_project = Project.where(name: data[:name]).first
+      same_project.update(
+          :id                    => same_project.id,
+          :ticket_repository_id => ticket_repository_id,
+      )
+
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+      end
+    end
+  end
+
+  def add_github_in_DB
+    data = {
+      name:                    params['name'],
+      github_project_name:     params['github_project_name'],
+      github_repo:             params['github_repo'],
+      github_login_id:         params['github_login_id'],
+      github_password_digest:  params['github_password_digest']
+    }
+
+    if data[:github_project_name].present?
+      begin
+        req = RestClient::Request.execute method: :get,
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
+          user:     data[:github_login_id],
+          password: data[:github_password_digest]
+      rescue
+        data[:github_project_name] = UNAUTH
+        data[:github_repo] = UNAUTH
+      end
+    else
+      data[:github_project_name] = UNAUTH
+      data[:github_repo] = UNAUTH
+    end
+
+    if data[:github_project_name] != UNAUTH
+      # version_repositories
+      unless VersionRepository.exists?(project_name: data[:github_project_name], repository_name: data[:github_repo])
+        version_repository = VersionRepository.new(
+          project_name: data[:github_project_name],
+          repository_name: data[:github_repo]
+        )
+        version_repository.save
+      end
+
+      # TODO: 開発者関連も登録する必要あり
+      # github_keys
+      if VersionRepository.where(project_name: data[:github_project_name], repository_name: data[:github_repo]).select(:id).present?
+        version_repository_id = VersionRepository.where(
+          project_name: data[:github_project_name],
+          repository_name: data[:github_repo]).pluck(:id).first
+      else
+        version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
+      end
+      unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        github_key = GithubKey.new(
+            :version_repository_id => version_repository_id,
+            :login_id             => data[:github_login_id],
+            :password_digest      => data[:github_password_digest]
+        )
+        github_key.save
+      end
+
+      # github_authorities
+      unless current_user.github_keys.present?
+        current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+      end
+
+      same_project = Project.where(name: data[:name]).first
+      same_project.update(
+          :id                    => same_project.id,
+          :version_repository_id => version_repository_id,
+      )
+
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+      end
+    end
+  end
+
+
+  def add_github
+    @project = Project.find(params[:project_id])
+
+  end
+
+  def add_redmine
+    @project = Project.find(params[:project_id])
+  end
+
   def update
     respond_to do |format|
       if @project.update(project_params)
@@ -325,26 +494,6 @@ class ProjectsController < ApplicationController
       format.html { redirect_to projects_url, notice: 'Project was successfully destroyed.' }
       format.json { head :no_content }
     end
-  end
-
-  def authen_git
-    @project = Project.find(params[:project_id])
-    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
-    @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
-  end
-
-  def authen_red
-    @project = Project.find(params[:project_id])
-    @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
-    @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
-  end
-
-  def add_git
-    @project = Project.find(params[:project_id])
-  end
-
-  def add_red
-    @project = Project.find(params[:project_id])
   end
 
   private
