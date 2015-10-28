@@ -279,7 +279,7 @@ class ProjectsController < ApplicationController
 
   def add_redmine_in_DB
 
-    begin
+
     data = {
         name:                    params['name'],
         redmine_host:            params['redmine_host'],
@@ -289,9 +289,26 @@ class ProjectsController < ApplicationController
 
     }
 
+    if params['redmine_host'].present?
+      begin
+        req = RestClient::Request.execute method: :get,
+                                          url:      'https://' + params['redmine_host'] + '/projects/' + params['redmine_project_name'] + '/memberships.json',
+                                          user:     params['redmine_login_id'],
+                                          password: params['redmine_password_digest']
+      rescue
+        data[:redmine_host] = UNAUTH
+        data[:redmine_project_name] = UNAUTH
+      end
+    else
+      data[:redmine_host] = UNAUTH
+      data[:redmine_project_name] = UNAUTH
+    end
+
 
     if data[:redmine_project_name] != UNAUTH
       redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
+
+
 
       # ticket_repositories
       unless TicketRepository.exists?(url: redmine_url)
@@ -312,6 +329,7 @@ class ProjectsController < ApplicationController
             :ticket_repository_id => ticket_repository_id,
             :login_id             => data[:redmine_login_id],
             :password_digest      => data[:redmine_password_digest],
+            :api_key              => data[:redmine_api_key]
         )
         redmine_key.save
       end
@@ -324,28 +342,25 @@ class ProjectsController < ApplicationController
       same_project = Project.where(name: data[:name]).first
       same_project.update(
           :id                    => same_project.id,
-          :ticket_repository_id  => ticket_repository_id,
+          :ticket_repository_id => ticket_repository_id,
 
       )
-
-
-    end
-
-
-    respond_to do |format|
-      format.html { redirect_to projects_path, notice: 'プロジェクトが登録されました!' }
-    end
-    rescue
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: 'プロジェクト登録に失敗しました....' }
+        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
       end
-
+    else
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+      end
     end
+
+
+
   end
 
   def add_github_in_DB
 
-    begin
+
     data = {
         name:                    params['name'],
         github_project_name:     params['github_project_name'],
@@ -353,6 +368,22 @@ class ProjectsController < ApplicationController
         github_login_id:         params['github_login_id'],
         github_password_digest:  params['github_password_digest']
     }
+
+    if params['github_project_name'].present?
+      begin
+        req = RestClient::Request.execute method: :get,
+                                          url:      'https://api.github.com/orgs/' + params['github_project_name'] + '/members',
+                                          user:     params['github_login_id'],
+                                          password: params['github_password_digest']
+      rescue
+        data[:github_project_name] = UNAUTH
+        data[:github_repo] = UNAUTH
+      end
+    else
+      data[:github_project_name] = UNAUTH
+      data[:github_repo] = UNAUTH
+    end
+
 
     if data[:github_project_name] != UNAUTH
       github_url = 'https://github.com/' + data[:github_project_name] + '/' + data[:github_repo]
@@ -363,6 +394,8 @@ class ProjectsController < ApplicationController
             url: github_url
         )
         version_repository.save
+
+
       end
 
       # github_keys
@@ -391,15 +424,17 @@ class ProjectsController < ApplicationController
           :version_repository_id => version_repository_id,
 
       )
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+      end
     end
-    respond_to do |format|
-      format.html { redirect_to projects_path, notice: 'プロジェクトが登録されました!' }
-    end
-  rescue
-    respond_to do |format|
-      format.html { redirect_to projects_path, notice: 'プロジェクト登録に失敗しました....' }
-    end
-end
+
+
+
   end
 
 
