@@ -4,7 +4,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var ticket_num_all = ticket_num_all;
    
     // テストデータ(Redmineと連携後に削除)
-    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', 'DeveloperE'];
+    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
     var trackers = ['DESIGN', 'IMPLEMENTATION', 'TEST', 'BUG'];
     var prospect = [
       [30, 10, 20, 10],
@@ -924,6 +924,27 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                      .domain([0, d3.max(productivity)])
                      .range([0, bar_height-100])
                      .nice();
+
+      // 開発者名の表示
+      svg.selectAll(".bar_chart")
+        .selectAll(".developer_label")
+        .data(developers)
+        .enter()
+        .append("text")
+        .attr("class", "developer_labe")
+        .text(function(d,i) {
+          return developers[i];
+        })
+        .attr("x", function(d,i) {
+          return i*60+20+100;
+        })
+        .attr("y", bar_height+10)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "15px")
+        .attr("text-anchor", "start")
+        .attr("dominant-baseline", "middle")
+        .attr("writing-mode", "tb")
+        .attr("fill", "#777777");
 
       var bar = svg.selectAll(".bar_chart")
                   .selectAll(".bar")
