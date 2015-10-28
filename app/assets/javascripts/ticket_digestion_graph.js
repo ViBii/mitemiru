@@ -26,7 +26,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     var base_color = ['#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646'];
     var pale_color = ['#749ccb', '#cd7573', '#b1ca7d', '#9a84b5', '#72bed2', '#f9b277'];
     var faint_color = ['#a5bfdd', '#dfa6a5', '#cedead', '#bdaecf', '#a5d6e3', '#fcd7b8'];
-    var low_faint_color = ['#cbd9eb', '#eccbca', '#e4ecd1', '#d7cee2', '#cce7ef', '#fef2e9']
+    var low_faint_color = ['#cbd9eb', '#eccbca', '#e4ecd1', '#d7cee2', '#cce7ef', '#fef2e9'];
 
     // SVG領域の範囲設定
     var margin = {top: 0, right: 100, bottom: 0, left: 100};
@@ -156,6 +156,37 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           zoomPiChart(id);
           drawPiChart(id);
 
+          // 開発者情報の再表示
+          svg.selectAll(".dev_name")
+            .remove();
+ 
+          for (var j=0; j<developers.length; j++) {
+            var swap_name = svg.append("g")
+                              .attr("class", "swap_name")
+                              .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(j%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(j/4))+")");
+
+            // 開発者名の表示
+            swap_name.append("text")
+              .attr("class", "dev_name")
+              .text(developers[j])
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "10px")
+              .attr("text-anchor", "middle")
+              .attr("dominant-baseline", "middle")
+              .attr("fill", "#ffffff")
+              .attr("opacity", 1)
+              .transition()
+              .duration(event_time/2)
+              .attr("opacity", 0);
+          }
+
+          svg.selectAll(".swap_name")
+            .transition()
+            .delay(event_time)
+            .remove();
+
           // 他のグラフを削除する
           for (var j=0; j<developers.length; j++) {
             if (j != id) {
@@ -219,6 +250,28 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           .style("fill", function(d,i) {
             return base_color[i];
           });
+
+        var dev_name = svg.append("g")
+                         .attr("class", "dev_name")
+                         .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")");
+
+        // 開発者名の表示
+        dev_name.append("text")
+          .attr("class", "dev_name")
+          .text(developers[id])
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", "#ffffff")
+          .attr("opacity", 0)
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .attr("opacity", 1);
+
     };
 
     //
