@@ -342,17 +342,13 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .selectAll(".pi")
         .data(trackers)
         .on("mouseover", function(d,i) {
-          //console.log("Mouseover "+i);
-          highlight(i);
           displayInfo(i);
+          highlight(i);
         })
         .on("mouseout", function(d,i) {
-          //console.log("Mouseout "+i)
           normalize();
         })
         .on("click", function(d,i) {
-          //console.log("Click "+i);
-         
           // 円グラフの削除
           vanishPiChart(id);
           svg.selectAll("g")
@@ -931,7 +927,14 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .data(developers)
         .enter()
         .append("text")
-        .attr("class", "developer_labe")
+        .attr("class", "developer_label")
+        .transition()
+        .delay(event_time)
+        .duration(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("fill", "#ededed");
+        })
         .text(function(d,i) {
           return developers[i];
         })
@@ -985,7 +988,9 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .selectAll(".bar")
               .attr("fill", base_color[tracker_id]);
           })
+          // クリックイベント
           .on("click", function(d, i) {
+            // 棒グラフの消滅
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
               .data(productivity)
@@ -993,6 +998,14 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .duration(event_time)
               .attr("fill", "#ededed");
 
+            // 開発者ラベルの消滅
+            svg.selectAll(".bar_chart")
+              .selectAll(".developer_label")
+              .transition()
+              .duration(event_time)
+              .attr("fill", "#ededed");
+            
+          // 棒グラフの完全削除
             svg.selectAll(".bar_chart")
               .transition()
               .delay(event_time)
