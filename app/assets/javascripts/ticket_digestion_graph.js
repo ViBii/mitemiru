@@ -1242,6 +1242,17 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
               .attr("fill", base_color[tracker_id]);
+
+            svg.select(".bar_chart")
+              .selectAll(".bar_figure")
+              .data(productivity)
+              .attr("fill", function(d,i) {
+                if (d < 300) {
+                  return "#777777";
+                } else {
+                  return base_color[tracker_id];
+                }
+              });
           })
           // クリックイベント
           .on("click", function(d, i) {
@@ -1298,6 +1309,25 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               return base_color[tracker_id];
             } else {
               return faint_color[tracker_id];
+            }
+          });
+
+        svg.select(".bar_chart")
+          .selectAll(".bar_figure")
+          .data(productivity)
+          .attr("fill", function(d,i) {
+            if (i == mouse_over) {
+              if (d < 300) {
+                return "#777777";
+              } else {
+                return base_color[tracker_id];
+              }
+            } else {
+              if (d < 300) {
+                return "#aaaaaa";
+              } else {
+                return faint_color[tracker_id];
+              }
             }
           });
       };
