@@ -178,41 +178,24 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     // 円グラフのズームイベント
     //
     var zoomPiChart = function(developer_id) {
-    }
-
-    //
-    // 拡大円グラフの作成
-    //
-
-    var drawPiChart = function(id) {
-      // 扇形の設定
-      var pie = d3.layout.pie()
-                  .sort(null)
-                  .value(function(d) {
-                    return d;
-                  });
-   
-         
       // 拡大円グラフの基本クラス
       svg.append("g")
-        .attr("class", "developer_"+developers[id])
+        .attr("class", "developer_"+developers[developer_id])
         .append("g")
         .attr("class", "event_circle")
         .transition()
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")");
+            .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(developer_id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(developer_id/4))+")");
         })
-        .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
-        .each("end", function() {
-        });     
+        .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")");
 
       // Zoomイベント用Piのクラス設定
-      var zoom_event_pi = svg.selectAll(".developer_"+developers[id])
+      var zoom_event_pi = svg.selectAll(".developer_"+developers[developer_id])
                       .selectAll(".event_circle")
                       .selectAll(".pi")
-                      .data(pie(prospect[id]))
+                      .data(pie(prospect[developer_id]))
                       .enter()
                       .append("g")
                       .attr("class", "pi");
@@ -233,7 +216,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       // Zoomイベント用実績円グラフの作成
       zoom_event_pi.append("path")
         .attr("class", "result")
-        .attr("d", result_arc(id, base_radius, 0))
+        .attr("d", result_arc(developer_id, base_radius, 0))
         .style("fill", function(d,i) {
           return base_color[i];
         })
@@ -241,15 +224,21 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .delay(event_time)
         .duration(event_time)
         .ease("bounce")
-        .attr("d", result_arc(id, 2*base_radius, 0));
+        .attr("d", result_arc(developer_id, 2*base_radius, 0));
 
       // Zoomイベント用円グラフの削除
-      svg.select(".developer_"+developers[id])
+      svg.select(".developer_"+developers[developer_id])
         .select(".event_circle")
         .transition()
         .delay(2*event_time)
         .remove();
+    }
 
+    //
+    // 拡大円グラフの作成
+    //
+    var drawPiChart = function(id) {
+      zoomPiChart(id);
       // 操作用円グラフの作成
       var base_pi = svg.selectAll(".developer_"+developers[id])
                       .append("g")
@@ -260,7 +249,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
                       .enter()
                       .append("g")
                       .attr("class", "pi");
-     
+      
       // 操作用見積もり円グラフの作成
       base_pi.append("path")
         .attr("class", "prospect")
