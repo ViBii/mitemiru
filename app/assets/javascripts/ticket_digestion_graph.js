@@ -916,10 +916,58 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .attr("class", "bar_chart")
         .attr("transform", "translate("+(margin.left)+", "+(margin.top)+")");
 
+      // 棒グラフのスケール調整
       var yScale = d3.scale.linear()
-                     .domain([0, d3.max(productivity)])
+                     .domain([0, 300])
                      .range([0, bar_height-100])
                      .nice();
+
+      // 座標軸の基本設定
+      var line = d3.svg.line()
+            .x(function(d){ return d[0]; })
+            .y(function(d){ return d[1]; })
+    
+      // Y座標軸
+      svg.select(".bar_chart")
+        .append("path")
+        .attr("class", "yaxis")
+        .attr("d", line([[margin.left-20, bar_height], [margin.left-20, bar_height-yScale(320)]])) 
+        .attr("stroke", "#777777");
+
+      // 0% Line
+      svg.select(".bar_chart")
+        .append("path")
+        .attr("class", "yaxis")
+        .attr("d", line([[margin.left-20, bar_height], [margin.left+developers.length*60, bar_height]])) 
+        .attr("stroke", "#aaaaaa");
+
+      // 100% Line
+      svg.select(".bar_chart")
+        .append("path")
+        .attr("class", "yaxis")
+        .attr("d", line([[margin.left-20, bar_height-yScale(100)], [margin.left+developers.length*60, bar_height-yScale(100)]])) 
+        .attr("stroke", "#aaaaaa")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", 10);
+
+      // 200% Line
+      svg.select(".bar_chart")
+        .append("path")
+        .attr("class", "yaxis")
+        .attr("d", line([[margin.left-20, bar_height-yScale(200)], [margin.left+developers.length*60, bar_height-yScale(200)]])) 
+        .attr("stroke", "#aaaaaa")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", 10);
+
+      // 300% Line
+      svg.select(".bar_chart")
+        .append("path")
+        .attr("class", "yaxis")
+        .attr("d", line([[margin.left-20, bar_height-yScale(300)], [margin.left+developers.length*60, bar_height-yScale(300)]])) 
+        .attr("stroke", "#aaaaaa")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", 10);
+
 
       // 開発者名の表示
       svg.selectAll(".bar_chart")
