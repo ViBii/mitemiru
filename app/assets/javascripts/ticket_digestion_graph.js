@@ -1005,6 +1005,26 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         })
         .attr("stroke", "#aaaaaa");
 
+      // グラフタイトルの表示
+      svg.selectAll(".bar_chart")
+        .append("text")
+        .attr("class", "graph_name")
+        .transition()
+        .delay(event_time)
+        .duration(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("fill", "#ededed");
+        })
+        .text(trackers[tracker_id])
+        .attr("x", bar_margin.left+(developers.length*60/2))
+        .attr("y", bar_height-yScale(320)-35)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#777777");
+
       // 座標項目名の表示
       svg.selectAll(".bar_chart")
         .append("text")
