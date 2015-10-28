@@ -931,43 +931,77 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
-        .attr("d", line([[margin.left-20, bar_height], [margin.left-20, bar_height-yScale(320)]])) 
-        .attr("stroke", "#777777");
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("d", line([[margin.left-20, bar_height], [margin.left-20, bar_height-yScale(320)]])) 
+            .attr("stroke", "#ededed");
+        })
+        .attr("stroke", "#aaaaaa");
 
       // 0% Line
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
-        .attr("d", line([[margin.left-20, bar_height], [margin.left+developers.length*60, bar_height]])) 
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("d", line([[margin.left-20, bar_height], [margin.left+developers.length*60, bar_height]])) 
+            .attr("stroke", "#ededed");
+        })
         .attr("stroke", "#aaaaaa");
 
       // 100% Line
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
-        .attr("d", line([[margin.left-20, bar_height-yScale(100)], [margin.left+developers.length*60, bar_height-yScale(100)]])) 
-        .attr("stroke", "#aaaaaa")
-        .attr("stroke-width", 1)
-        .attr("stroke-dasharray", 10);
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("d", line([[margin.left-20, bar_height-yScale(100)], [margin.left+developers.length*60, bar_height-yScale(100)]])) 
+            .attr("stroke", "#ededed")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", 10);
+        })
+        .attr("stroke", "#aaaaaa");
 
       // 200% Line
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
-        .attr("d", line([[margin.left-20, bar_height-yScale(200)], [margin.left+developers.length*60, bar_height-yScale(200)]])) 
-        .attr("stroke", "#aaaaaa")
-        .attr("stroke-width", 1)
-        .attr("stroke-dasharray", 10);
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("d", line([[margin.left-20, bar_height-yScale(200)], [margin.left+developers.length*60, bar_height-yScale(200)]])) 
+            .attr("stroke", "#ededed")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", 10);
+        })
+        .attr("stroke", "#aaaaaa");
 
       // 300% Line
       svg.select(".bar_chart")
         .append("path")
         .attr("class", "yaxis")
-        .attr("d", line([[margin.left-20, bar_height-yScale(300)], [margin.left+developers.length*60, bar_height-yScale(300)]])) 
-        .attr("stroke", "#aaaaaa")
-        .attr("stroke-width", 1)
-        .attr("stroke-dasharray", 10);
-
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .each("start", function() {
+          d3.select(this)
+            .attr("d", line([[margin.left-20, bar_height-yScale(300)], [margin.left+developers.length*60, bar_height-yScale(300)]])) 
+            .attr("stroke", "#ededed")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", 10);
+        })
+        .attr("stroke", "#aaaaaa");
 
       // 開発者名の表示
       svg.selectAll(".bar_chart")
@@ -1038,10 +1072,16 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           })
           // クリックイベント
           .on("click", function(d, i) {
+            // 座標軸の消滅
+            svg.select(".bar_chart")
+              .selectAll(".yaxis")
+              .transition()
+              .duration(event_time)
+              .attr("stroke", "#ededed")
+           
             // 棒グラフの消滅
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
-              .data(productivity)
               .transition()
               .duration(event_time)
               .attr("fill", "#ededed");
