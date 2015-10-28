@@ -1005,11 +1005,20 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
               .duration(event_time)
               .attr("fill", "#ededed");
             
-          // 棒グラフの完全削除
+            // 棒グラフの完全削除
             svg.selectAll(".bar_chart")
               .transition()
               .delay(event_time)
               .remove();
+
+            // Returnボタンの表示
+            addReturnButton(i,1);
+
+            // 開発者名の表示
+            showDeveloperName(i);
+
+            // 凡例の表示
+            drawLegend();
 
             emergePiChart(i);
             drawPiChart(i);
