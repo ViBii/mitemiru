@@ -107,6 +107,7 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
           .remove();
 
           // 拡大グラフの描画
+          zoomPiChart(id);
           drawPiChart(id);
 
           // 他のグラフを削除する
@@ -226,9 +227,8 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
         .ease("bounce")
         .attr("d", result_arc(developer_id, 2*base_radius, 0));
 
-      // Zoomイベント用円グラフの削除
+      // 開発者クラスの削除 
       svg.select(".developer_"+developers[developer_id])
-        .select(".event_circle")
         .transition()
         .delay(2*event_time)
         .remove();
@@ -238,7 +238,10 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
     // 拡大円グラフの作成
     //
     var drawPiChart = function(id) {
-      zoomPiChart(id);
+      // 開発者クラスの生成
+      svg.append("g")
+        .attr("class", "developer_"+developers[id]);
+
       // 操作用円グラフの作成
       var base_pi = svg.selectAll(".developer_"+developers[id])
                       .append("g")
@@ -818,6 +821,12 @@ var create_ticket_digestion_graph = function(tracker,ticket_num,ticket_num_all){
 
       // 開発者名の削除
       svg.selectAll(".developer_name")
+        .transition()
+        .delay(event_time)
+        .remove();
+
+      // 開発者グループの削除
+      svg.selectAll(".developer_"+developers[developer_id])
         .transition()
         .delay(event_time)
         .remove();
