@@ -18,11 +18,11 @@ Vibi.load = function(e) {
       datetimepickerJapanese();
 
       $('.date').datepicker({
-        format: "yyyy/mm",
+        format: "yyyy/mm/dd",
         language: 'ja',
         autoclose: true,
         orientation: "bottom",
-        minViewMode: 1
+        todayHighlight: true
       });
 
       $('#new_project_button').click(function() {

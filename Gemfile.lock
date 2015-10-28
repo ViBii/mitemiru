@@ -167,7 +167,6 @@ GEM
     octokit (4.1.0)
       sawyer (~> 0.6.0, >= 0.5.3)
     orm_adapter (0.5.0)
-    pg (0.18.3)
     phantomjs (1.9.8.0)
     poltergeist (1.6.0)
       capybara (~> 2.1)
@@ -399,7 +398,6 @@ DEPENDENCIES
   launchy
   mysql2 (~> 0.3.20)
   octokit (~> 4.0)
-  pg
   phantomjs
   poltergeist
   pry-byebug

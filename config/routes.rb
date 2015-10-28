@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root 'portfolio#top'
 
-  get 'portfolio/top'
   get 'portfolio/setting'
   post 'portfolio/index'
   post 'portfolio/show_projects'
