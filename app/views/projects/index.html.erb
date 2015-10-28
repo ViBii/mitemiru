@@ -12,7 +12,6 @@
       <tr>
         <th>プロジェクト名前</th>
         <th>プロジェクト開始日</th>
-        <th>プロジェクト終了日</th>
         <th>github認証状態</th>
         <th>redmine認証状態</th>
         <th></th>
@@ -22,27 +21,29 @@
 
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
-        <td><%= link_to project.name, project %></td>
-        <td><%= project.project_start_date %></td>
-        <td><%= project.project_end_date %></td>
+        <% if did_current_user_make_this_project?(project) %>
+          <td><%= link_to project.name, project %></td>
+          <td><%= project.project_start_date %></td>
 
         <% if auth_git(project.id) %>
-            <td><%= link_to '認証済み',project_authen_git_path(project)%>
+            <td><%= link_to '認証済み',project_authen_github_path(project)%>
               <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
         <% else %>
-            <td><%= link_to '未認証',project_add_git_path(project)%>
+            <td><%= link_to '未認証',project_add_github_path(project)%>
             <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
         <% end %>
 
         <% if auth_red(project.id) %>
-            <td><%= link_to '認証済み',project_authen_red_path(project)%>
+            <td><%= link_to '認証済み',project_authen_redmine_path(project)%>
               <%=  image_tag('green.png', { :border => '0', :alt => 'green'}) %></td>
         <% else %>
-            <td><%= link_to '未認証',project_add_red_path(project)%>
+            <td><%= link_to '未認証',project_add_redmine_path(project)%>
+
             <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %></td>
+          <% end %>
+          <td><%= link_to '編集', edit_project_path(project) %></td>
+          <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% end %>
-        <td><%= link_to '編集', edit_project_path(project) %></td>
-        <td><%= link_to '削除', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>
   </table>

@@ -1,21 +1,9 @@
 class PortfolioController < ApplicationController
-  def select_function
-    if params[:id] == '1' then
-      redirect_to '/commit_counter/index'
-    elsif params[:id] == '2' then
-      redirect_to '/comments_counter/index'
-    elsif params[:id] == '3' then
-      redirect_to '/portfolio/productivity_info'
-    elsif params[:id] == '4' then
-      redirect_to '/portfolio/productivity'
-    end
-  end
 
-  def productivity_info
-    @developer = Developer.all
-  end
+  def index
+    #@project_id = params[:project_info][:project_id]
+    @developer_id = params[:developer_info][:id]
 
-  def show_projects
     @info = Hash.new
     @info[:status] = true
 
@@ -27,11 +15,11 @@ class PortfolioController < ApplicationController
 
     @developer_info= Hash.new
     @developer_info[:id] = params[:developer_info][:id]
+
   end
 
-  def ticket_digestion
-    @project_id = params[:project_info][:project_id]
-    @developer_id = params[:developer_id]
+  def productivity_info
+    @developer = Developer.all
   end
 
   def ticket_digestion_ajax
@@ -46,23 +34,14 @@ class PortfolioController < ApplicationController
       # Redmineの認証情報を取得
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
-      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT url FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].url
+      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT host_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].host_name
       @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
-      @redmine_info[:password_digest] = RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest
+      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest)
 
       @project = Hash.new
 
       # プロジェクト名を取得
-      @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+projectId)[0].name
-      project_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/projects.json',
-                                                            user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['projects']
-
-      # プロジェクトの識別子を取得
-      for project in project_info do
-        if (project['name'] == @project[:name])
-          @project[:identifier] = project['identifier']
-        end
-      end
+      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
       # 開発者情報を取得
       @developer = Hash.new
@@ -72,7 +51,7 @@ class PortfolioController < ApplicationController
       @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
 
       # 開発者の一覧をRedmineから取得
-      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json',
+      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
                                                               user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
 
       # 対象開発者情報の抽出
@@ -89,14 +68,14 @@ class PortfolioController < ApplicationController
       developer_redmineId = @developer[:id]
 
       #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + "projects/" + @project[:name].downcase
+      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
 
       #redmine上の該当開発者の全てのissue情報を取得する
 
       #全てのissue情報を保存するarray、最後json形式に変更する
       issuesArr = []
 
-      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url + '/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
       first_issues_json = JSON.parse(first_issues_req)
 
       #第一回問い合わせしてもらった情報をarrayに保存
@@ -124,7 +103,7 @@ class PortfolioController < ApplicationController
       all_ticket_info = JSON.parse(issuesArr.to_json)
 
       # トラッカーの一覧を取得
-      tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
+      tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
       @tracker = Hash.new
       @tracker[:id] = Array.new
       @tracker[:name] = Array.new
@@ -166,10 +145,6 @@ class PortfolioController < ApplicationController
     end
   end
 
-  def productivity
-    @developer_name = "SYU"
-  end
-
   def productivity_ajax
     #画面からデータの取得
     if request.xhr?
@@ -178,13 +153,13 @@ class PortfolioController < ApplicationController
 
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
-      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT url FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].url
+      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT host_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].host_name
       @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
-      @redmine_info[:password_digest] = RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest
+      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest)
 
       @project = Hash.new
       # プロジェクト名を取得
-      @project[:name] = Project.find_by_sql("SELECT name FROM projects WHERE id = "+projectId)[0].name
+      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
       # 開発者情報を取得
       @developer = Hash.new
@@ -194,7 +169,7 @@ class PortfolioController < ApplicationController
       @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
 
       # 開発者の一覧をRedmineから取得
-      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url]+'/users.json',
+      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
                                                               user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
 
       # 対象開発者情報の抽出
@@ -211,7 +186,7 @@ class PortfolioController < ApplicationController
       developer_redmineId = @developer[:id]
 
       #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + "projects/" + @project[:name].downcase
+      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
 
       #redmine上の該当開発者の全てのissue情報を取得する
 
@@ -331,6 +306,21 @@ class PortfolioController < ApplicationController
         result_hours_result.push(value)
       }
 
+      arr_index = 0
+
+      while arr_index < estimated_hours_result.length do
+        if estimated_hours_result[arr_index] == 0 && result_hours_result[arr_index] == 0
+          estimated_hours_result[arr_index] = -1
+          result_hours_result[arr_index] = -1
+          @productivity_info[:tracker][arr_index] = 'unshow'
+        end
+        arr_index = arr_index + 1
+      end
+      
+      estimated_hours_result.delete(-1)
+      result_hours_result.delete(-1)
+      @productivity_info[:tracker].delete('unshow')
+
       #****************************************************graph
 
       finalStr.concat(estimated_hours_result.to_s + ",\"result_hours_result\":" + result_hours_result.to_s + ",\"tracker\":" + @productivity_info[:tracker].to_s + "}");
@@ -348,12 +338,11 @@ class PortfolioController < ApplicationController
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
-      repo_url = VersionRepository.find(@version_repo_id)[:url]
-      githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
+      githubRepo = VersionRepository.find(@version_repo_id)[:project_name] + '/' + VersionRepository.find(@version_repo_id)[:repository_name]
 
       #システム利用者github認証
       githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
-      githubUserPW = GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first
+      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
 
       #認証を取る
       Octokit.configure do |c|
@@ -382,7 +371,7 @@ class PortfolioController < ApplicationController
 
       #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         total_commits = total_commits + contributor['contributions']
         if developer_email == developer_detail['email'] then
           developer_name = developer_detail['login']
@@ -413,13 +402,11 @@ class PortfolioController < ApplicationController
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
-      repo_url = VersionRepository.find(@version_repo_id)[:url]
+      githubRepo = VersionRepository.find(@version_repo_id)[:project_name] + '/' + VersionRepository.find(@version_repo_id)[:repository_name]
 
       #システム利用者github認証
       githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
-      githubUserPW = GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first
-
-      githubRepo = repo_url.gsub(/https:\/\/github.com\//,'')
+      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
 
       #認証を取る
       Octokit.configure do |c|
@@ -441,7 +428,7 @@ class PortfolioController < ApplicationController
       @assigneeArg = ""
 
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'])
+        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
         if developer_email == developer_detail['email'] then
           @assigneeArg = developer_detail['login']
         end

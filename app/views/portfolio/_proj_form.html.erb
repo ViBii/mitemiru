@@ -1,5 +1,5 @@
 <div class="proj_form">
-  <%= form_tag({:controller => 'portfolio', :action => 'ticket_digestion'}) do %>
+  <%= form_tag({:controller => 'portfolio', :action => 'index'}) do %>
     <% if @info[:status] == true then %>
       <div class="control-group">
         <%= label_tag(:project_id, "プロジェクト名") %>

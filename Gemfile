@@ -4,11 +4,8 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.3'
 
 # DB
-gem 'mysql2', '~> 0.3.20', :group => [:development, :test]
-group :production do
-  gem 'pg'
-  gem 'rails_12factor'
-end
+gem 'mysql2', '~> 0.3.20'
+gem 'rails_12factor'
 
 # SCSS
 gem 'sass-rails', '~> 5.0'
