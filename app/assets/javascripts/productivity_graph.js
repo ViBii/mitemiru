@@ -108,9 +108,9 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .select(".prospect")
               .style("fill", function(d,i) {
                 if (j == id) {
-                  return pale_color[i];
+                  return pale_color[i%pale_color.length];
                 } else {
-                  return low_faint_color[i];
+                  return low_faint_color[i%low_faint_color.length];
                 }
               });
 
@@ -120,9 +120,9 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .select(".result")
               .style("fill", function(d,i) {
                 if (j == id) {
-                  return base_color[i];
+                  return base_color[i%low_faint_color.length];
                 } else {
-                  return faint_color[i];
+                  return faint_color[i%faint_color.length];
                 }
               });
           }
@@ -134,7 +134,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .data(trackers)
               .select(".prospect")
               .style("fill", function(d,i) {
-                return pale_color[i];
+                return pale_color[i%pale_color.length];
               });
 
             svg.selectAll(".developer_"+j)
@@ -142,7 +142,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .data(trackers)
               .select(".result")
               .style("fill", function(d,i) {
-                return base_color[i];
+                return base_color[i%base_color.length];
               });
           }
         })
@@ -233,7 +233,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
           })
           .attr("d", arc(base_radius, 0))
           .style("fill", function(d,i) {
-            return pale_color[i];
+            return pale_color[i%pale_color.length];
           });
    
         // 実績円グラフの生成
@@ -248,7 +248,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
           })
           .attr("d", result_arc(base_radius, 0))
           .style("fill", function(d,i) {
-            return base_color[i];
+            return base_color[i%base_color.length];
           });
 
         var dev_name = svg.append("g")
@@ -305,7 +305,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("class", "prospect")
         .attr("d", arc(base_radius, 0))
         .style("fill", function(d,i) {
-          return pale_color[i];
+          return pale_color[i%pale_color.length];
         })
         .transition()
         .delay(event_time)
@@ -318,7 +318,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("class", "result")
         .attr("d", result_arc(developer_id, base_radius, 0))
         .style("fill", function(d,i) {
-          return base_color[i];
+          return base_color[i%base_color.length];
         })
         .transition()
         .delay(event_time)
@@ -368,7 +368,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .style("fill", "#ededed");
         })
         .style("fill", function(d,i) {
-          return pale_color[i];
+          return pale_color[i%pale_color.length];
         });
 
       // 出現イベント用実績円グラフの作成
@@ -386,7 +386,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .style("fill", "#ededed");
         })
         .style("fill", function(d,i) {
-          return base_color[i];
+          return base_color[i%base_color.length];
         });
 
       // 開発者クラスの削除 
@@ -419,7 +419,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
       base_pi.append("path")
         .attr("class", "prospect")
         .style("fill", function(d,i) {
-          return pale_color[i];
+          return pale_color[i%pale_color.length];
         })
         .transition()
         .delay(2*event_time)
@@ -429,7 +429,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
       base_pi.append("path")
         .attr("class", "result")
         .style("fill", function(d,i) {
-          return base_color[i];
+          return base_color[i%base_color.length];
         })
         .transition()
         .delay(2*event_time)
@@ -472,18 +472,18 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         highlight_pi.select(".prospect")
           .style("fill", function(d, i) {
             if (i != mouse_over) {
-              return low_faint_color[i];
+              return low_faint_color[i%low_faint_color.length];
             } else {
-              return pale_color[i];
+              return pale_color[i%pale_color.length];
             }
           });
 
         highlight_pi.select(".result")
           .style("fill", function(d, i) {
             if (i != mouse_over) {
-              return faint_color[i];
+              return faint_color[i%faint_color.length];
             } else {
-              return base_color[i];
+              return base_color[i%base_color.length];
             }
           });
 
@@ -494,9 +494,9 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .selectAll(".prospect")
             .attr("fill", function() {
               if (mouse_over == i) {
-                return pale_color[i];
+                return pale_color[i%pale_color.length];
               } else {
-                return low_faint_color[i];
+                return low_faint_color[i%low_faint_color.length];
               }
             });
 
@@ -505,9 +505,9 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .selectAll(".result")
             .attr("fill", function() {
               if (mouse_over == i) {
-                return base_color[i];
+                return base_color[i%base_color.length];
               } else {
-                return faint_color[i];
+                return faint_color[i%faint_color.length];
               }
             });
 
@@ -541,7 +541,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
              .attr("y", 0)
              .attr("height", 60)
              .attr("transform", "translate(-75, -32)")
-             .attr("fill", faint_color[tracker_id])
+             .attr("fill", faint_color[tracker_id%faint_color.length])
              .attr("opacity", "0.1");
         
 
@@ -596,12 +596,12 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
        
         normal_pi.select(".prospect")
           .style("fill", function(d,i) {
-            return pale_color[i];
+            return pale_color[i%pale_color.length];
           });
         
         normal_pi.select(".result")
           .style("fill", function(d,i) {
-            return base_color[i];
+            return base_color[i%base_color.length];
           });
 
         // 凡例の通常化
@@ -610,14 +610,14 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .selectAll(".tracker_"+i)
             .selectAll(".prospect")
             .attr("fill", function() {
-              return pale_color[i];
+              return pale_color[i%pale_color.length];
             });
 
           svg.selectAll(".legend")
             .selectAll(".tracker_"+i)
             .selectAll(".result")
             .attr("fill", function() {
-              return base_color[i];
+              return base_color[i%base_color.length];
             });
 
           svg.selectAll(".legend")
@@ -670,7 +670,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             y: margin.top+100+(i*30),
             width: 20,
             height: 20,
-            fill: pale_color[i]
+            fill: pale_color[i%pale_color.length]
           });
 
         svg.selectAll(".legend")
@@ -691,7 +691,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             y: margin.top+100+(i*30)+2,
             width: 16,
             height: 16,
-            fill: base_color[i]
+            fill: base_color[i%base_color.length]
           });
 
         svg.selectAll(".legend")
@@ -781,7 +781,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             return mark_radius[i];
           },
           fill: function(d,i) {
-            return mark_default_colors[i];
+            return mark_default_colors[i%mark_default_colors.length];
           }
         });
         
@@ -818,7 +818,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
              .select("circle")
              .transition()
              .attr("fill", function(d,i) {
-               return mark_event_colors[i];
+               return mark_event_colors[i%mark_event_colors.length];
              });
         })
         .on("mouseout", function() {
@@ -828,7 +828,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             .select("circle")
             .transition()
             .attr("fill", function(d,i) {
-              return mark_default_colors[i];
+              return mark_default_colors[i%mark_default_colors.length];
             });
         })
         // クリック時
@@ -878,7 +878,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
       base_pi.append("path")
         .attr("class", "prospect")
         .style("fill", function(d,i) {
-          return pale_color[i];
+          return pale_color[i%pale_color.length];
         })
        .attr("d", arc(2*base_radius, 0));
 
@@ -922,7 +922,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
                return mark_radius[i];
               },
               fill: function() {
-                return mark_event_colors[i];
+                return mark_event_colors[i%mark_event_colors.length];
               }
             });
 
@@ -1038,9 +1038,10 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .each("start", function() {
           d3.select(this)
             .attr("d", line([[bar_margin.left-20, bar_height], [bar_margin.left-20, bar_height-yScale(320)]])) 
-            .attr("stroke", "#ededed");
+            .attr("stroke", "#aaaaaa")
+            .attr("opacity", 0);
         })
-        .attr("stroke", "#aaaaaa");
+        .attr("opacity", 1);
 
       // 0% Line
       svg.select(".bar_chart")
@@ -1052,9 +1053,10 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .each("start", function() {
           d3.select(this)
             .attr("d", line([[bar_margin.left-20, bar_height], [bar_margin.left+developers.length*60, bar_height]])) 
-            .attr("stroke", "#ededed");
+            .attr("stroke", "#aaaaaa")
+            .attr("opacity", 0);
         })
-        .attr("stroke", "#aaaaaa");
+        .attr("opacity", 1);
 
       // 100% Line
       svg.select(".bar_chart")
@@ -1066,11 +1068,12 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .each("start", function() {
           d3.select(this)
             .attr("d", line([[bar_margin.left-20, bar_height-yScale(100)], [bar_margin.left+developers.length*60, bar_height-yScale(100)]])) 
-            .attr("stroke", "#ededed")
+            .attr("stroke", "#aaaaaa")
+            .attr("opacity", 0)
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
         })
-        .attr("stroke", "#aaaaaa");
+        .attr("opacity", 1);
 
       // 200% Line
       svg.select(".bar_chart")
@@ -1082,11 +1085,12 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .each("start", function() {
           d3.select(this)
             .attr("d", line([[bar_margin.left-20, bar_height-yScale(200)], [bar_margin.left+developers.length*60, bar_height-yScale(200)]])) 
-            .attr("stroke", "#ededed")
+            .attr("stroke", "#aaaaaa")
+            .attr("opacity", 0)
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
         })
-        .attr("stroke", "#aaaaaa");
+        .attr("opacity", 1);
 
       // 300% Line
       svg.select(".bar_chart")
@@ -1098,11 +1102,12 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .each("start", function() {
           d3.select(this)
             .attr("d", line([[bar_margin.left-20, bar_height-yScale(300)], [bar_margin.left+developers.length*60, bar_height-yScale(300)]])) 
-            .attr("stroke", "#ededed")
+            .attr("stroke", "#aaaaaa")
+            .attr("opacity", 0)
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", 10);
         })
-        .attr("stroke", "#aaaaaa");
+        .attr("opacity", 1);
 
       // グラフタイトルの表示
       svg.selectAll(".bar_chart")
@@ -1113,7 +1118,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text(trackers[tracker_id])
         .attr("x", bar_margin.left+(developers.length*60/2))
@@ -1122,7 +1128,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("font-size", "20px")
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
 
       // 座標項目名の表示
       svg.selectAll(".bar_chart")
@@ -1133,7 +1139,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text("生産性")
         .attr("x", bar_margin.left-100)
@@ -1143,7 +1150,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "middle")
         .attr("writing-mode", "tb")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
 
       // 座標軸ラベルの表示
       // 0%
@@ -1155,7 +1162,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text("0%")
         .attr("x", bar_margin.left-30)
@@ -1164,7 +1172,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("font-size", "15px")
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
 
       // 100%
       svg.selectAll(".bar_chart")
@@ -1175,7 +1183,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text("100%")
         .attr("x", bar_margin.left-30)
@@ -1184,7 +1193,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("font-size", "15px")
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
  
       // 200%
       svg.selectAll(".bar_chart")
@@ -1195,7 +1204,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text("200%")
         .attr("x", bar_margin.left-30)
@@ -1204,7 +1214,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("font-size", "15px")
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
  
       // 300%
       svg.selectAll(".bar_chart")
@@ -1215,7 +1225,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text("300%")
         .attr("x", bar_margin.left-30)
@@ -1224,7 +1235,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("font-size", "15px")
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
 
       // 開発者名の表示
       svg.selectAll(".bar_chart")
@@ -1238,7 +1249,8 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("fill", "#ededed");
+            .attr("fill", "#777777")
+            .attr("opacity", 0);
         })
         .text(function(d,i) {
           return developers[i];
@@ -1252,7 +1264,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
         .attr("text-anchor", "start")
         .attr("dominant-baseline", "middle")
         .attr("writing-mode", "tb")
-        .attr("fill", "#777777");
+        .attr("opacity", 1);
 
       // 棒の表示
       var bar = svg.selectAll(".bar_chart")
@@ -1277,19 +1289,20 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
                       .attr("fill", base_color[tracker_id]);
                   })
                   .attr("y", function(d) {
-                    if (d < 300) {
+                    if (d < 320) {
                       return bar_height-yScale(d);
                     } else {
                       return bar_height-yScale(320);
                     }
                   })
                   .attr("height", function(d,i) {
-                    if (d < 300) {
+                    if (d < 320) {
                       return yScale(d);
                     } else {
                       return yScale(320)
                     }
-                  });
+                  })
+                  .attr("opacity", 1);
 
         // 生産性の数値表示
         svg.selectAll(".bar_chart")
@@ -1312,7 +1325,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
             return bar_margin.left+i*60+20;
           })
           .attr("y", function(d) {
-            if (d < 300) {
+            if (d < 320) {
               return bar_height-yScale(d)-10;
             } else {
               return bar_height-yScale(320)-10;
@@ -1323,12 +1336,13 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
           .attr("text-anchor", "middle")
           .attr("dominant-baseline", "middle")
           .attr("fill", function(d) {
-            if (d < 300) {
+            if (d < 320) {
               return "#777777";
             } else {
               return base_color[tracker_id];
             }
-          });
+          })
+          .attr("opacity", 1);
 
         // 棒のマウスイベント
         svg.selectAll(".bar_chart")
@@ -1346,7 +1360,7 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .selectAll(".bar_figure")
               .data(productivity)
               .attr("fill", function(d,i) {
-                if (d < 300) {
+                if (d < 320) {
                   return "#777777";
                 } else {
                   return base_color[tracker_id];
@@ -1360,22 +1374,29 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
               .selectAll(".yaxis")
               .transition()
               .duration(event_time)
-              .attr("stroke", "#ededed")
+              .attr("opacity", 0)
 
             // 棒グラフの消滅
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
               .transition()
               .duration(event_time)
-              .attr("fill", "#ededed");
+              .attr("opacity", 0);
 
             // 各テキストの削除
             svg.select(".bar_chart")
               .selectAll("text")
               .transition()
               .duration(event_time)
-              .attr("fill", "#ededed");
-            
+              .attr("opacity", 0);
+           
+            // ソートボタンの消滅
+            svg.select(".bar_chart")
+              .selectAll(".button")
+              .transition()
+              .duration(event_time)
+              .attr("opacity", 0);
+
             // 棒グラフの完全削除
             svg.selectAll(".bar_chart")
               .transition()
@@ -1405,9 +1426,9 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
           .data(productivity)
           .attr("fill", function(d,i) {
             if (i == mouse_over) {
-              return base_color[tracker_id];
+              return base_color[tracker_id%base_color.length];
             } else {
-              return faint_color[tracker_id];
+              return faint_color[tracker_id%faint_color.length];
             }
           });
 
@@ -1416,20 +1437,260 @@ var create_productivity_graph = function(tracker, task_result, task_estimate) {
           .data(productivity)
           .attr("fill", function(d,i) {
             if (i == mouse_over) {
-              if (d < 300) {
+              if (d < 320) {
                 return "#777777";
               } else {
-                return base_color[tracker_id];
+                return base_color[tracker_id%base_color.length];
               }
             } else {
-              if (d < 300) {
+              if (d < 320) {
                 return "#aaaaaa";
               } else {
-                return faint_color[tracker_id];
+                return faint_color[tracker_id%faint_color.length];
               }
             }
           });
       };
+
+      //
+      // 棒グラフのソート
+      //
+      var sortBarChart = function() {
+        var button_base_color = ['#4f81bd', '#c0504d'];
+        var button_pale_color = ['#99b6d9', '#db9a98'];
+        var button_radius = [10, 8];
+        var order = ['開発者の登録順', '生産性順'];
+        var in_order = 0;
+
+        /* ソート済みのデータの準備 */
+        var swp_productivity = [];
+        var sort_productivity = [];
+        var swp_developers = [];
+        var sort_developers = [];
+        for (var i=0; i<productivity.length; i++) {
+          swp_productivity.push(productivity[i]);
+          sort_productivity.push(productivity[i]);
+          swp_developers.push(developers[i]);
+        }
+
+        // 生産性のソート
+        sort_productivity.sort(function(a,b) {
+          if (a<b) return -1;
+          if (a>b) return 1;
+          return 0;
+        });
+        
+        // 開発者名のソート
+        for (var i=0; i<developers.length; i++) {
+          for (var j=0; j<developers.length; j++) {
+            if (sort_productivity[i] == swp_productivity[j]) {
+              sort_developers.push(swp_developers[j]);
+              swp_productivity.splice(j,1);
+              swp_developers.splice(j,1);
+              break;
+            }
+          }
+        }
+
+        // sortグループの生成
+        svg.select(".bar_chart")
+          .append("g")
+          .attr("class", "sort")
+          .attr("transform", "translate("+(2*margin.left+60*developers.length)+", "+(margin.top+60)+")");
+
+        // テキストの表示
+        svg.select(".bar_chart")
+          .select(".sort")
+          .append("text")
+          .attr("class", "function_name")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+            d3.select(this)
+              .text("Sort")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "20px")
+              .attr("text-anchor", "start")
+              .attr("dominant-baseline", "middle")
+              .attr("fill", "#777777")
+              .attr("opacity", 0);
+          })
+          .attr("opacity", 1);
+
+        // ボタンの追加
+        svg.select(".bar_chart")
+          .select(".sort")
+          .selectAll(".button")
+          .data(button_radius)
+          .enter()
+          .append("circle")
+          .attr("class", "button")
+          .attr({
+            cx: 10,
+            cy: 30,
+            r: 0,
+            fill: function(d,i) {
+              if (i == 0) {
+                return button_pale_color[0];
+              } else if (i == 1) {
+                return button_base_color[0];
+              }
+            },
+            opacity: 0
+          })
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .attr({
+            r: function(d,i) {
+              return button_radius[i];
+            },
+            opacity: 1
+          });
+
+        // ボタンのマウスイベント
+        svg.select(".bar_chart")
+          .selectAll(".sort")
+          .on("mouseover", function() {
+            svg.select(".bar_chart")
+              .select(".sort")
+              .selectAll(".button")
+              .data(button_radius)
+              .attr("fill", function(d,i) {
+                if (i == 0) {
+                  return button_pale_color[1];
+                } else if (i == 1) {
+                  return button_base_color[1];
+                }
+              });
+          })
+          .on("mouseout", function() {
+            svg.select(".bar_chart")
+              .select(".sort")
+              .selectAll(".button")
+              .data(button_radius)
+              .attr("fill", function(d,i) {
+                if (i == 0) {
+                  return button_pale_color[0];
+                } else if (i == 1) {
+                  return button_base_color[0];
+                }
+              });
+          })
+          .on("click", function() {
+            in_order = (in_order+1)%order.length;
+            svg.select(".bar_chart")
+              .select(".sort")
+              .select(".sort_name")
+              .text(order[in_order]);
+
+            // 開発者の登録順
+            if (in_order == 0) {
+            // 開発者ラベルのソート
+              svg.select(".bar_chart")
+                .selectAll(".developer_label")
+                .data(developers)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d,i) {
+                  return bar_margin.left+i*60+20;
+                });
+
+              // 棒グラフのソート
+              svg.select(".bar_chart")
+                .selectAll(".bar")
+                .data(productivity)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d,i) {
+                  return bar_margin.left+i*60;
+                });
+
+              // 生産性数値のソート
+              svg.select(".bar_chart")
+                .selectAll(".bar_figure")
+                .data(productivity)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d,i) {
+                  return bar_margin.left+i*60+20;
+                });
+            }
+            // 生産性順
+            else if (in_order == 1) {
+              // 開発者ラベルのソート
+              svg.select(".bar_chart")
+                .selectAll(".developer_label")
+                .data(developers)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (d == sort_developers[j]) {
+                      return bar_margin.left+(developers.length-j-1)*60+20;
+                    }
+                  }
+                });
+
+              // 棒グラフのソート
+              svg.select(".bar_chart")
+                .selectAll(".bar")
+                .data(developers)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (d == sort_developers[j]) {
+                      return bar_margin.left+(developers.length-j-1)*60;
+                    }
+                  }
+                });
+
+              // 生産性数値のソート
+              svg.select(".bar_chart")
+                .selectAll(".bar_figure")
+                .data(developers)
+                .transition()
+                .duration(event_time)
+                .attr("x", function(d) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (d == sort_developers[j]) {
+                      return bar_margin.left+(developers.length-j-1)*60+20;
+                    }
+                  }
+                });
+            }
+          });
+
+        // ソート順の表示
+        svg.select(".bar_chart")
+          .select(".sort")
+          .append("text")
+          .attr("class", "sort_name")
+          .transition()
+          .duration(event_time)
+          .delay(event_time)
+          .each("start", function() {
+            d3.select(this)
+              .text(order[in_order])
+              .attr("x", 26)
+              .attr("y", 32)
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "15px")
+              .attr("text-anchor", "start")
+              .attr("dominant-baseline", "middle")
+              .attr("fill", "#777777")
+              .attr("opacity", 0);
+          })
+          .attr("opacity", 1);
+
+      }
+
+      // ソート機能の生成
+      sortBarChart();
     };
 
     // 描画処理
