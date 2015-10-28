@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'portfolio#top'
+  root 'portfolio#productivity_info'
 
   get 'portfolio/setting'
   post 'portfolio/index'
