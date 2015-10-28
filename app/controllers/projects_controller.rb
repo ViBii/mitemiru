@@ -310,35 +310,32 @@ class ProjectsController < ApplicationController
   def authen_github
     @project = Project.find(params[:project_id])
     @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
-    @github_key = GithubKey.find_by(:version_repository_id =>@version_repository)
+    @github_key = GithubKey.find_by(:version_repository_id => @version_repository)
   end
 
   def authen_redmine
     @project = Project.find(params[:project_id])
     @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
-    @redmine_key = RedmineKey.find_by(:ticket_repository_id =>@ticket_repository)
+    @redmine_key = RedmineKey.find_by(:ticket_repository_id => @ticket_repository)
   end
 
   def add_redmine_in_DB
-
-
     data = {
-        name:                    params['name'],
-        redmine_host:            params['redmine_host'],
-        redmine_project_name:    params['redmine_project_name'],
-        redmine_login_id:        params['redmine_login_id'],
-        redmine_password_digest: params['redmine_password_digest'],
-
+      name:                    params['name'],
+      redmine_host:            params['redmine_host'],
+      redmine_project_name:    params['redmine_project_name'],
+      redmine_login_id:        params['redmine_login_id'],
+      redmine_password_digest: params['redmine_password_digest']
     }
 
-    if params['redmine_host'].present?
+    if data[:redmine_host].present?
       begin
         req = RestClient::Request.execute method: :get,
-                                          url:      'https://' + params['redmine_host'] + '/projects/' + params['redmine_project_name'] + '/memberships.json',
-                                          user:     params['redmine_login_id'],
-                                          password: params['redmine_password_digest']
+          url:      'https://' + data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
+          user:     data[:redmine_login_id],
+          password: data[:redmine_password_digest]
       rescue
-        data[:redmine_host] = UNAUTH
+        data[:redmine_hoparamsst] = UNAUTH
         data[:redmine_project_name] = UNAUTH
       end
     else
@@ -346,23 +343,22 @@ class ProjectsController < ApplicationController
       data[:redmine_project_name] = UNAUTH
     end
 
-
     if data[:redmine_project_name] != UNAUTH
-      redmine_url = data[:redmine_host] + '/projects/' + data[:redmine_project_name]
-
-
-
       # ticket_repositories
-      unless TicketRepository.exists?(url: redmine_url)
+      unless TicketRepository.exists?(host_name: data[:redmine_host], project_name: data[:redmine_project_name])
         ticket_repository = TicketRepository.new(
-            url: redmine_url
+          host_name: data[:redmine_host],
+          project_name: data[:redmine_project_name]
         )
         ticket_repository.save
       end
 
+      # TODO: 開発者関連も登録する必要あり
       # redmine_keys
-      if TicketRepository.where(url: redmine_url).select(:id).present?
-        ticket_repository_id = TicketRepository.where(url: redmine_url).pluck(:id).first
+      if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
+        ticket_repository_id = TicketRepository.where(
+          host_name: data[:redmine_host],
+          project_name: data[:redmine_project_name]).pluck(:id).first
       else
         ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
       end
@@ -385,8 +381,8 @@ class ProjectsController < ApplicationController
       same_project.update(
           :id                    => same_project.id,
           :ticket_repository_id => ticket_repository_id,
-
       )
+
       respond_to do |format|
         format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
       end
@@ -395,28 +391,23 @@ class ProjectsController < ApplicationController
         format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
       end
     end
-
-
-
   end
 
   def add_github_in_DB
-
-
     data = {
-        name:                    params['name'],
-        github_project_name:     params['github_project_name'],
-        github_repo:             params['github_repo'],
-        github_login_id:         params['github_login_id'],
-        github_password_digest:  params['github_password_digest']
+      name:                    params['name'],
+      github_project_name:     params['github_project_name'],
+      github_repo:             params['github_repo'],
+      github_login_id:         params['github_login_id'],
+      github_password_digest:  params['github_password_digest']
     }
 
-    if params['github_project_name'].present?
+    if data[:github_project_name].present?
       begin
         req = RestClient::Request.execute method: :get,
-                                          url:      'https://api.github.com/orgs/' + params['github_project_name'] + '/members',
-                                          user:     params['github_login_id'],
-                                          password: params['github_password_digest']
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
+          user:     data[:github_login_id],
+          password: data[:github_password_digest]
       rescue
         data[:github_project_name] = UNAUTH
         data[:github_repo] = UNAUTH
@@ -426,23 +417,22 @@ class ProjectsController < ApplicationController
       data[:github_repo] = UNAUTH
     end
 
-
     if data[:github_project_name] != UNAUTH
-      github_url = 'https://github.com/' + data[:github_project_name] + '/' + data[:github_repo]
-
       # version_repositories
-      unless VersionRepository.exists?(url: github_url)
+      unless VersionRepository.exists?(project_name: data[:github_project_name], repository_name: data[:github_repo])
         version_repository = VersionRepository.new(
-            url: github_url
+          project_name: data[:github_project_name],
+          repository_name: data[:github_repo]
         )
         version_repository.save
-
-
       end
 
+      # TODO: 開発者関連も登録する必要あり
       # github_keys
-      if VersionRepository.where(url: github_url).select(:id).present?
-        version_repository_id = VersionRepository.where(url: github_url).pluck(:id).first
+      if VersionRepository.where(project_name: data[:github_project_name], repository_name: data[:github_repo]).select(:id).present?
+        version_repository_id = VersionRepository.where(
+          project_name: data[:github_project_name],
+          repository_name: data[:github_repo]).pluck(:id).first
       else
         version_repository_id = VersionRepository.last.present? ? VersionRepository.last.id + 1 : 1
       end
@@ -464,8 +454,8 @@ class ProjectsController < ApplicationController
       same_project.update(
           :id                    => same_project.id,
           :version_repository_id => version_repository_id,
-
       )
+
       respond_to do |format|
         format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
       end
@@ -474,9 +464,6 @@ class ProjectsController < ApplicationController
         format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
       end
     end
-
-
-
   end
 
 
@@ -487,9 +474,6 @@ class ProjectsController < ApplicationController
 
   def add_redmine
     @project = Project.find(params[:project_id])
-
-
-
   end
 
   def update
