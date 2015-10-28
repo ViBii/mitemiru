@@ -4,7 +4,16 @@
       戻る
   <% end %>
   <h1>githubリポジトリの新規追加</h1>
+  <h3>プロジェクトの名前:<%= @project.name %></h3>
+
   <%= form_tag '/projects/add_github_in_DB' do %>
+      <br>
+      <div class="form-group">
+
+        <div class="col-sm-5">
+          <input type="hidden" name="name" class="form-control" id="name" value= <%= @project.name %> />
+        </div>
+      </div>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">プロジェクト名</label>

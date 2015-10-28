@@ -281,13 +281,13 @@ class ProjectsController < ApplicationController
 
     begin
     data = {
+        name:                    params['name'],
         redmine_host:            params['redmine_host'],
         redmine_project_name:    params['redmine_project_name'],
         redmine_login_id:        params['redmine_login_id'],
         redmine_password_digest: params['redmine_password_digest'],
 
     }
-
 
 
     if data[:redmine_project_name] != UNAUTH
@@ -321,8 +321,17 @@ class ProjectsController < ApplicationController
         current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
       end
 
+      same_project = Project.where(name: data[:name]).first
+      same_project.update(
+          :id                    => same_project.id,
+          :ticket_repository_id  => ticket_repository_id,
+
+      )
+
 
     end
+
+
     respond_to do |format|
       format.html { redirect_to projects_path, notice: 'プロジェクトが登録されました!' }
     end
@@ -338,6 +347,7 @@ class ProjectsController < ApplicationController
 
     begin
     data = {
+        name:                    params['name'],
         github_project_name:     params['github_project_name'],
         github_repo:             params['github_repo'],
         github_login_id:         params['github_login_id'],
@@ -375,46 +385,12 @@ class ProjectsController < ApplicationController
         current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
       end
 
+      same_project = Project.where(name: data[:name]).first
+      same_project.update(
+          :id                    => same_project.id,
+          :version_repository_id => version_repository_id,
 
-
-
-      developer_list = RestClient::Request.execute method: :get,
-                                                   url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
-                                                   user:     data[:github_login_id],
-                                                   password: data[:github_password_digest]
-      github_developers = JSON.parse(developer_list)
-      github_developer_list = []
-
-      github_developers.each do |github_developer|
-        github_developer_list << github_developer['login']
-      end
-      github_developer_list.each do |github_developer|
-        github_developer_info = RestClient::Request.execute method: :get,
-                                                            url: 'https://api.github.com/users/' + github_developer,
-                                                            user:     data[:github_login_id],
-                                                            password: data[:github_password_digest]
-        github_developer_info = JSON.parse(github_developer_info)
-
-        unless Developer.exists?(email: github_developer_info['email'])
-          developer = Developer.new(
-              :name  => github_developer_info['login'],
-              :email => github_developer_info['email']
-          )
-          developer.save
-        end
-
-        developer = Developer.where(email: github_developer_info['email']).first
-        project = Project.where(name: data[:name]).first
-        unless AssignLog.exists?(developer_id: developer.id, project_id: project.id)
-          assign_log = AssignLog.new(
-              :developer_id      => developer.id,
-              :project_id        => project.id,
-              :assign_start_date => nil,
-              :assign_end_date   => nil
-          )
-          assign_log.save
-        end
-      end
+      )
     end
     respond_to do |format|
       format.html { redirect_to projects_path, notice: 'プロジェクトが登録されました!' }
@@ -434,6 +410,8 @@ end
 
   def add_redmine
     @project = Project.find(params[:project_id])
+
+
 
   end
 
