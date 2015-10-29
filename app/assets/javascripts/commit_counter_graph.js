@@ -121,7 +121,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
         .data(commit_count)
         .enter()
         .append('rect')
-        .attr('class', '.bar')
+        .attr('class', 'bar')
         .attr({
           'width': 40,
           'height': 0,
@@ -177,11 +177,11 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
 
       // 開発者名の表示
       svg.select('.chart_area')
-        .selectAll('.developer_name')
+        .selectAll('.developer_label')
         .data(developers)
         .enter()
         .append('text')
-        .attr('class', 'developer_name')
+        .attr('class', 'developer_label')
         .text(function(d) {
           return d;
         })
@@ -389,6 +389,84 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
             .select('.sort')
             .select('.sort_name')
             .text(order[in_order]);
+
+          /* 開発者の登録順 */
+          if (in_order == 0) {
+            // 開発者ラベルのソート
+            svg.select('.chart_area')
+              .selectAll('.developer_label')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d, i) {
+                return bar_start_x+i*60+20;
+              });
+
+            // 棒グラフのソート
+            svg.select('.chart_area')
+              .selectAll('.bar')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d, i) {
+                return bar_start_x+i*60;
+              });
+
+            // コミット数のソート
+            svg.select('.chart_area')
+              .selectAll('.bar_figure')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d, i) {
+                return bar_start_x+i*60+20;
+              });
+
+          }
+          /* コミット数順 */
+          else if (in_order == 1) {
+            // 開発者ラベルのソート
+            svg.select('.chart_area')
+              .selectAll('.developer_label')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d) {
+                for (var j=0; j<developers.length; j++) {
+                  if (d == sort_developers[j]) {
+                    return bar_start_x+(developers.length-1-j)*60+20;
+                  }
+                }
+              });
+
+            // 棒グラフのソート
+            svg.select('.chart_area')
+              .selectAll('.bar')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d) {
+                for (var j=0; j<developers.length; j++) {
+                  if (d == sort_developers[j]) {
+                    return bar_start_x+(developers.length-1-j)*60;
+                  }
+                }
+              });
+
+            // コミット数のソート
+            svg.select('.chart_area')
+              .selectAll('.bar_figure')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr('x', function(d) {
+                for (var j=0; j<developers.length; j++) {
+                  if (d == sort_developers[j]) {
+                    return bar_start_x+(developers.length-1-j)*60+20;
+                  }
+                }
+              });
+          }
         });
 
       // ソート順の表示
