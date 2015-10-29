@@ -18,21 +18,85 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
     // SVG領域の設定
     var width = 960;
     var height = 640;
-    var margin = {top: 0, right: 100, bottom: 0, left: 100};
+    var margin = {top: 50, right: 100, bottom: 0, left: 100};
 
     // SVG領域の描画
-    var svg = d3.select("body")
-          .append("svg")
-          .attr("class", "commit_counter_graph")
-          .attr("width", width)
-          .attr("height", height);
+    var svg = d3.select('body')
+          .append('svg')
+          .attr({
+            'class': 'commit_counter_graph',
+            'width': width,
+            'height': height
+          });
 
-    // SVG領域の確認
-    svg.append("text")
-      .text("Hello World")
-      .attr({
-        x: 150,
-        y: 150
-      })
-      .attr("font-size", "50px");
-}
+    /**************/
+    /* 描画の実行 */
+    /**************/
+    drawBarChart();
+    
+    /******************/
+    /* 棒グラフの描画 */
+    /******************/
+    function drawBarChart() {
+      // 棒の最大の高さ
+      var bar_max_height = 300;
+
+      // グラフエリアの設定
+      svg.append('g')
+        .attr({
+          'class': 'chart_area',
+          'transform': 'translate('+(margin.left)+', '+(margin.top)+')'
+        });
+
+      // グラフスケールの調整
+      var yScale = d3.scale.linear()
+                     .domain([0, d3.max(commit_count)])
+                     .range([0, bar_max_height])
+                     .nice();
+     
+     var line = d3.svg.line()
+                  .x(function(d) {
+                    return d[0];
+                  })
+                  .y(function(d) {
+                    return d[1];
+                  });
+
+      svg.select('.chart_area')
+        .append('path')
+        .transition()
+        .duration(1000)
+        .each('start', function() {
+          d3.select(this)
+            .attr({
+              'class': 'yaxis',
+              'd': line([[100,bar_max_height], [100, 0]]),
+              'stroke': '#aaaaaa',
+              'stroke-width': 1,
+              'opacity': 0
+            });
+        })
+        .attr({
+          'opacity': 1
+        });
+
+      svg.select('.chart_area')
+        .append('path')
+        .transition()
+        .duration(1000)
+        .each('start', function() {
+          d3.select(this)
+            .attr({
+              'class': 'xaxis',
+              'd': line([[100,bar_max_height], [100+developers.length*60, bar_max_height]]),
+              'stroke': '#aaaaaa',
+              'stroke-width': 1,
+              'opacity': 0
+            });
+        })
+        .attr({
+          'opacity': 1
+        });
+
+    };
+};
