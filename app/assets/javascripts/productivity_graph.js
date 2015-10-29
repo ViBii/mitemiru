@@ -1,25 +1,48 @@
-var create_productivity_graph = function(tracker, task_result, task_estimate) {
-    var tracker = tracker;
-    var task_result = task_result;
-    var ticket_estimate = task_estimate;
-   
-    // テストデータ(Redmineと連携後に削除)
-    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
-    var trackers = ['DESIGN', 'IMPLEMENTATION', 'TEST', 'BUG'];
-    var prospect = [
-      [30, 10, 20, 10],
-      [25, 25, 0, 10],
-      [10, 10, 10, 10],
-      [10, 15, 20, 25],
-      [0, 30, 30, 5]
-    ];
-    var result = [
-      [25, 15, 20, 5],
-      [20, 20, 0, 20],
-      [30, 5, 5, 10],
-      [15, 20, 5, 5],
-      [0, 40, 10, 15]
-    ];
+var create_productivity_graph = function(developers, trackers, prospectArr, resultArr) {
+
+    var developers = developers;
+    var trackers = trackers;
+    var prospect = new Array();
+    var result = new Array();
+    for(var i = 0;i < developers.length; i++){
+        prospect[i] = new Array();
+        result[i] = new Array();
+        for(var j = 0;j < prospectArr[i].length;j++){
+            prospect[i][j] = prospectArr[i][j];
+        }
+        for(var j = 0;j < resultArr[i].length;j++){
+            result[i][j] = resultArr[i][j];
+        }
+    }
+
+    var str = '';
+
+    for(var i = 0; i < result.length; i++){
+        for(var j=0; j< result[i].length; j++){
+            if((j+1)%9 == 0){
+                str += result[i][j] + '<br>';
+            }else{
+                str += result[i][j] + ',';
+            }
+
+        }
+    }
+    alert(str);
+
+    //var prospect = [
+    //  [30, 10, 20, 10],
+    //  [25, 25, 0, 10],
+    //  [10, 10, 10, 10],
+    //  [10, 15, 20, 25],
+    //  [0, 30, 30, 5]
+    //];
+    //var result = [
+    //  [25, 15, 20, 5],
+    //  [20, 20, 0, 20],
+    //  [30, 5, 5, 10],
+    //  [15, 20, 5, 5],
+    //  [0, 40, 10, 15]
+    //];
 
     // Concentration: deep > base > pale > faint
     var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
