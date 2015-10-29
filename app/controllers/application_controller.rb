@@ -10,8 +10,10 @@ class ApplicationController < ActionController::Base
   layout :layout_by_resource
 
   # ハンドリング
-  rescue_from Exception, with: :error500
-  rescue_from ActiveRecord::RecordNotFound, ActionController::RoutingError, with: :error404
+  if Rails.env == 'production'
+    rescue_from Exception, with: :error500
+    rescue_from ActiveRecord::RecordNotFound, ActionController::RoutingError, with: :error404
+  end
 
   protected
   def configure_permitted_parameters
