@@ -3,12 +3,12 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
     var developer_name = ['その他', developer_name];
     var color = ['#b1d7e8', '#006ab3'];
 
-    // 取得データの一覧
+    /* 取得データの一覧 */
     // developers: 開発者のリスト
     // commit_count: 各開発者のコミット数
 
     // 取得データサンプル(連携後に消去)
-    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉      条士郎'];
+    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
     var commit_count = [38, 55, 103, 11, 82];
 
     // グラフの色
@@ -17,8 +17,8 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
 
     // SVG領域の設定
     var width = 960;
-    var height = 640;
-    var margin = {top: 50, right: 100, bottom: 0, left: 100};
+    var height = 540;
+    var margin = {top: 50, right: 100, bottom: 0, left: 150};
 
     // SVG領域の描画
     var svg = d3.select('body')
@@ -42,7 +42,8 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
     /* 描画の実行 */
     /**************/
     drawBarChart();
-    sortBarChart(); 
+    sortBarChart();
+
     /******************/
     /* 棒グラフの描画 */
     /******************/
@@ -104,7 +105,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
           d3.select(this)
             .attr({
               'class': 'xaxis',
-              'd': line([[bar_start_x-20, bar_max_height-yScale(getCommitAvarage())], [bar_start_x-20+developers.length*60+20, bar_max_height-yScale(getCommitAvarage())]]),
+              'd': line([[bar_start_x-20, bar_max_height-yScale(getCommitAverage())], [bar_start_x-20+developers.length*60+20, bar_max_height-yScale(getCommitAverage())]]),
               'stroke': '#aaaaaa',
               'stroke-width': 1,
               'stroke-dasharray': 10,
@@ -114,6 +115,55 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
         .attr({
           'opacity': 1
         });
+
+      // 平均値の表示
+      svg.select('.chart_area')
+        .append('text')
+        .transition()
+        .duration(event_time)
+        .each('start', function() {
+          d3.select(this)
+            .attr({
+              'class': 'average_label',
+              'x': bar_start_x-20+developers.length*60+22,
+              'y': bar_max_height-yScale(getCommitAverage())-10,
+              'font-family': 'sans-serif',
+              'font-size': '15px',
+              'text-anchor': 'start',
+              'dominant-baseline': 'middle',
+              'fill': '#777777',
+              'opacity': 0
+            })
+            .text('平均');
+        })
+        .attr({
+          'opacity': 1
+        });
+
+      // 同上
+      svg.select('.chart_area')
+        .append('text')
+        .transition()
+        .duration(event_time)
+        .each('start', function() {
+          d3.select(this)
+            .attr({
+              'class': 'average_label',
+              'x': bar_start_x-20+developers.length*60+22,
+              'y': bar_max_height-yScale(getCommitAverage())+10,
+              'font-family': 'sans-serif',
+              'font-size': '15px',
+              'text-anchor': 'start',
+              'dominant-baseline': 'middle',
+              'fill': '#777777',
+              'opacity': 0
+            })
+            .text(getCommitAverage());
+        })
+        .attr({
+          'opacity': 1
+        });
+
 
       // 棒の表示 
       svg.select('.chart_area')
@@ -159,7 +209,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
             return bar_start_x+i*60+20;
           },
           'y': function(d, i) {
-            return bar_max_height-yScale(d)-15;
+            return bar_max_height-yScale(d)-10;
           },
           'font-family': 'sans-serif',
           'font-size': '15px',
@@ -247,9 +297,9 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
          });
     };
 
-    //
-    // 棒グラフのソート 
-    //
+    /********************/
+    /* 棒グラフのソート */ 
+    /********************/
     function sortBarChart() {
       var button_base_color = ['#4f81bd', '#c0504d'];
       var button_pale_color = ['#99b6d9', '#db9a98'];
@@ -286,12 +336,6 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
           }
         }
       }
-
-      // ソート結果の表示
-      console.log(commit_count);
-      console.log(developers);
-      console.log(sort_commit_count);
-      console.log(sort_developers);
 
       // ソートグループの作成
       svg.select('.chart_area')
@@ -498,7 +542,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
     /*************/
     
     // コミット数の平均値
-    function getCommitAvarage() {
+    function getCommitAverage() {
       var avg = 0;
 
       for (var i=0; i<commit_count.length; i++) {
