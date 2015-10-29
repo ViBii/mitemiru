@@ -1,48 +1,63 @@
 var create_productivity_graph = function(developers, trackers, prospectArr, resultArr) {
 
-    var developers = developers;
-    var trackers = trackers;
-    var prospect = new Array();
-    var result = new Array();
-    for(var i = 0;i < developers.length; i++){
-        prospect[i] = new Array();
-        result[i] = new Array();
-        for(var j = 0;j < prospectArr[i].length;j++){
-            prospect[i][j] = prospectArr[i][j];
-        }
-        for(var j = 0;j < resultArr[i].length;j++){
-            result[i][j] = resultArr[i][j];
-        }
-    }
-
-    var str = '';
-
-    for(var i = 0; i < result.length; i++){
-        for(var j=0; j< result[i].length; j++){
-            if((j+1)%9 == 0){
-                str += result[i][j] + '<br>';
-            }else{
-                str += result[i][j] + ',';
-            }
-
-        }
-    }
-    alert(str);
-
-    //var prospect = [
-    //  [30, 10, 20, 10],
-    //  [25, 25, 0, 10],
-    //  [10, 10, 10, 10],
-    //  [10, 15, 20, 25],
-    //  [0, 30, 30, 5]
-    //];
-    //var result = [
-    //  [25, 15, 20, 5],
-    //  [20, 20, 0, 20],
-    //  [30, 5, 5, 10],
-    //  [15, 20, 5, 5],
-    //  [0, 40, 10, 15]
-    //];
+    //var developers = developers;
+    //var trackers = trackers;
+    //var prospect = prospectArr;
+    //var result = resultArr;
+    //alert(prospect[9][3]);
+    //alert(result[3][3]);
+    //var prospect = new Array();
+    //var result = new Array();
+    //for(var i = 0;i < developers.length; i++){
+    //    prospect[i] = new Array();
+    //    result[i] = new Array();
+    //    for(var j = 0;j < prospectArr[i].length;j++){
+    //        prospect[i][j] = prospectArr[i][j];
+    //    }
+    //    for(var j = 0;j < resultArr[i].length;j++){
+    //        result[i][j] = resultArr[i][j];
+    //    }
+    //}
+    //
+    //var str = '';
+    //
+    //for(var i = 0; i < result.length; i++){
+    //    for(var j=0; j< result[i].length; j++){
+    //        if((j+1)%9 == 0){
+    //            str += result[i][j] + '<br>';
+    //        }else{
+    //            str += result[i][j] + ',';
+    //        }
+    //
+    //    }
+    //}
+    //alert(str);
+    var developers = ["居駒幹夫", "三末和男", "中村宇佑", "OKIRyota", "白井明", "SUNKasei", "須貝佳彦 ", "土田正士", "YAGINUMAtakuya", "SYUYichimin"];
+    var trackers = ["バグ", "機能", "サポート", "FEATURE", "QUESTION", "MEETING", "BUG", "SUPPORT", "HELP!!!"];
+    var prospect = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1.0, 42.0, 0, 0, 0, 19.5, 0]
+    ];
+    var result = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1.0, 0, 0, 44.5, 0, 0, 1.0, 38.0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 20.5, 0, 0, 0, 20.0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [2.0, 0, 0, 1.5, 3.0, 0, 2.0, 37.0, 0],
+        [0, 0, 4.0, 40.0, 0, 0, 0, 31.0, 0]
+    ];
 
     // Concentration: deep > base > pale > faint
     var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
@@ -54,7 +69,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     // SVG領域の範囲設定
     var margin = {top: 0, right: 100, bottom: 0, left: 100};
     var width = 960 + margin.right + margin.left;
-    var height = 480 + margin.top + margin.bottom;
+    var height = 960 + margin.top + margin.bottom;
 
     var box_width = 240,
         box_height = 240;

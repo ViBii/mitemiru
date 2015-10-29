@@ -11,6 +11,8 @@ var costAjax = function() {
     }
   })
   .done(function(data) {
+        alert(data.prospect[9][3]);
+        alert(data.result[3][3]);
         create_productivity_graph(data.developers, data.trackers, data.prospect, data.result);
         //commentAjax();
   });

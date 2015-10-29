@@ -224,7 +224,7 @@ class PortfolioController < ApplicationController
 
       # 各対象開発者情報の統計
       for developer in developer_info do
-        redmine_developers.push(developer['firstname'] + developer['lastname'])
+        redmine_developers.push(developer['lastname'] + developer['firstname'])
 
         roop_issues_Arr = []
         first_issues_json = JSON.parse(RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['id'].to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
