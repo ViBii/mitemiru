@@ -172,8 +172,13 @@ class PortfolioController < ApplicationController
       developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
                                                               user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
 
+      # Redmine開発者リスト
+      redmine_developers = []
+
       # 対象開発者情報の抽出
       for developer in developer_info do
+        redmine_developers.push(developer['firstname'] + ' ' + developer['lastname'])
+
         if (developer['mail'] == @developer[:mail])
           @developer[:id] = developer['id']
           @developer[:firstname] = developer['firstname']
@@ -305,21 +310,6 @@ class PortfolioController < ApplicationController
       result_hours.each{|key, value|
         result_hours_result.push(value)
       }
-
-      arr_index = 0
-
-      while arr_index < estimated_hours_result.length do
-        if estimated_hours_result[arr_index] == 0 && result_hours_result[arr_index] == 0
-          estimated_hours_result[arr_index] = -1
-          result_hours_result[arr_index] = -1
-          @productivity_info[:tracker][arr_index] = 'unshow'
-        end
-        arr_index = arr_index + 1
-      end
-      
-      estimated_hours_result.delete(-1)
-      result_hours_result.delete(-1)
-      @productivity_info[:tracker].delete('unshow')
 
       #****************************************************graph
 

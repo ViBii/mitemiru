@@ -42,11 +42,9 @@ Vibi.load = function(e) {
             $("svg").remove();
 
             $('#selected_project_id').val($('#project_info_project_id').val());
-            ticketDigestionAjax();
+            //ticketDigestionAjax();
             commitAjax();
         });
-        //ticketDigestionAjax();
-        //commitAjax();
     }
   }
 
