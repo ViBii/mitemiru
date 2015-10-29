@@ -14,27 +14,42 @@ module ApplicationHelper
   end
 
   def show_project?(user, project)
+    show_project = nil
     if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
-      true
-    elsif user.github_keys.where(version_repository_id: project.version_repository_id).present?
-      true
-    else
-      false
+      show_project = true if project.version_repository_id.blank?
     end
+    if user.github_keys.where(version_repository_id: project.version_repository_id).present?
+      show_project = true if project.ticket_repository_id.blank?
+    end
+    if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
+      show_project = true if user.github_keys.where(version_repository_id: project.version_repository_id).present?
+    end
+    show_project = false if show_project.blank?
+    return show_project
   end
 
   def show_developer?(user, developer)
     show_developer = nil
     developer.projects.each do |project|
       if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
-        show_developer = true
-        break
-      elsif user.github_keys.where(version_repository_id: project.version_repository_id).present?
-        show_developer = true
-        break
-      else
-        show_developer = false
+        if project.version_repository_id.blank?
+          show_developer = true
+          break
+        end
       end
+      if user.github_keys.where(version_repository_id: project.version_repository_id).present?
+        if project.ticket_repository_id.blank?
+          show_developer = true
+          break
+        end
+      end
+      if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
+        if user.github_keys.where(version_repository_id: project.version_repository_id).present?
+          show_developer = true
+          break
+        end
+      end
+      show_developer = false
     end
     return show_developer
   end

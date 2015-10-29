@@ -143,7 +143,7 @@ class ProjectsController < ApplicationController
         end
 
         # redmine_keys
-        unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        if RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id]).blank?
           redmine_key = RedmineKey.new(
             :ticket_repository_id => ticket_repository_id,
             :login_id             => data[:redmine_login_id],
@@ -153,6 +153,8 @@ class ProjectsController < ApplicationController
           redmine_key.save
 
         # redmine_authorities
+          current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        elsif current_user.redmine_keys.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id]).blank?
           current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
         end
       end
@@ -168,7 +170,7 @@ class ProjectsController < ApplicationController
         end
 
         # github_keys
-        unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        if GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id]).blank?
           github_key = GithubKey.new(
             :version_repository_id => version_repository_id,
             :login_id             => data[:github_login_id],
@@ -177,6 +179,8 @@ class ProjectsController < ApplicationController
           github_key.save
 
         # github_authorities
+          current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        elsif current_user.github_keys.where(version_repository_id: version_repository_id, login_id: data[:github_login_id]).blank?
           current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
         end
       end
