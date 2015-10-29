@@ -8,7 +8,11 @@ class DevelopersController < ApplicationController
   # GET /developers
   # GET /developers.json
   def index
-    @developers = Developer.page(params[:page]).per(PER)
+    developers = []
+    Developer.all.each do |developer|
+      developers << developer if ApplicationController.helpers.show_developer?(current_user, developer)
+    end
+    @developers = Kaminari.paginate_array(developers).page(params[:page]).per(PER)
   end
 
   # GET /developers/1

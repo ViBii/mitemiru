@@ -2,7 +2,11 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :edit, :update, :destroy]
 
   def index
-    @projects = Project.page(params[:page]).per(PER)
+    projects = []
+    Project.all.each do |project|
+      projects << project if ApplicationController.helpers.show_project?(current_user, project)
+    end
+    @projects = Kaminari.paginate_array(projects).page(params[:page]).per(PER)
   end
 
   def new
@@ -147,11 +151,9 @@ class ProjectsController < ApplicationController
             :api_key              => data[:redmine_api_key]
           )
           redmine_key.save
-        end
 
         # redmine_authorities
-        unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
-          current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+          current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
         end
       end
 
@@ -173,11 +175,9 @@ class ProjectsController < ApplicationController
             :password_digest      => data[:github_password_digest]
           )
           github_key.save
-        end
 
         # github_authorities
-        unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
-          current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+          current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
         end
       end
 
