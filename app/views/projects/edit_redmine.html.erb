@@ -13,31 +13,35 @@
     </div>
   </div>
   <br>
+  <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">ホスト名</label>
     <div class="col-sm-5">
-      <input type="text" name="github_project_name" class="form-control" id="github_project_name" value="<%= @ticket_repository.host_name %>" />
+      <input type="text" name="redmine_host" class="form-control" id="redmine_host" value="<%= @ticket_repository.host_name %>"/>
     </div>
   </div>
+  <br>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">プロジェクト名(識別子)</label>
     <div class="col-sm-5">
-      <input type="text" name="github_repo" class="form-control" id="github_repo" value="<%= @ticket_repository.project_name %>"/>
+      <input type="text" name="redmine_project_name" class="form-control" id="redmine_project_name" value="<%= @ticket_repository.project_name %>" />
     </div>
   </div>
+  <br>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">ログイン名</label>
     <div class="col-sm-5">
-      <input type="text" name="github_login_id" class="form-control" id="github_login_id" value="<%= @redmine_key.login_id %>"/>
+      <input type="text" name="redmine_login_id" class="form-control" id="redmine_login_id" value="<%= @redmine_key.login_id %>"/>
     </div>
   </div>
+  <br>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">パスワード</label>
     <div class="col-sm-5">
-      <input type="password" name="github_password_digest" class="form-control" id="password_digest" />
+      <input type="password" name="redmine_password_digest" class="form-control" id="password_digest" />
     </div>
   </div>
   <br>
