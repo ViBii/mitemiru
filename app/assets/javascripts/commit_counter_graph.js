@@ -85,6 +85,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
           'opacity': 1
         });
 
+
       var line = d3.svg.line()
                    .x(function(d) {
                      return d[0];
@@ -142,29 +143,71 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
             return bar_max_height-yScale(d);
           }
         });
-        /*
+
+      // 各コミット数の表示
+      svg.select('.chart_area')
+        .selectAll('.bar_figure')
+        .data(commit_count)
+        .enter()
+        .append('text')
+        .attr('class', 'bar_figure')
+        .text(function(d) {
+          return d;
+        })
+        .attr({
+          'x': function(d, i) {
+            return bar_start_x+i*60+20;
+          },
+          'y': function(d, i) {
+            return bar_max_height-yScale(d)-15;
+          },
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 0
+        })
+        .transition()
+        .delay(2*event_time)
+        .duration(event_time)
+        .attr({
+          'opacity': 1
+        });
+
+      // 開発者名の表示
+      svg.select('.chart_area')
+        .selectAll('.developer_name')
+        .data(developers)
+        .enter()
+        .append('text')
+        .attr('class', 'developer_name')
+        .text(function(d) {
+          return d;
+        })
+        .attr({
+          'x': function(d, i) {
+            return bar_start_x+i*60+20;
+          },
+          'y': function(d, i) {
+            return bar_max_height+10;
+          },
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'writing-mode': 'tb',
+          'fill': '#777777',
+          'opacity': 0
+        })
         .transition()
         .delay(event_time)
         .duration(event_time)
-        .each('start', function() {
-          svg.select('.chart_area')
-            .selectAll('.bar')
-            .data(commit_count)
-            .attr({
-              'width': 40,
-              'height': 100,
-              'x': function(d, i) {
-                return i*60;
-              },
-              'y': 100,
-              'fill': 'blue',
-              'opacity': 0
-            })
-        })
         .attr({
           'opacity': 1
-        }); */
+        });
 
+      
       // y軸の表示
       svg.select('.chart_area')
          .append('path')
