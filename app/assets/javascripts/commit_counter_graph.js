@@ -29,24 +29,24 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
             'height': height
           });
 
+    // イベントの所要時間
+    var event_time = 800;
+
+    // 棒の描画エリア
+    var bar_start_x = 100;
+
+    // 棒の最大の高さ
+    var bar_max_height = 300;
+
     /**************/
     /* 描画の実行 */
     /**************/
     drawBarChart();
-    
+    sortBarChart(); 
     /******************/
     /* 棒グラフの描画 */
     /******************/
     function drawBarChart() {
-      // イベントの所要時間
-      var event_time = 800;
-
-      // 棒の描画エリア
-      var bar_start_x = 100;
-
-      // 棒の最大の高さ
-      var bar_max_height = 300;
-
       // グラフエリアの設定
       svg.append('g')
         .attr({
@@ -104,7 +104,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
           d3.select(this)
             .attr({
               'class': 'xaxis',
-              'd': line([[bar_start_x-20, bar_max_height-yScale(getCommitAvarage())], [bar_start_x-20+developers.length*60, bar_max_height-yScale(getCommitAvarage())]]),
+              'd': line([[bar_start_x-20, bar_max_height-yScale(getCommitAvarage())], [bar_start_x-20+developers.length*60+20, bar_max_height-yScale(getCommitAvarage())]]),
               'stroke': '#aaaaaa',
               'stroke-width': 1,
               'stroke-dasharray': 10,
@@ -236,7 +236,7 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
            d3.select(this)
              .attr({
                'class': 'xaxis',
-               'd': line([[bar_start_x-20, bar_max_height], [bar_start_x-20+developers.length*60, bar_max_height]]),
+               'd': line([[bar_start_x-20, bar_max_height], [bar_start_x-20+developers.length*60+20, bar_max_height]]),
                'stroke': '#aaaaaa',
                'stroke-width': 1,
                'opacity': 0
@@ -246,6 +246,174 @@ var create_commit_graph = function(all_commit,own_commit,developer_name){
            'opacity': 1
          });
     };
+
+    //
+    // 棒グラフのソート 
+    //
+    function sortBarChart() {
+      var button_base_color = ['#4f81bd', '#c0504d'];
+      var button_pale_color = ['#99b6d9', '#db9a98'];
+      var button_radius = [10, 8];
+      var order = ['開発者の登録順', 'コミット数順'];
+      var in_order = 0;
+
+      // ソート済みデータの準備
+      var swp_commit_count = [];
+      var sort_commit_count = [];
+      var swp_developers = [];
+      var sort_developers = [];
+      for (var i=0; i<commit_count.length; i++) {
+        swp_commit_count.push(commit_count[i]);
+        sort_commit_count.push(commit_count[i]);
+        swp_developers.push(developers[i]);
+      }
+
+      // コミット数のソート
+      sort_commit_count.sort(function(a, b) {
+        if (a<b) return -1;
+        if (a>b) return 1;
+        return 0;
+      });
+
+      // 開発者名のソート
+      for (var i=0; i<developers.length; i++) {
+        for (var j=0; j<developers.length; j++) {
+          if (sort_commit_count[i] == swp_commit_count[j]) {
+            sort_developers.push(swp_developers[j]);
+            swp_commit_count.splice(j,1);
+            swp_developers.splice(j,1);
+            break;
+          }
+        }
+      }
+
+      // ソート結果の表示
+      console.log(commit_count);
+      console.log(developers);
+      console.log(sort_commit_count);
+      console.log(sort_developers);
+
+      // ソートグループの作成
+      svg.select('.chart_area')
+        .append('g')
+        .attr('class', 'sort')
+        .attr('transform', 'translate('+(bar_start_x-20+developers.length*60+20)+', '+0+')');
+
+      // テキストの表示
+      svg.select('.chart_area')
+        .select('.sort')
+        .append('text')
+        .attr('class', 'function_name')
+        .text('Sort')
+        .attr({
+          'x': 20,
+          'y': 0,
+          'font-family': 'sans-serif',
+          'font-size': '20px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 0
+        })
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .attr({
+          'opacity': 1
+        });
+
+      // ボタンの追加
+      svg.select('.chart_area')
+        .select('.sort')
+        .selectAll('.button')
+        .data(button_radius)
+        .enter()
+        .append('circle')
+        .attr('class', 'button')
+        .attr({
+          'cx': 20,
+          'cy': 30,
+          'r': 0,
+          'fill': function(d, i) {
+            if (i == 0) {
+              return button_pale_color[0];
+            } else if (i == 1) {
+              return button_base_color[0];
+            }
+          },
+          'opacity': 0
+        })
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .attr({
+          'r': function(d, i) {
+            return button_radius[i];
+          },
+          'opacity': 1
+        });
+      
+      // ボタンのマウスイベント
+      svg.select('.chart_area')
+        .select('.sort')
+        .selectAll('.button')
+        .on('mouseover', function() {
+          svg.select('.chart_area')
+            .select('.sort')
+            .selectAll('.button')
+            .data(button_radius)
+            .attr('fill', function(d, i) {
+              if (i == 0) {
+                return button_pale_color[1];
+              } else if (i == 1) {
+                return button_base_color[1];
+              }
+            });
+        })
+        .on('mouseout', function() {
+          svg.select('.chart_area')
+            .select('.sort')
+            .selectAll('.button')
+            .data(button_radius)
+            .attr('fill', function(d, i) {
+              if (i == 0) {
+                return button_pale_color[0];
+              } else if (i == 1) {
+                return button_base_color[0];
+              }
+            });
+        })
+        .on('click', function() {
+          in_order = (in_order+1)%order.length;
+          svg.select('.chart_area')
+            .select('.sort')
+            .select('.sort_name')
+            .text(order[in_order]);
+        });
+
+      // ソート順の表示
+      svg.select('.chart_area')
+        .select('.sort')
+        .append('text')
+        .attr('class', 'sort_name')
+        .text(order[in_order])
+        .attr({
+          'x': 32,
+          'y': 32,
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 0
+        })
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .attr('opacity', 1);
+
+      
+    }; // End sortBarChart();
 
     /*************/
     /* Utilities */
