@@ -4,15 +4,16 @@ var costAjax = function() {
     url: 'productivity_ajax',
     dataType: "json",
     data: {
-        projectId: $('#selected_project_id').val(),
-        developerId: $('#selected_developer_id').val()
+        projectId: $('#selected_project_id').val()
     },
-    success: function(commit_data) {
+    success: function(data) {
 
     }
   })
-  .done(function(commit_data) {
-        create_productivity_graph(commit_data.tracker,commit_data.result_hours_result,commit_data.estimated_hours_result);
+  .done(function(data) {
+        //alert(data.prospect[9][3]);
+        //alert(data.result[3][3]);
+        create_productivity_graph(data.developers, data.trackers, data.prospect, data.result);
         commentAjax();
   });
 }

@@ -3,17 +3,15 @@
       <span class="glyphicon glyphicon-list-alt"></span>
       戻る
   <% end %>
-  <h1>githubリポジトリの新規追加</h1>
   <h3>プロジェクトの名前:<%= @project.name %></h3>
-
-  <%= form_tag '/projects/add_github_in_DB' do %>
-      <br>
-      <div class="form-group">
-
-        <div class="col-sm-5">
-          <input type="hidden" name="name" class="form-control" id="name" value= <%= @project.name %> />
-        </div>
-      </div>
+</div>
+<br>
+<%= form_tag '/projects/auth_github' do %>
+  <div class="form-group">
+    <div class="col-sm-5">
+      <input type="hidden" name="name" class="form-control" id="name" value= <%= @project.name %> />
+    </div>
+  </div>
   <br>
   <div class="form-group">
     <label class="col-sm-2 control-label">プロジェクト名</label>
@@ -44,9 +42,6 @@
   </div>
   <br>
   <div class="col-sm-10">
-    <input type="submit" value="認証" id="new_project_button" class="btn btn-primary" />
+    <input type="submit" value="認証する" id="new_project_button" class="btn btn-primary" />
   </div>
-</div>
-</div>
-
-  <% end %>
+<% end %>

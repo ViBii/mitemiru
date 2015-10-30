@@ -2,7 +2,11 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :edit, :update, :destroy]
 
   def index
-    @projects = Project.page(params[:page]).per(PER)
+    projects = []
+    Project.all.each do |project|
+      projects << project if ApplicationController.helpers.show_project?(current_user, project)
+    end
+    @projects = Kaminari.paginate_array(projects).page(params[:page]).per(PER)
   end
 
   def new
@@ -41,7 +45,7 @@ class ProjectsController < ApplicationController
       redmine_project_name = UNAUTH
     end
 
-    if params['github_project_name'].present?
+    if params['github_project_name'].present? && params['github_repo'].present?
       begin
         req = RestClient::Request.execute method: :get,
           url:      'https://api.github.com/orgs/' + params['github_project_name'] + '/members',
@@ -139,7 +143,7 @@ class ProjectsController < ApplicationController
         end
 
         # redmine_keys
-        unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        if RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id]).blank?
           redmine_key = RedmineKey.new(
             :ticket_repository_id => ticket_repository_id,
             :login_id             => data[:redmine_login_id],
@@ -147,16 +151,15 @@ class ProjectsController < ApplicationController
             :api_key              => data[:redmine_api_key]
           )
           redmine_key.save
-        end
 
         # redmine_authorities
-        unless current_user.redmine_keys.present?
+          current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
+        elsif current_user.redmine_keys.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id]).blank?
           current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
         end
       end
 
       if data[:github_project_name] != UNAUTH
-
         # version_repositories
         unless VersionRepository.exists?(repository_name: data[:github_repo], project_name: data[:github_project_name])
           version_repository = VersionRepository.new(
@@ -167,17 +170,17 @@ class ProjectsController < ApplicationController
         end
 
         # github_keys
-        unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        if GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id]).blank?
           github_key = GithubKey.new(
             :version_repository_id => version_repository_id,
             :login_id             => data[:github_login_id],
             :password_digest      => data[:github_password_digest]
           )
           github_key.save
-        end
 
         # github_authorities
-        unless current_user.github_keys.present?
+          current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
+        elsif current_user.github_keys.where(version_repository_id: version_repository_id, login_id: data[:github_login_id]).blank?
           current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
         end
       end
@@ -307,19 +310,27 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def authen_github
+  def new_redmine
     @project = Project.find(params[:project_id])
-    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
-    @github_key = GithubKey.find_by(:version_repository_id => @version_repository)
   end
 
-  def authen_redmine
+  def new_github
+    @project = Project.find(params[:project_id])
+  end
+
+  def edit_redmine
     @project = Project.find(params[:project_id])
     @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
     @redmine_key = RedmineKey.find_by(:ticket_repository_id => @ticket_repository)
   end
 
-  def add_redmine_in_DB
+  def edit_github
+    @project = Project.find(params[:project_id])
+    @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
+    @github_key = GithubKey.find_by(:version_repository_id => @version_repository)
+  end
+
+  def auth_redmine
     data = {
       name:                    params['name'],
       redmine_host:            params['redmine_host'],
@@ -335,7 +346,7 @@ class ProjectsController < ApplicationController
           user:     data[:redmine_login_id],
           password: data[:redmine_password_digest]
       rescue
-        data[:redmine_hoparamsst] = UNAUTH
+        data[:redmine_host] = UNAUTH
         data[:redmine_project_name] = UNAUTH
       end
     else
@@ -373,7 +384,7 @@ class ProjectsController < ApplicationController
       end
 
       # redmine_authorities
-      unless current_user.redmine_keys.present?
+      unless RedmineKey.exists?(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
         current_user.redmine_keys << RedmineKey.where(ticket_repository_id: ticket_repository_id, login_id: data[:redmine_login_id])
       end
 
@@ -384,16 +395,16 @@ class ProjectsController < ApplicationController
       )
 
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
+        format.html { redirect_to projects_path, notice: UPDATE_PROJECT_MESSAGE }
       end
     else
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+        format.html { redirect_to projects_path, notice: UPDATE_PROJECT_ERROR_MESSAGE }
       end
     end
   end
 
-  def add_github_in_DB
+  def auth_github
     data = {
       name:                    params['name'],
       github_project_name:     params['github_project_name'],
@@ -402,7 +413,7 @@ class ProjectsController < ApplicationController
       github_password_digest:  params['github_password_digest']
     }
 
-    if data[:github_project_name].present?
+    if data[:github_project_name].present? && data[:github_repo].present?
       begin
         req = RestClient::Request.execute method: :get,
           url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
@@ -446,7 +457,7 @@ class ProjectsController < ApplicationController
       end
 
       # github_authorities
-      unless current_user.github_keys.present?
+      unless GithubKey.exists?(version_repository_id: version_repository_id, login_id: data[:github_login_id])
         current_user.github_keys << GithubKey.where(version_repository_id: version_repository_id, login_id: data[:github_login_id])
       end
 
@@ -457,23 +468,34 @@ class ProjectsController < ApplicationController
       )
 
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: '認証情報が登録されました!' }
+        format.html { redirect_to projects_path, notice: UPDATE_PROJECT_MESSAGE }
       end
     else
       respond_to do |format|
-        format.html { redirect_to projects_path, notice: '認証情報登録に失敗しました....' }
+        format.html { redirect_to projects_path, notice: UPDATE_PROJECT_ERROR_MESSAGE }
       end
     end
   end
 
-
-  def add_github
-    @project = Project.find(params[:project_id])
-
-  end
-
-  def add_redmine
-    @project = Project.find(params[:project_id])
+  def unauth
+    project = Project.find_by(id: params[:project_id])
+    action = Rails.application.routes.recognize_path(request.referrer)[:action]
+    if action == "edit_redmine"
+      project.update(
+          :ticket_repository_id => nil,
+      )
+    elsif action == "edit_github"
+      project.update(
+          :version_repository_id => nil,
+      )
+    else
+      respond_to do |format|
+        format.html { redirect_to projects_path, notice: DELETE_PROJECT_ERROR_MESSAGE }
+      end
+    end
+    respond_to do |format|
+      format.html { redirect_to projects_path, notice: DELETE_PROJECT_MESSAGE }
+    end
   end
 
   def update

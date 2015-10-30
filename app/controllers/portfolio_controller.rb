@@ -22,134 +22,10 @@ class PortfolioController < ApplicationController
     @developer = Developer.all
   end
 
-  def ticket_digestion_ajax
-    #画面からデータの取得
-    if request.xhr?
-      projectId   = params['projectId']
-      developerId = params['developerId']
-      ######################
-      # チケット情報の取得 #
-      ######################
-
-      # Redmineの認証情報を取得
-      @redmine_info = Hash.new
-      @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
-      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT host_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].host_name
-      @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
-      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest)
-
-      @project = Hash.new
-
-      # プロジェクト名を取得
-      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
-
-      # 開発者情報を取得
-      @developer = Hash.new
-
-      # 開発者のメールアドレスを取得
-      @developer[:id] = developerId
-      @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
-
-      # 開発者の一覧をRedmineから取得
-      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
-                                                              user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
-
-      # 対象開発者情報の抽出
-      for developer in developer_info do
-        if (developer['mail'] == @developer[:mail])
-          @developer[:id] = developer['id']
-          @developer[:firstname] = developer['firstname']
-          @developer[:lastname] = developer['lastname']
-        end
-      end
-
-      #*************************************Redmineアカウント情報の取得
-      #redmine上のアカウントID
-      developer_redmineId = @developer[:id]
-
-      #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
-
-      #redmine上の該当開発者の全てのissue情報を取得する
-
-      #全てのissue情報を保存するarray、最後json形式に変更する
-      issuesArr = []
-
-      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url + '/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-      first_issues_json = JSON.parse(first_issues_req)
-
-      #第一回問い合わせしてもらった情報をarrayに保存
-      first_issues_json['issues'].each do |issue|
-        issuesArr.push(issue)
-      end
-
-      #最初のデータのindex
-      issue_offset = 0
-      #総数
-      total_count = first_issues_json['total_count']
-      #一回問い合わせする最大値
-      limit = first_issues_json['limit']
-
-      #issueのpagination処理
-      while total_count > limit do
-        issue_offset = issue_offset + limit
-        issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset + '&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-        total_count = total_count - limit
-        JSON.parse(issues_req)['issues'].each do |issue|
-          issuesArr.push(issue)
-        end
-      end
-
-      all_ticket_info = JSON.parse(issuesArr.to_json)
-
-      # トラッカーの一覧を取得
-      tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
-      @tracker = Hash.new
-      @tracker[:id] = Array.new
-      @tracker[:name] = Array.new
-      for tracker in tracker_info['trackers'] do
-        @tracker[:id].push(tracker['id'])
-        @tracker[:name].push(tracker['name'])
-      end
-
-      ##########################
-      # チケット情報のグラフ化 #
-      ##########################
-
-      @issue_info = Hash.new
-
-      # 各トラッカーのチケット消化数
-      @issue_info[:count] = Array.new(@tracker[:id].length)
-
-      for i in 1..@issue_info[:count].length do
-        @issue_info[:count][i-1] = 0
-      end
-
-      for i in all_ticket_info do
-        if (!(i['assigned_to'].nil?))
-          if (i['assigned_to']['id'] == @developer[:id])
-            @issue_info[:count][i['tracker']['id']-1] += 1
-          end
-        end
-      end
-
-      # 消化チケットの総数
-      @issue_info[:total_count] = 0
-      for n in @issue_info[:count] do
-        @issue_info[:total_count] += n;
-      end
-
-      finalStr = "{\"ticket_num\":" + @issue_info[:count].to_s + ",\"tracker\":" + @tracker[:name].to_s + ",\"ticket_num_all\":" + @issue_info[:total_count].to_s + ",\"projectName\":\"" + @project[:name] + "\",\"firstName\":\"" + @developer[:firstname] + "\",\"lastName\":\"" + @developer[:lastname] + "\"}"
-
-      render :json => finalStr
-    end
-  end
-
   def productivity_ajax
     #画面からデータの取得
     if request.xhr?
       projectId   = params['projectId']
-      developerId = params['developerId']
 
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
@@ -161,64 +37,16 @@ class PortfolioController < ApplicationController
       # プロジェクト名を取得
       @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
-      # 開発者情報を取得
-      @developer = Hash.new
-
-      # 開発者のメールアドレスを取得
-      @developer[:id] = developerId
-      @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
-
       # 開発者の一覧をRedmineから取得
       developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
                                                               user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
 
-      # 対象開発者情報の抽出
-      for developer in developer_info do
-        if (developer['mail'] == @developer[:mail])
-          @developer[:id] = developer['id']
-          @developer[:firstname] = developer['firstname']
-          @developer[:lastname] = developer['lastname']
-        end
-      end
-
-      #*************************************Redmineアカウント情報、tracker情報の取得
-      #redmine上のアカウントID
-      developer_redmineId = @developer[:id]
-
-      #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
-
-      #redmine上の該当開発者の全てのissue情報を取得する
-
-      #全てのissue情報を保存するarray、最後json形式に変更する
-      issuesArr = []
-
-      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-      first_issues_json = JSON.parse(first_issues_req)
-
-      #第一回問い合わせしてもらった情報をarrayに保存
-      first_issues_json['issues'].each do |issue|
-        issuesArr.push(issue)
-      end
-
-      #最初のデータのindex
-      issue_offset = 0
-      #総数
-      total_count = first_issues_json['total_count']
-      #一回問い合わせする最大値
-      limit = first_issues_json['limit']
-
-      #issueのpagination処理
-      while total_count > limit do
-        issue_offset = issue_offset + limit
-        issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-        total_count = total_count - limit
-        JSON.parse(issues_req)['issues'].each do |issue|
-          issuesArr.push(issue)
-        end
-      end
-
-      issues_json = JSON.parse(issuesArr.to_json)
+      # Redmine開発者リスト
+      redmine_developers = []
+      # 予定工数Array
+      prospect = []
+      # 実際工数Array
+      result = []
 
       # トラッカーHash
       @productivity_info = Hash.new
@@ -231,6 +59,8 @@ class PortfolioController < ApplicationController
       tracker_json['trackers'].each do |tracker|
         @productivity_info[:tracker].push(tracker['name'])
       end
+
+      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
 
       #予定工数Hash
       estimated_hours = Hash.new
@@ -269,63 +99,87 @@ class PortfolioController < ApplicationController
 
       time_entry_json = JSON.parse(time_entry_Arr.to_json)
 
-      #工数Hash初期化
-      @productivity_info[:tracker].each do |tracker|
-        estimated_hours[tracker] = 0
-        result_hours[tracker] = 0
-      end
+      # 各対象開発者情報の統計
+      for developer in developer_info do
+        redmine_developers.push(developer['lastname'] + developer['firstname'])
 
-      #*************************************************工数計算部分
-      #予定工数の計算
-      issues_json.each do |issue|
+        roop_issues_Arr = []
+        first_issues_json = JSON.parse(RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['id'].to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
 
-        #予定工数計算部分
-        if nil != issue['estimated_hours'] then
-          estimated_hours[issue['tracker']['name']] = estimated_hours[issue['tracker']['name']] + issue['estimated_hours']
+        first_issues_json['issues'].each do |issue|
+          roop_issues_Arr.push(issue)
         end
 
-        #実績工数計算部分
-        time_entry_json.each do |time_entry|
-          if issue['id'] == time_entry['issue']['id'] then
-            result_hours[issue['tracker']['name']] = result_hours[issue['tracker']['name']] + time_entry['hours']
+        #最初のデータのindex
+        issue_offset = 0
+        #総数
+        total_count = first_issues_json['total_count']
+        #一回問い合わせする最大値
+        limit = first_issues_json['limit']
+
+        #issueのpagination処理
+        while total_count > limit do
+          issue_offset = issue_offset + roop_limit
+          issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['id'].to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+          total_count = total_count - limit
+          JSON.parse(roop_issues_req)['issues'].each do |issue|
+            roop_issues_Arr.push(issue)
           end
         end
 
-      end
+        # 対象者の全てのissue
+        issues_json = JSON.parse(roop_issues_Arr.to_json)
 
-      finalStr = "{\"estimated_hours_result\":"
+        #予定工数Hash
+        roop_estimated_hours = Hash.new
+        #実績工数Hash
+        roop_result_hours = Hash.new
 
-      #予定工数Arrayの設定
-      estimated_hours_result = []
-      estimated_hours.each{|key, value|
-        estimated_hours_result.push(value)
-      }
-      #実績工数Arrayの設定
-      result_hours_result = []
-      result_hours.each{|key, value|
-        result_hours_result.push(value)
-      }
-
-      arr_index = 0
-
-      while arr_index < estimated_hours_result.length do
-        if estimated_hours_result[arr_index] == 0 && result_hours_result[arr_index] == 0
-          estimated_hours_result[arr_index] = -1
-          result_hours_result[arr_index] = -1
-          @productivity_info[:tracker][arr_index] = 'unshow'
+        #工数Hash初期化
+        @productivity_info[:tracker].each do |tracker|
+          roop_estimated_hours[tracker] = 0
+          roop_result_hours[tracker] = 0
         end
-        arr_index = arr_index + 1
+
+        #*************************************************工数計算部分
+        #予定工数の計算
+        issues_json.each do |issue|
+
+          #予定工数計算部分
+          if nil != issue['estimated_hours'] then
+            roop_estimated_hours[issue['tracker']['name']] = roop_estimated_hours[issue['tracker']['name']] + issue['estimated_hours']
+          end
+
+          #実績工数計算部分
+          time_entry_json.each do |time_entry|
+            if issue['id'] == time_entry['issue']['id'] then
+              roop_result_hours[issue['tracker']['name']] = roop_result_hours[issue['tracker']['name']] + time_entry['hours']
+            end
+          end
+
+        end
+
+        #予定工数Arrayの設定
+        roop_estimated_hours_result = []
+        roop_estimated_hours.each{|key, value|
+          roop_estimated_hours_result.push(value)
+        }
+        #実績工数Arrayの設定
+        roop_result_hours_result = []
+        roop_result_hours.each{|key, value|
+          roop_result_hours_result.push(value)
+        }
+
+        prospect.push(roop_estimated_hours_result)
+        result.push(roop_result_hours_result)
+
       end
-      
-      estimated_hours_result.delete(-1)
-      result_hours_result.delete(-1)
-      @productivity_info[:tracker].delete('unshow')
 
-      #****************************************************graph
+      finalStr = "{\"developers\":" + redmine_developers.to_s + ",\"trackers\":" + @productivity_info[:tracker].to_s + ",\"prospect\":" + prospect.to_s + ",\"result\":" + result.to_s + "}"
 
-      finalStr.concat(estimated_hours_result.to_s + ",\"result_hours_result\":" + result_hours_result.to_s + ",\"tracker\":" + @productivity_info[:tracker].to_s + "}");
+      puts finalStr
 
-      render :json => finalStr
+      render :json => JSON.parse(finalStr)
 
     end
 
@@ -334,7 +188,6 @@ class PortfolioController < ApplicationController
   def commits_ajax
     if request.xhr?
       projectId   = params['projectId']
-      developerId = params['developerId']
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
@@ -350,41 +203,20 @@ class PortfolioController < ApplicationController
         c.password = githubUserPW
       end
 
-      #開発者メールアドレスの取得
-      developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
+      # 開発者リスト
+      developers_array = []
+      # 各開発者のコミット数リスト
+      commit_array = []
 
-      #チーム内開発者の全て開発者名前とコミット情報を取る
-      Octokit.auto_paginate = true
-      contributors = Octokit.contribs(githubRepo)
+      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
 
-      #対象開発者の名前
-      developer_name = ""
-
-      #全員のコミット数
-      total_commits = 0
-
-      #対象開発者のコミット数
-      developer_commits = 0
-
-      #チーム内開発者総数
-      total_developers = contributors.length
-
-      #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
-      contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
-        total_commits = total_commits + contributor['contributions']
-        if developer_email == developer_detail['email'] then
-          developer_name = developer_detail['login']
-          developer_commits = developer_commits + contributor['contributions']
-        end
+      all_developer_commits.each do |contributor|
+        developers_array.push(contributor['author']['login'])
+        commit_array.push(contributor['total'])
       end
 
-      #コミット率
-      commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
+      finalStr = "{\"developers\":" + developers_array.to_s + ",\"commit_count\":" + commit_array.to_s + "}"
 
-      @commit_info = Hash.new
-
-      finalStr = "{\"all_commit\":" + total_commits.to_s + ",\"own_commit\":" + developer_commits.to_s + ",\"developer_name\":\"" + developer_name + "\",\"commit_rate\":" + commits_rate.to_s + ",\"total_developers\":" + total_developers.to_s + "}"
       graphJson = JSON.parse(finalStr)
       render :json => graphJson
     end

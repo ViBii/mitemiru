@@ -8,25 +8,27 @@
 
 <div class="table-responsive">
   <table class="table table-striped table-bordered table-hover">
-    <thead>
-      <tr>
-        <th>名前</th>
-        <th>メールアドレス</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
+    <% if @developers.present? %>
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>メールアドレス</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
 
-    <tbody>
-      <%= content_tag_for(:tr, @developers) do |developer| %>
-        <% if show_developer?(developer) %>
+      <tbody>
+        <%= content_tag_for(:tr, @developers) do |developer| %>
           <td><%= link_to developer.name, developer %></td>
           <td><%= developer.email %></td>
           <td><%= link_to '編集', edit_developer_path(developer) %></td>
           <td><%= link_to '削除', developer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
         <% end %>
-      <% end %>
-    </tbody>
+      </tbody>
+    <% else %>
+      <p>開発者データは存在しません</p>
+    <% end %>
   </table>
   <%= paginate @developers %>
 </div>
