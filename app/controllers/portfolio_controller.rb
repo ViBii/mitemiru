@@ -188,7 +188,6 @@ class PortfolioController < ApplicationController
   def commits_ajax
     if request.xhr?
       projectId   = params['projectId']
-      developerId = params['developerId']
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
@@ -204,41 +203,20 @@ class PortfolioController < ApplicationController
         c.password = githubUserPW
       end
 
-      #開発者メールアドレスの取得
-      developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
+      # 開発者リスト
+      developers_array = []
+      # 各開発者のコミット数リスト
+      commit_array = []
 
-      #チーム内開発者の全て開発者名前とコミット情報を取る
-      Octokit.auto_paginate = true
-      contributors = Octokit.contribs(githubRepo)
+      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
 
-      #対象開発者の名前
-      developer_name = ""
-
-      #全員のコミット数
-      total_commits = 0
-
-      #対象開発者のコミット数
-      developer_commits = 0
-
-      #チーム内開発者総数
-      total_developers = contributors.length
-
-      #各開発者のメールアドレスを取得し、対象開発者のアドレスと比較する
-      contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
-        total_commits = total_commits + contributor['contributions']
-        if developer_email == developer_detail['email'] then
-          developer_name = developer_detail['login']
-          developer_commits = developer_commits + contributor['contributions']
-        end
+      all_developer_commits.each do |contributor|
+        developers_array.push(contributor['author']['login'])
+        commit_array.push(contributor['total'])
       end
 
-      #コミット率
-      commits_rate = (developer_commits.to_f/total_commits.to_f * 100).round(3)
+      finalStr = "{\"developers\":" + developers_array.to_s + ",\"commit_count\":" + commit_array.to_s + "}"
 
-      @commit_info = Hash.new
-
-      finalStr = "{\"all_commit\":" + total_commits.to_s + ",\"own_commit\":" + developer_commits.to_s + ",\"developer_name\":\"" + developer_name + "\",\"commit_rate\":" + commits_rate.to_s + ",\"total_developers\":" + total_developers.to_s + "}"
       graphJson = JSON.parse(finalStr)
       render :json => graphJson
     end
