@@ -14,6 +14,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       [9, 59, 8, 23, 33]
     ];
 
+    var max_comment_num = getMaxCommentNum();
     // グラフの色
     var deep_color = '#ae403d';
 
@@ -178,7 +179,13 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             },
             'y': padding.top+j*32,
             'fill': deep_color,
-            'opacity': 1
+            'opacity': function(d) {
+              if (d != 0 && max_comment_num != 0) {
+                return d/max_comment_num;
+              } else {
+                return 0;
+              }
+            }
           });
       }
       /*
@@ -529,16 +536,12 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
     /* Utilities */
     /*************/
     
-    // コミット数の平均値
-    /*function getCommitAverage() {
-      var avg = 0;
-
-      for (var i=0; i<commit_count.length; i++) {
-        avg += commit_count[i];
+    // コメント数の最大値
+    function getMaxCommentNum() {
+      var max = 0;
+      for (var i=0; i<comments.length; i++) {
+        max = Math.max(max, Math.max.apply(null, comments[i]));
       }
-
-      avg = avg/commit_count.length;
-      return avg.toFixed(1);
+      return max;
     }
-    */
 };
