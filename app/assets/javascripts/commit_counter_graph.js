@@ -14,6 +14,19 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       [9, 59, 8, 23, 33]
     ];
 
+    // ソート済みコメントリストの作成
+    var sort_comments = [];
+    sortDefault();
+
+    function sortDefault() {
+      for (var i=0; i<comments.length; i++) {
+        sort_comments[i] = [];
+        for (var j=0; j<comments[i].length; j++) {
+          sort_comments[i].push(comments[i][j]);
+        }
+      }
+    }
+
     /* コメント数の合計値 */
     var send_comments_sum = [];
     var recieve_comments_sum = [];
@@ -51,6 +64,9 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
 
     // イベントの所要時間
     var event_time = 800;
+
+    // ソートのステータス
+    var in_order = 0;
 
     // 線の基本設定表
     var line = d3.svg.line()
@@ -99,7 +115,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       for (var j=0; j<comments.length; j++) {
         // マスの表示
         svg.select('.heat_map')
-          .selectAll('.column')
+          .selectAll('.data')
           .data(comments[j])
           .enter()
           .append('g')
@@ -127,6 +143,114 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             }
           });
       }
+
+      // マウスイベントの設定関数
+      function setMauseEventOnCells(j) {
+        svg.select('.heat_map')
+          .selectAll('.row_'+j)
+          .data(comments[j])
+          .on('mouseover', function(d, i) {
+            // 背景の表示
+            svg.select('.heat_map')
+              .append('rect')
+              .attr('class', 'text_back')
+              .attr({
+                'width': 30,
+                'height': 18,
+                'x': function() {
+                  return padding.left+i*31+1;
+                },
+                'y': function() {
+                  return padding.top+j*31-25;
+                },
+                'fill': '#000000',
+                'opacity': 0.5
+              });
+            
+            // 矢印の表示
+            svg.select('.heat_map')
+              .append('path')
+              .attr('class', 'arrow')
+              .attr({
+                'd': function() {
+                  return 'M '+(padding.left+i*31+16)+' '+(padding.top+j*31)+
+                         'l 5 -5'+
+                         'l -10 0'+
+                         'l 5 5';
+                },
+                'stroke': '#000000',
+                'stroke-width': 1,
+                'fill': '#000000',
+                'opacity': 0.5
+            });
+
+            // コメント数の表示
+            svg.select('.heat_map')
+              .append('text')
+              .attr('class', 'comment_num')
+              .text(comments[j][i])
+              .attr({
+                'x': function() {
+                  return padding.left+i*31+16;
+                },
+                'y': function() {
+                  return padding.top+j*31-15;
+                },
+                'font-family': 'sans-serif',
+                'font-size': '10px',
+                'text-anchor': 'middle',
+                'dominant-baseline': 'middle',
+                'fill': '#ffffff',
+                'opacity': 1
+              });
+          })
+          .on('mouseout', function() {
+            svg.select('.heat_map')
+              .selectAll('.comment_num')
+              .remove();
+
+            svg.select('.heat_map')
+              .selectAll('.arrow')
+              .remove();
+
+            svg.select('.heat_map')
+              .selectAll('.text_back')
+              .remove();
+          });
+      }
+
+      // 設定の実行
+      for (var j=0; j<developers.length; j++) {
+        setMauseEventOnCells(j);
+      }
+      /*
+        svg.select('.heat_map')
+          .selectAll('.row')
+          .data(comments)
+          .selectAll(function(row, i) {
+            return '.column_'+i;
+          })
+          .data(function(row) {
+            return d3.entries(row);
+          })
+          .on('mouseover', function(d) {
+            console.log(d.value);
+          });
+
+      
+      /*
+        for (var j=0; j<recieve_comments_sum.length; j++) {
+          // マウスイベント
+          svg.select('.heat_map')
+            .select('.row_')
+            .data(comments[j])
+            .on('mouseover', function(d, i) {
+              console.log(j+', '+i);
+            })
+            .on('mouseout', function() {
+            });
+        } */
+
 
       /* 境界線の設定 */
       // 行境界線の表示
@@ -325,7 +449,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       var button_pale_color = ['#99b6d9', '#db9a98'];
       var button_radius = [10, 8];
       var order = ['開発者の登録順', 'コメント数順'];
-      var in_order = 0;
 
       // ソート済みデータの準備
       var swp_send_comments_sum = [];
@@ -473,6 +596,9 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             .text(order[in_order]);
 
           if (in_order == 0) {
+            // コメント数リストのソート
+            sortDefault();
+
             // 開発者名のソート(行)
             svg.select('.heat_map')
               .selectAll('.row_developer_label')
@@ -612,6 +738,10 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                     'x': function() {
                       for (var k=0; k<developers.length; k++) {
                         if (recieve_comments_sum[j] == sort_recieve_comments_sum[k]) {
+                          // コメントリストの置換
+                          sort_comments[i][j] = comments[i][k];
+                          sort_comments[i][k] = comments[i][j];
+                          // x座標の返却
                           return padding.left+(developers.length-1-k)*31;
                         }
                       }
@@ -619,6 +749,10 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                     'y': function() {
                       for (var k=0; k<developers.length; k++) {
                         if (send_comments_sum[i] == sort_send_comments_sum[k]) {
+                          // コメントリストの置換
+                          sort_comments[i][j] = comments[k][j];
+                          sort_comments[k][j] = comments[i][j];
+                          // y座標の返却
                           return padding.top+(developers.length-1-k)*31;
                         }
                       }
