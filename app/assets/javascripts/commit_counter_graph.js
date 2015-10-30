@@ -1,15 +1,10 @@
-var create_commit_graph = function(all_commit,own_commit,developer_name){
-    var commit_count = [all_commit, own_commit];
-    var developer_name = ['その他', developer_name];
-    var color = ['#b1d7e8', '#006ab3'];
+var create_commit_graph = function(developers,commit_count){
 
     /* 取得データの一覧 */
     // developers: 開発者のリスト
     // commit_count: 各開発者のコミット数
-
-    // 取得データサンプル(連携後に消去)
-    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
-    var commit_count = [38, 55, 103, 11, 82];
+    var developers = developers;
+    var commit_count = commit_count;
 
     // グラフの色
     var base_color = '#4f81bd';
