@@ -431,45 +431,44 @@ class PortfolioController < ApplicationController
         show_developers << contributor_data['login'] if developers_email.include?(contributor['email'])
       end
 
-      #issue情報を取る
-      issues = Octokit.list_issues(version_repository, state: 'all')
-
+      # issue情報を取る
       issue_comment_data = Hash.new { |h,k| h[k] = {} }
-      binding.pry
-      developer_name = Hash.new
-      contributors.each do |contributor|
-        if contributor['login'] != @assigneeArg
-          developer_name[contributor['login']] = 0
+      issues = Octokit.list_issues(version_repository, state: 'all')
+      issues.each do |issue|
+        comment_data = []
+        if issue['assignee'] != nil && issue['comments'] != 0
+          comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
+          comments.each do |comment|
+            comment_data << comment
+          end
+          issue_comment_data["#{issue['number'].to_s}"] = comment_data
         end
       end
-      issues.each do |issue|
-        show_developers.each do |show_developer|
-          show_developer = []
-          # comment数は0ではない＆担当者がnilではないissueの一覧表示
-          if issue['assignee'] != nil && issue['comments'] != 0 && show_developer
-            # 各issueのcommentsの取得
-            comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
+
+      speaker_data = Hash.new { |h,k| h[k] = {} }
+      show_developers.each do |speaker|
+        developer_comments = []
+        show_developers.each do |receiver|
+          if speaker == receiver
+            developer_comments << 0
+            break
+          end
+          issue_comment_data.each do |issue|
             count = 0
-            # commentsから該当開発者の発言を合計する
-            comments.each do |comment|
-              show_developers.each do |receiver|
+            if speaker != issue['assignee']['login']
+              # commentsから該当開発者の発言を取得し, 計算する
+              issue.each do |comment|
                 count += 1 if comment['user']['login'] == receiver
               end
             end
-
-            # comment数を分類する
-            if count != 0
-              developer_name.each_pair {|name, num|
-                if name == issue['assignee']['login']
-                  developer_name[name] = developer_name[name] + count
-                end
-              }
-            end
+            developer_comments << count
           end
         end
+        speaker_data["#{speaker}"] = developer_comments
       end
+      binding.pry
 
-      render :json => issue_comment_data
+      render :json => speaker_data
     end
   end
 end
