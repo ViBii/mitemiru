@@ -314,11 +314,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         sort_recieve_comments_sum.push(recieve_comments_sum[i]);
       }
 
-      //console.log(swp_send_developers);
-      //console.log(swp_recieve_developers);
-      //console.log(swp_send_comments_sum);
-      //console.log(swp_recieve_comments_sum);
-
       // コミット数のソート
       sort_send_comments_sum.sort(function(a, b) {
         if (a<b) return -1;
@@ -331,9 +326,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         if (a>b) return 1;
         return 0;
       });
-
-      //console.log(sort_send_comments_sum);
-      //console.log(sort_recieve_comments_sum);
 
       /* 開発者名のソート */
       // 送信者
@@ -445,17 +437,30 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             .text(order[in_order]);
 
           if (in_order == 0) {
-            /*
-            // 開発者ラベルのソート
-            svg.select('.chart_area')
-              .selectAll('.developer_label')
+            // 開発者名のソート(行)
+            svg.select('.heat_map')
+              .selectAll('.row_developer_label')
               .data(developers)
               .transition()
               .duration(event_time)
-              .attr('x', function(d, i) {
-                return bar_start_x+i*60+20;
+              .attr({
+                'y': function(d, i) {
+                  return padding.top+i*31+18;
+                }
               });
-            */
+
+            // 開発者名のソート(列)
+            svg.select('.heat_map')
+              .selectAll('.column_developer_label')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr({
+                'x': function(d, i) {
+                  return padding.left+i*31+16;
+                },
+              });
+
             // マスのソート
             for (var i=0; i<developers.length; i++) {
               for (var j=0; j<developers.length; j++) {
@@ -465,7 +470,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   .select('.cell')
                   .transition()
                   .duration(event_time)
-                  .delay(event_time)
                   .attr({
                     'x': function() {
                       return padding.left+j*31;
@@ -476,36 +480,41 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   });
               }
             }
-            /*
-            // マスのソート(行)
-            for (var i=0; i<developers.length; i++) {
-              svg.select('.heat_map')
-                .selectAll('.row_'+i)
-                .selectAll('.cell')
-                .transition()
-                .duration(event_time)
-                .attr({
-                  'y': function() {
-                    return padding.top+i*31;
-                  }
-                });
-            }
-
-            // マスのソート(列)
-            for (var i=0; i<developers.length; i++) {
-              svg.select('.heat_map')
-                .selectAll('.column_'+i)
-                .selectAll('.cell')
-                .transition()
-                .duration(event_time)
-                .attr({
-                  'x': function() {
-                    return padding.top+i*31;
-                  }
-                });
-            } */
           }
           else if (in_order == 1) {
+            // 開発者名のソート(行)
+            svg.select('.heat_map')
+              .selectAll('.row_developer_label')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr({
+                'y': function(d, i) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
+                      return padding.top+(developers.length-1-j)*31+18;
+                    }
+                  }
+                }
+              });
+
+            // 開発者名の表示(列)
+            svg.select('.heat_map')
+              .selectAll('.column_developer_label')
+              .data(developers)
+              .transition()
+              .duration(event_time)
+              .attr({
+                'x': function(d, i) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
+                      return padding.left+(developers.length-1-j)*31+16;
+                    }
+                  }
+                }
+              });
+             
+
             // マスのソート
             for (var i=0; i<developers.length; i++) {
               for (var j=0; j<developers.length; j++) {
@@ -515,7 +524,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   .select('.cell')
                   .transition()
                   .duration(event_time)
-                  .delay(event_time)
                   .attr({
                     'x': function() {
                       for (var k=0; k<developers.length; k++) {
@@ -535,64 +543,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               }
             }
           }
-
-          /*
-              });
-            // コミット数のソート
-            svg.select('.chart_area')
-              .selectAll('.bar_figure')
-              .data(developers)
-              .transition()
-              .duration(event_time)
-              .attr('x', function(d, i) {
-                return bar_start_x+i*60+20;
-              });
-
-          }
-          /* コミット数順 */
-          /*else if (in_order == 1) {
-            // 開発者ラベルのソート
-            svg.select('.chart_area')
-              .selectAll('.developer_label')
-              .data(developers)
-              .transition()
-              .duration(event_time)
-              .attr('x', function(d) {
-                for (var j=0; j<developers.length; j++) {
-                  if (d == sort_developers[j]) {
-                    return bar_start_x+(developers.length-1-j)*60+20;
-                  }
-                }
-              });
-
-            // 棒グラフのソート
-            svg.select('.chart_area')
-              .selectAll('.bar')
-              .data(developers)
-              .transition()
-              .duration(event_time)
-              .attr('x', function(d) {
-                for (var j=0; j<developers.length; j++) {
-                  if (d == sort_developers[j]) {
-                    return bar_start_x+(developers.length-1-j)*60;
-                  }
-                }
-              });
-
-            // コミット数のソート
-            svg.select('.chart_area')
-              .selectAll('.bar_figure')
-              .data(developers)
-              .transition()
-              .duration(event_time)
-              .attr('x', function(d) {
-                for (var j=0; j<developers.length; j++) {
-                  if (d == sort_developers[j]) {
-                    return bar_start_x+(developers.length-1-j)*60+20;
-                  }
-                }
-              });
-          } */
         });
 
       // ソート順の表示
