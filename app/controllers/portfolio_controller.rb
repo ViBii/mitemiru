@@ -392,115 +392,84 @@ class PortfolioController < ApplicationController
 
   def comments_ajax
     if request.xhr?
-      projectId   = params['projectId']
-      developerId = params['developerId']
-      #issuesの状態
-      stateArg = "all"
+      # TODO: 変数はスネークで記述します
+      target_project = Project.find_by(id: params['projectId'])
 
-      #開発者メールアドレスの取得
-      developer_email = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+developerId)[0].email
-
-      #repo設定
-      @version_repo_id = Project.find(projectId)[:version_repository_id]
-      githubRepo = VersionRepository.find(@version_repo_id)[:project_name] + '/' + VersionRepository.find(@version_repo_id)[:repository_name]
-
-      #システム利用者github認証
-      githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
-      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
-
-      #認証を取る
-      Octokit.configure do |c|
-        c.login = githubUserName
-        c.password = githubUserPW
+      # 認証
+      login_id = target_project.version_repository.github_keys.first.login_id
+      password = RedmineKey.decrypt(target_project.version_repository.github_keys.first.password_digest)
+      Octokit.configure do |f|
+        f.login    = login_id
+        f.password = password
       end
 
-      # API 呼び出し回数
+      # API呼び出し回数制限表示
       ratelimit           = Octokit.ratelimit
       ratelimit_remaining = Octokit.ratelimit_remaining
       puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
-      puts
 
-      #チーム内開発者の全て開発者名前を取る
+      project_name    = target_project.version_repository.project_name
+      repository_name = target_project.version_repository.repository_name
+      version_repository = project_name + '/' + repository_name
+
+      # チーム内開発者の全て開発者名前を取る
       Octokit.auto_paginate = true
-      contributors = Octokit.contribs(githubRepo)
+      contributors = Octokit.contribs(version_repository)
 
-      #見たい開発者のGithub上のUserName
-      @assigneeArg = ""
+      # 開発者取得
+      # TODO: 開発者とプロジェクトのリレーションなってない..
+      assign_logs = AssignLog.where(project_id: target_project).pluck(:id)
+      developers_email = Developer.where(id: assign_logs).pluck(:email)
 
+      # 表示する開発者
+      show_developers = []
       contributors.each do |contributor|
-        developer_detail = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/users/' + contributor['login'], user: githubUserName, password: githubUserPW)
-        if developer_email == developer_detail['email'] then
-          @assigneeArg = developer_detail['login']
-        end
-      end
-
-      #同じリポジトリの中の他の開発者名前を取得する
-      contributors = Octokit.contribs(githubRepo)
-      developer_name = Hash.new
-      contributors.each do |contributor|
-        if contributor['login'] != @assigneeArg then
-          developer_name[contributor['login']] = 0
-        end
+        contributor_data = JSON.parse(RestClient::Request.execute method: :get,
+                                      url: 'https://api.github.com/users/' + contributor['login'],
+                                      user: login_id,
+                                      password: password)
+        show_developers << contributor_data['login'] if developers_email.include?(contributor['email'])
       end
 
       #issue情報を取る
-      Octokit.auto_paginate = true
-      issues = Octokit.list_issues(githubRepo,state: stateArg)
+      issues = Octokit.list_issues(version_repository, state: 'all')
 
-      #最終json
-      finalStr = ""
-      nodes = ""
-      links = ""
-
+      issue_comment_data = Hash.new { |h,k| h[k] = {} }
+      binding.pry
+      developer_name = Hash.new
+      contributors.each do |contributor|
+        if contributor['login'] != @assigneeArg
+          developer_name[contributor['login']] = 0
+        end
+      end
       issues.each do |issue|
+        show_developers.each do |show_developer|
+          show_developer = []
+          # comment数は0ではない＆担当者がnilではないissueの一覧表示
+          if issue['assignee'] != nil && issue['comments'] != 0 && show_developer
+            # 各issueのcommentsの取得
+            comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
+            count = 0
+            # commentsから該当開発者の発言を合計する
+            comments.each do |comment|
+              show_developers.each do |receiver|
+                count += 1 if comment['user']['login'] == receiver
+              end
+            end
 
-        #assigneeArgが担当しなかった,かつ comment数は0ではない,かつ 担当者がnilではないissueの一覧表示
-        if issue['assignee'] != nil && issue['assignee']['login'] != @assigneeArg && issue['comments'] != 0 then
-          #各issueのcommentsの取得
-          comments = Octokit.issue_comments(githubRepo, issue['number'].to_s)
-          counter = 0
-          #commentsから該当開発者の発言を合計する
-          comments.each do |comment|
-            if comment['user']['login'] == @assigneeArg
-              counter = counter + 1
+            # comment数を分類する
+            if count != 0
+              developer_name.each_pair {|name, num|
+                if name == issue['assignee']['login']
+                  developer_name[name] = developer_name[name] + count
+                end
+              }
             end
           end
-
-          #comment数を分類する
-          if counter != 0 then
-            developer_name.each_pair {|name, num|
-              if name == issue['assignee']['login'] then
-                developer_name[name] = developer_name[name] + counter
-              end
-            }
-          end
-
         end
       end
 
-      #該当開発者の設定
-      nodes.concat("{\"nodes\":[{\"name\":\"" + @assigneeArg + "\",\"group\":3}")
-      links.concat("],\"links\":[{\"source\":0,\"target\":")
-      loopTime = 0
-
-      developer_name.each_pair {|name, num|
-        if loopTime < developer_name.length then
-          nodes.concat(",{\"name\":\"" + name + "\",\"group\":2}")
-          links.concat((loopTime + 1).to_s + ",\"value\":")
-          if loopTime != developer_name.length - 1 then
-            links.concat(num.to_s + "},{\"source\":0,\"target\":")
-          else
-            links.concat(num.to_s + "}]}")
-          end
-          loopTime = loopTime + 1
-        end
-      }
-
-      finalStr = nodes + links
-
-      render :json => finalStr
-
+      render :json => issue_comment_data
     end
-
   end
 end
