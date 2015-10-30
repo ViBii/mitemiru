@@ -78,33 +78,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           'transform': 'translate('+(margin.left)+', '+(margin.top)+')'
         });
 
-      /*
-      // グラフタイトルの表示
-      svg.select('.chart_area')
-        .append('text')
-        .transition()
-        .duration(event_time)
-        .each('start', function() {
-          d3.select(this)
-            .attr({
-              'class': 'chart_title',
-              'x': bar_start_x-50,
-              'y': bar_max_height/2,
-              'font-family': 'sans-serif',
-              'font-size': '20px',
-              'text-anchor': 'middle',
-              'dominant-baseline': 'middle',
-              'writing-mode': 'tb',
-              'fill': '#777777',
-              'opacity': 0
-              })
-            .text('コミット数');
-        })
-        .attr({
-          'opacity': 1
-        });
 
-      */
       for (var j=0; j<comments.length; j++) {
         // マスの表示
         svg.select('.heat_map')
@@ -197,6 +171,40 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           'opacity': 1
         });
 
+      // 項目名の表示(行)
+      svg.select('.heat_map')
+        .append('text')
+        .attr('class', 'row_term_label')
+        .text('送信者')
+        .attr({
+          'x': padding.left-15,
+          'y': padding.top-10,
+          'font-family': 'sans-serif',
+          'font-size': '10px',
+          'text-anchor': 'end',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 1
+        });
+
+      // 項目名の表示(列)
+      svg.select('.heat_map')
+        .append('text')
+        .attr('class', 'row_term_label')
+        .text('受信者')
+        .attr({
+          'x': padding.left-10,
+          'y': padding.top-15,
+          'font-family': 'sans-serif',
+          'font-size': '10px',
+          'text-anchor': 'end',
+          'dominant-baseline': 'middle',
+          'writing-mode': 'tb',
+          'fill': '#777777',
+          'opacity': 1
+        });
+
+
       // 開発者名の表示(行)
       svg.select('.heat_map')
         .selectAll('.row_developer_label')
@@ -244,37 +252,52 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           'opacity': 1
         });
 
-      /*
-      // 各コミット数の表示
-      svg.select('.chart_area')
-        .selectAll('.bar_figure')
-        .data(commit_count)
+      // 送信コメント数の表示
+      svg.select('.heat_map')
+        .selectAll('.send_comments_sum_label')
+        .data(send_comments_sum)
         .enter()
         .append('text')
-        .attr('class', 'bar_figure')
+        .attr('class', 'send_comments_sum_label')
+        .text(function(d) {
+          return d;
+        })
+        .attr({
+          'x': padding.left+developers.length*31+5,
+          'y': function(d, i) {
+            return padding.top+i*31+18;
+          },
+          'font-family': 'sans-serif',
+          'font-size': '10px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 1
+        });
+
+      // 受信コメント数の表示
+      svg.select('.heat_map')
+        .selectAll('.recieve_comments_sum_label')
+        .data(recieve_comments_sum)
+        .enter()
+        .append('text')
+        .attr('class', 'recieve_comments_sum_label')
         .text(function(d) {
           return d;
         })
         .attr({
           'x': function(d, i) {
-            return bar_start_x+i*60+20;
+            return padding.left+i*31+16
           },
-          'y': function(d, i) {
-            return bar_max_height-yScale(d)-10;
-          },
+          'y': padding.top+developers.length*31+5,
           'font-family': 'sans-serif',
-          'font-size': '15px',
-          'text-anchor': 'middle',
+          'font-size': '10px',
+          'text-anchor': 'start',
           'dominant-baseline': 'middle',
+          'writing-mode': 'tb',
           'fill': '#777777',
-          'opacity': 0
-        })
-        .transition()
-        .delay(2*event_time)
-        .duration(event_time)
-        .attr({
           'opacity': 1
-        }); */
+        });
     }; // End drawCommentGraph;
 
     /************************/
@@ -500,6 +523,30 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   return line([[padding.left+i*31, padding.top],[padding.left+i*31, padding.top+developers.length*31]]);
                 }
               });
+
+            // 送信コメント数の移動
+            svg.select('.heat_map')
+              .selectAll('.send_comments_sum_label')
+              .data(send_comments_sum)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'y': function(d, i) {
+                  return padding.top+i*31+18;
+                }
+              });
+
+              // 受信コメント数の移動
+              svg.select('.heat_map')
+                .selectAll('.recieve_comments_sum_label')
+                .data(recieve_comments_sum)
+                .transition()
+                .duration(2*event_time)
+                .attr({
+                  'x': function(d, i) {
+                    return padding.left+i*31+16;
+                  }
+                });
           }
           else if (in_order == 1) {
             // 開発者名のソート(行)
@@ -594,8 +641,40 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   }
                 }
               });
-        }
-      }); // End onClick;
+
+            // 送信コメント数の移動
+            svg.select('.heat_map')
+              .selectAll('.send_comments_sum_label')
+              .data(send_comments_sum)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'y': function(d, i) {
+                  for (var j=0; j<send_comments_sum.length; j++) {
+                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
+                      return padding.top+(send_comments_sum.length-1-j)*31+18;
+                    }
+                  }
+                }
+              });
+
+            // 受信コメント数の移動
+            svg.select('.heat_map')
+              .selectAll('.recieve_comments_sum_label')
+              .data(recieve_comments_sum)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'x': function(d, i) {
+                  for (var j=0; j<recieve_comments_sum.length; j++) {
+                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
+                      return padding.left+(recieve_comments_sum.length-1-j)*31+16;
+                    }
+                  }
+                }
+              });
+          }
+        }); // End onClick;
 
       // ソート順の表示
       svg.select('.heat_map')
