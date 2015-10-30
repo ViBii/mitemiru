@@ -6,7 +6,6 @@ Rails.application.routes.draw do
   post 'portfolio/show_projects'
 
   get 'portfolio/productivity_info'
-  post 'portfolio/ticket_digestion_ajax'
   post 'portfolio/productivity_ajax'
   post 'portfolio/commits_ajax'
   post 'portfolio/comments_ajax'
