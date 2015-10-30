@@ -78,6 +78,23 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           'transform': 'translate('+(margin.left)+', '+(margin.top)+')'
         });
 
+      // グラフタイトルの表示
+      svg.select('.heat_map')
+        .append('text')
+        .attr('class', 'title')
+        .text('コメント数の送受信数')
+        .attr({
+          'x': padding.left+developers.length*31+40,
+          'y': padding.top-50,
+          'font-family': 'sans-serif',
+          'font-size': '20px',
+          'font-weight': 'bold',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 1
+        });
+
 
       for (var j=0; j<comments.length; j++) {
         // マスの表示
@@ -375,7 +392,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       svg.select('.heat_map')
         .append('g')
         .attr('class', 'sort')
-        .attr('transform', 'translate('+(padding.left+developers.length*31+40)+', '+(padding.top-50)+')');
+        .attr('transform', 'translate('+(padding.left+developers.length*31+40)+', '+(padding.top)+')');
 
       // テキストの表示
       svg.select('.heat_map')
@@ -384,10 +401,10 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .attr('class', 'function_name')
         .text('Sort')
         .attr({
-          'x': 0,
-          'y': 0,
+          'x': 10,
+          'y': 10,
           'font-family': 'sans-serif',
-          'font-size': '20px',
+          'font-size': '15px',
           'text-anchor': 'start',
           'dominant-baseline': 'middle',
           'fill': '#777777',
