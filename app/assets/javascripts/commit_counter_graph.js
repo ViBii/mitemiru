@@ -30,9 +30,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       recieve_comments_sum.push(sum);
     }
 
-    console.log(send_comments_sum);
-    //console.log(recieve_comments_sum);
-
     var max_comment_num = getMaxCommentNum();
     // グラフの色
     var deep_color = '#ae403d';
@@ -55,15 +52,24 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
     // イベントの所要時間
     var event_time = 800;
 
+    // 線の基本設定表
+    var line = d3.svg.line()
+                 .x(function(d) {
+                   return d[0];
+                 })
+                 .y(function(d) {
+                   return d[1];
+                 });
+
     /**************/
     /* 描画の実行 */
     /**************/
     drawCommentGraph();
     sortHeatMap();
 
-    /******************/
-    /* 棒グラフの描画 */
-    /******************/
+    /**********************/
+    /* ヒートマップの描画 */
+    /**********************/
     function drawCommentGraph() {
       // グラフエリアの設定
       svg.append('g')
@@ -132,16 +138,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       }
 
       /* 境界線の設定 */
-
-      // 線の基本設定表
-      var line = d3.svg.line()
-                   .x(function(d) {
-                     return d[0];
-                   })
-                   .y(function(d) {
-                     return d[1];
-                   });
-
       // 行境界線の表示
       svg.select('.heat_map')
         .selectAll('.row_border')
@@ -149,7 +145,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .enter()
         .append('path')
         .attr('class', function(d, i) {
-          return 'row_border_'+i;
+          return 'row_border';
         })
         .attr({
           'd': function(d, i) {
@@ -167,7 +163,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .enter()
         .append('path')
         .attr('class', function(d, i) { 
-            return 'column_border_'+i;
+            return 'column_border';
         })
         .attr({
           'd': function(d, i) {
@@ -442,7 +438,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               .selectAll('.row_developer_label')
               .data(developers)
               .transition()
-              .duration(event_time)
+              .duration(2*event_time)
               .attr({
                 'y': function(d, i) {
                   return padding.top+i*31+18;
@@ -454,7 +450,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               .selectAll('.column_developer_label')
               .data(developers)
               .transition()
-              .duration(event_time)
+              .duration(2*event_time)
               .attr({
                 'x': function(d, i) {
                   return padding.left+i*31+16;
@@ -469,7 +465,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   .selectAll('.column_'+j)
                   .select('.cell')
                   .transition()
-                  .duration(event_time)
+                  .duration(2*event_time)
                   .attr({
                     'x': function() {
                       return padding.left+j*31;
@@ -480,6 +476,30 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   });
               }
             }
+
+            // 行境界線の移動
+            svg.select('.heat_map')
+              .selectAll('.row_border')
+              .data(developers)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'd': function(d, i) {
+                  return line([[padding.left+0, padding.top+i*31],[padding.left+developers.length*31, padding.top+i*31]]);
+                }
+              });
+
+            // 列境界線の移動
+            svg.select('.heat_map')
+              .selectAll('.column_border')
+              .data(developers)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'd': function(d, i) {
+                  return line([[padding.left+i*31, padding.top],[padding.left+i*31, padding.top+developers.length*31]]);
+                }
+              });
           }
           else if (in_order == 1) {
             // 開発者名のソート(行)
@@ -487,7 +507,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               .selectAll('.row_developer_label')
               .data(developers)
               .transition()
-              .duration(event_time)
+              .duration(2*event_time)
               .attr({
                 'y': function(d, i) {
                   for (var j=0; j<developers.length; j++) {
@@ -503,7 +523,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               .selectAll('.column_developer_label')
               .data(developers)
               .transition()
-              .duration(event_time)
+              .duration(2*event_time)
               .attr({
                 'x': function(d, i) {
                   for (var j=0; j<developers.length; j++) {
@@ -523,7 +543,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   .selectAll('.column_'+j)
                   .select('.cell')
                   .transition()
-                  .duration(event_time)
+                  .duration(2*event_time)
                   .attr({
                     'x': function() {
                       for (var k=0; k<developers.length; k++) {
@@ -542,8 +562,40 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   });
               }
             }
-          }
-        });
+
+            // 行境界線の移動
+            svg.select('.heat_map')
+              .selectAll('.row_border')
+              .data(developers)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'd': function(d, i) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
+                      return line([[padding.left+0, padding.top+(developers.length-1-j)*31],[padding.left+developers.length*31, padding.top+(developers.length-1-j)*31]]);
+                    }
+                  }
+                }
+              });
+
+            // 列境界線の移動
+            svg.select('.heat_map')
+              .selectAll('.column_border')
+              .data(developers)
+              .transition()
+              .duration(2*event_time)
+              .attr({
+                'd': function(d, i) {
+                  for (var j=0; j<developers.length; j++) {
+                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
+                      return line([[padding.left+(developers.length-1-j)*31, padding.top],[padding.left+(developers.length-1-j)*31, padding.top+developers.length*31]]);
+                    }
+                  }
+                }
+              });
+        }
+      }); // End onClick;
 
       // ソート順の表示
       svg.select('.heat_map')
