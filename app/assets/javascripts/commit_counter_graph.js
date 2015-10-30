@@ -245,7 +245,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         [[padding.left, padding.top], [padding.left, padding.top+developers.length*31]]
       ];
       
-      // ヒートマップの縁
+      // ヒートマップの縁の表示
       svg.select('.heat_map')
         .selectAll('.edge_line')
         .data(heat_map_edgelines)
@@ -261,6 +261,52 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           'opacity': 1
         });
 
+      // 開発者名の表示(行)
+      svg.select('.heat_map')
+        .selectAll('.row_developer_label')
+        .data(developers)
+        .enter()
+        .append('text')
+        .attr('class', 'row_developer_label')
+        .text(function(d) {
+          return d;
+        })
+        .attr({
+          'x': padding.left-10,
+          'y': function(d, i) {
+            return padding.top+i*31+18;
+          },
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'end',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 1
+        });
+
+      // 開発者名の表示(列)
+      svg.select('.heat_map')
+        .selectAll('.column_developer_label')
+        .data(developers)
+        .enter()
+        .append('text')
+        .attr('class', 'column_developer_label')
+        .text(function(d) {
+          return d;
+        })
+        .attr({
+          'x': function(d, i) {
+            return padding.left+i*31+16
+          },
+          'y': padding.top-10,
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'end',
+          'dominant-baseline': 'middle',
+          'writing-mode': 'tb',
+          'fill': '#777777',
+          'opacity': 1
+        });
 
       /*
       // 各コミット数の表示
