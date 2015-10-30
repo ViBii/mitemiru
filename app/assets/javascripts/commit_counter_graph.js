@@ -14,6 +14,25 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       [9, 59, 8, 23, 33]
     ];
 
+    /* コメント数の合計値 */
+    var send_comments_sum = [];
+    var recieve_comments_sum = [];
+    
+    for (var i=0; i<developers.length; i++) {
+      // 送信コメント数
+      send_comments_sum.push(getSum(comments[i]));
+
+      //受信コメント数
+      var sum = 0;
+      for (var j=0; j<developers.length; j++) {
+        sum += comments[j][i];
+      }
+      recieve_comments_sum.push(sum);
+    }
+
+    console.log(send_comments_sum);
+    //console.log(recieve_comments_sum);
+
     var max_comment_num = getMaxCommentNum();
     // グラフの色
     var deep_color = '#ae403d';
@@ -78,85 +97,6 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .attr({
           'opacity': 1
         });
-
-
-      var line = d3.svg.line()
-                   .x(function(d) {
-                     return d[0];
-                   })
-                   .y(function(d) {
-                     return d[1];
-                   });
-
-
-      // 平均軸の表示
-      svg.select('.chart_area')
-        .append('path')
-        .transition()
-        .duration(event_time)
-        .each('start', function() {
-          d3.select(this)
-            .attr({
-              'class': 'xaxis',
-              'd': line([[bar_start_x-20, bar_max_height-yScale(getCommitAverage())], [bar_start_x-20+developers.length*60+20, bar_max_height-yScale(getCommitAverage())]]),
-              'stroke': '#aaaaaa',
-              'stroke-width': 1,
-              'stroke-dasharray': 10,
-              'opacity': 0
-            });
-        })
-        .attr({
-          'opacity': 1
-        });
-
-      // 平均値の表示
-      svg.select('.chart_area')
-        .append('text')
-        .transition()
-        .duration(event_time)
-        .each('start', function() {
-          d3.select(this)
-            .attr({
-              'class': 'average_label',
-              'x': bar_start_x-20+developers.length*60+22,
-              'y': bar_max_height-yScale(getCommitAverage())-10,
-              'font-family': 'sans-serif',
-              'font-size': '15px',
-              'text-anchor': 'start',
-              'dominant-baseline': 'middle',
-              'fill': '#777777',
-              'opacity': 0
-            })
-            .text('平均');
-        })
-        .attr({
-          'opacity': 1
-        });
-
-      // 同上
-      svg.select('.chart_area')
-        .append('text')
-        .transition()
-        .duration(event_time)
-        .each('start', function() {
-          d3.select(this)
-            .attr({
-              'class': 'average_label',
-              'x': bar_start_x-20+developers.length*60+22,
-              'y': bar_max_height-yScale(getCommitAverage())+10,
-              'font-family': 'sans-serif',
-              'font-size': '15px',
-              'text-anchor': 'start',
-              'dominant-baseline': 'middle',
-              'fill': '#777777',
-              'opacity': 0
-            })
-            .text(getCommitAverage());
-        })
-        .attr({
-          'opacity': 1
-        });
-
 
       */
       for (var j=0; j<comments.length; j++) {
@@ -351,37 +291,74 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
       var order = ['開発者の登録順', 'コメント数順'];
       var in_order = 0;
 
-      /*
       // ソート済みデータの準備
-      var swp_commit_count = [];
-      var sort_commit_count = [];
-      var swp_developers = [];
-      var sort_developers = [];
-      for (var i=0; i<commit_count.length; i++) {
-        swp_commit_count.push(commit_count[i]);
-        sort_commit_count.push(commit_count[i]);
-        swp_developers.push(developers[i]);
+      var swp_send_comments_sum = [];
+      var swp_recieve_comments_sum = [];
+      var sort_send_comments_sum = [];
+      var sort_recieve_comments_sum = [];
+      var swp_send_developers = [];
+      var swp_recieve_developers = [];
+      var sort_send_developers = [];
+      var sort_recieve_developers = [];
+
+      // データの準備
+      for (var i=0; i<developers.length; i++) {
+        //  開発者
+        swp_send_developers.push(developers[i]);
+        swp_recieve_developers.push(developers[i]);
+
+        // コメント数
+        swp_send_comments_sum.push(send_comments_sum[i]);
+        swp_recieve_comments_sum.push(recieve_comments_sum[i]);
+        sort_send_comments_sum.push(send_comments_sum[i]);
+        sort_recieve_comments_sum.push(recieve_comments_sum[i]);
       }
 
+      //console.log(swp_send_developers);
+      //console.log(swp_recieve_developers);
+      //console.log(swp_send_comments_sum);
+      //console.log(swp_recieve_comments_sum);
+
       // コミット数のソート
-      sort_commit_count.sort(function(a, b) {
+      sort_send_comments_sum.sort(function(a, b) {
         if (a<b) return -1;
         if (a>b) return 1;
         return 0;
       });
 
-      // 開発者名のソート
+      sort_recieve_comments_sum.sort(function(a, b) {
+        if (a<b) return -1;
+        if (a>b) return 1;
+        return 0;
+      });
+
+      //console.log(sort_send_comments_sum);
+      //console.log(sort_recieve_comments_sum);
+
+      /* 開発者名のソート */
+      // 送信者
       for (var i=0; i<developers.length; i++) {
         for (var j=0; j<developers.length; j++) {
-          if (sort_commit_count[i] == swp_commit_count[j]) {
-            sort_developers.push(swp_developers[j]);
-            swp_commit_count.splice(j,1);
-            swp_developers.splice(j,1);
+          if (sort_send_comments_sum[i] == swp_send_comments_sum[j]) {
+            sort_send_developers.push(swp_send_developers[j]);
+            swp_send_comments_sum.splice(j,1);
+            swp_send_developers.splice(j,1);
             break;
           }
         }
       }
-      */
+
+      // 受信者
+      for (var i=0; i<developers.length; i++) {
+        for (var j=0; j<developers.length; j++) {
+          if (sort_recieve_comments_sum[i] == swp_recieve_comments_sum[j]) {
+            sort_recieve_developers.push(swp_recieve_developers[j]);
+            swp_recieve_comments_sum.splice(j,1);
+            swp_recieve_developers.splice(j,1);
+            break;
+          }
+        }
+      }
 
       // ソートグループの作成
       svg.select('.heat_map')
@@ -467,8 +444,8 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             .select('.sort_name')
             .text(order[in_order]);
 
-          /* 開発者の登録順 */
-          /*if (in_order == 0) {
+          if (in_order == 0) {
+            /*
             // 開発者ラベルのソート
             svg.select('.chart_area')
               .selectAll('.developer_label')
@@ -478,17 +455,89 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               .attr('x', function(d, i) {
                 return bar_start_x+i*60+20;
               });
+            */
+            // マスのソート
+            for (var i=0; i<developers.length; i++) {
+              for (var j=0; j<developers.length; j++) {
+                svg.select('.heat_map')
+                  .selectAll('.row_'+i)
+                  .selectAll('.column_'+j)
+                  .select('.cell')
+                  .transition()
+                  .duration(event_time)
+                  .delay(event_time)
+                  .attr({
+                    'x': function() {
+                      return padding.left+j*31;
+                    },
+                    'y': function() {
+                      return padding.top+i*31;
+                    }
+                  });
+              }
+            }
+            /*
+            // マスのソート(行)
+            for (var i=0; i<developers.length; i++) {
+              svg.select('.heat_map')
+                .selectAll('.row_'+i)
+                .selectAll('.cell')
+                .transition()
+                .duration(event_time)
+                .attr({
+                  'y': function() {
+                    return padding.top+i*31;
+                  }
+                });
+            }
 
-            // 棒グラフのソート
-            svg.select('.chart_area')
-              .selectAll('.bar')
-              .data(developers)
-              .transition()
-              .duration(event_time)
-              .attr('x', function(d, i) {
-                return bar_start_x+i*60;
+            // マスのソート(列)
+            for (var i=0; i<developers.length; i++) {
+              svg.select('.heat_map')
+                .selectAll('.column_'+i)
+                .selectAll('.cell')
+                .transition()
+                .duration(event_time)
+                .attr({
+                  'x': function() {
+                    return padding.top+i*31;
+                  }
+                });
+            } */
+          }
+          else if (in_order == 1) {
+            // マスのソート
+            for (var i=0; i<developers.length; i++) {
+              for (var j=0; j<developers.length; j++) {
+                svg.select('.heat_map')
+                  .selectAll('.row_'+i)
+                  .selectAll('.column_'+j)
+                  .select('.cell')
+                  .transition()
+                  .duration(event_time)
+                  .delay(event_time)
+                  .attr({
+                    'x': function() {
+                      for (var k=0; k<developers.length; k++) {
+                        if (recieve_comments_sum[j] == sort_recieve_comments_sum[k]) {
+                          return padding.left+(developers.length-1-k)*31;
+                        }
+                      }
+                    },
+                    'y': function() {
+                      for (var k=0; k<developers.length; k++) {
+                        if (send_comments_sum[i] == sort_send_comments_sum[k]) {
+                          return padding.top+(developers.length-1-k)*31;
+                        }
+                      }
+                    }
+                  });
+              }
+            }
+          }
+
+          /*
               });
-
             // コミット数のソート
             svg.select('.chart_area')
               .selectAll('.bar_figure')
@@ -579,5 +628,14 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         max = Math.max(max, Math.max.apply(null, comments[i]));
       }
       return max;
+    }
+
+    // 合計値の算出
+    function getSum(array) {
+      var sum = 0;
+      for (var i=0; i<array.length; i++) {
+        sum += array[i];
+      }
+      return sum;
     }
 };
