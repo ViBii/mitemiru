@@ -1,147 +1,13 @@
 class PortfolioController < ApplicationController
 
   def index
-    #@project_id = params[:project_info][:project_id]
-    @developer_id = params[:developer_info][:id]
-
     @info = Hash.new
     @info[:status] = true
 
     # プロジェクト情報を取得
-    @project = Project.find_by_sql("SELECT projects.id, projects.name FROM projects, assign_logs WHERE assign_logs.project_id = projects.id AND assign_logs.developer_id = "+params[:developer_info][:id])
+    @project = Project.all
     if (@project.empty?)
       @info[:status] = false
-    end
-
-    @developer_info= Hash.new
-    @developer_info[:id] = params[:developer_info][:id]
-
-  end
-
-  def productivity_info
-    @developer = Developer.all
-  end
-
-  def ticket_digestion_ajax
-    #画面からデータの取得
-    if request.xhr?
-      projectId   = params['projectId']
-      developerId = params['developerId']
-      ######################
-      # チケット情報の取得 #
-      ######################
-
-      # Redmineの認証情報を取得
-      @redmine_info = Hash.new
-      @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
-      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT host_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].host_name
-      @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
-      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest)
-
-      @project = Hash.new
-
-      # プロジェクト名を取得
-      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
-
-      # 開発者情報を取得
-      @developer = Hash.new
-
-      # 開発者のメールアドレスを取得
-      @developer[:id] = developerId
-      @developer[:mail] = Developer.find_by_sql("SELECT email FROM developers WHERE id = "+@developer[:id])[0].email
-
-      # 開発者の一覧をRedmineから取得
-      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
-                                                              user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
-
-      # 対象開発者情報の抽出
-      for developer in developer_info do
-        if (developer['mail'] == @developer[:mail])
-          @developer[:id] = developer['id']
-          @developer[:firstname] = developer['firstname']
-          @developer[:lastname] = developer['lastname']
-        end
-      end
-
-      #*************************************Redmineアカウント情報の取得
-      #redmine上のアカウントID
-      developer_redmineId = @developer[:id]
-
-      #redmine上の全てのアカウントを取得し、その中から該当開発者のIDをもらう
-      redmine_url = @redmine_info[:url] + '/projects/'+ @project[:name]
-
-      #redmine上の該当開発者の全てのissue情報を取得する
-
-      #全てのissue情報を保存するarray、最後json形式に変更する
-      issuesArr = []
-
-      first_issues_req = RestClient::Request.execute method: :get, url: redmine_url + '/issues.json?status_id=*&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-      first_issues_json = JSON.parse(first_issues_req)
-
-      #第一回問い合わせしてもらった情報をarrayに保存
-      first_issues_json['issues'].each do |issue|
-        issuesArr.push(issue)
-      end
-
-      #最初のデータのindex
-      issue_offset = 0
-      #総数
-      total_count = first_issues_json['total_count']
-      #一回問い合わせする最大値
-      limit = first_issues_json['limit']
-
-      #issueのpagination処理
-      while total_count > limit do
-        issue_offset = issue_offset + limit
-        issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset + '&limit=100&assigned_to_id='+ developer_redmineId.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
-        total_count = total_count - limit
-        JSON.parse(issues_req)['issues'].each do |issue|
-          issuesArr.push(issue)
-        end
-      end
-
-      all_ticket_info = JSON.parse(issuesArr.to_json)
-
-      # トラッカーの一覧を取得
-      tracker_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
-      @tracker = Hash.new
-      @tracker[:id] = Array.new
-      @tracker[:name] = Array.new
-      for tracker in tracker_info['trackers'] do
-        @tracker[:id].push(tracker['id'])
-        @tracker[:name].push(tracker['name'])
-      end
-
-      ##########################
-      # チケット情報のグラフ化 #
-      ##########################
-
-      @issue_info = Hash.new
-
-      # 各トラッカーのチケット消化数
-      @issue_info[:count] = Array.new(@tracker[:id].length)
-
-      for i in 1..@issue_info[:count].length do
-        @issue_info[:count][i-1] = 0
-      end
-
-      for i in all_ticket_info do
-        if (!(i['assigned_to'].nil?))
-          if (i['assigned_to']['id'] == @developer[:id])
-            @issue_info[:count][i['tracker']['id']-1] += 1
-          end
-        end
-      end
-
-      # 消化チケットの総数
-      @issue_info[:total_count] = 0
-      for n in @issue_info[:count] do
-        @issue_info[:total_count] += n;
-      end
-
-      finalStr = "{\"ticket_num\":" + @issue_info[:count].to_s + ",\"tracker\":" + @tracker[:name].to_s + ",\"ticket_num_all\":" + @issue_info[:total_count].to_s + ",\"projectName\":\"" + @project[:name] + "\",\"firstName\":\"" + @developer[:firstname] + "\",\"lastName\":\"" + @developer[:lastname] + "\"}"
-
-      render :json => finalStr
     end
   end
 
@@ -149,7 +15,7 @@ class PortfolioController < ApplicationController
     #画面からデータの取得
     if request.xhr?
       projectId   = params['projectId']
-      developerId = params['developerId']
+      developerId = 1
 
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
@@ -334,7 +200,7 @@ class PortfolioController < ApplicationController
   def commits_ajax
     if request.xhr?
       projectId   = params['projectId']
-      developerId = params['developerId']
+      developerId = 1
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
@@ -406,7 +272,7 @@ class PortfolioController < ApplicationController
       # API呼び出し回数制限表示
       ratelimit           = Octokit.ratelimit
       ratelimit_remaining = Octokit.ratelimit_remaining
-      puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
+      puts "残り回数: #{ratelimit_remaining} / #{ratelimit}"
 
       project_name    = target_project.version_repository.project_name
       repository_name = target_project.version_repository.repository_name
@@ -436,14 +302,16 @@ class PortfolioController < ApplicationController
       issues = Octokit.list_issues(version_repository, state: 'all')
       issues.each do |issue|
         comment_data = []
-        if issue['assignee'] != nil && issue['comments'] != 0
+        if issue['assignee'] != nil || issue['comments'] != 0
           comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
           comments.each do |comment|
             comment_data << comment
           end
           issue_comment_data["#{issue['number'].to_s}"] = comment_data
+          puts issue['number'].to_s
         end
       end
+      binding.pry
 
       speaker_data = Hash.new { |h,k| h[k] = {} }
       show_developers.each do |speaker|
@@ -459,14 +327,15 @@ class PortfolioController < ApplicationController
               # commentsから該当開発者の発言を取得し, 計算する
               issue.each do |comment|
                 count += 1 if comment['user']['login'] == receiver
+                puts count
               end
             end
             developer_comments << count
           end
         end
+        puts developer_comments
         speaker_data["#{speaker}"] = developer_comments
       end
-      binding.pry
 
       render :json => speaker_data
     end
