@@ -159,12 +159,14 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
 
 
       */
-      // マスの表示
       for (var j=0; j<comments.length; j++) {
+        // マスの表示
         svg.select('.heat_map')
-          .selectAll('.row_'+j)
+          .selectAll('.column')
           .data(comments[j])
           .enter()
+          .append('g')
+          .attr('class', 'row_'+j)
           .append('g')
           .attr('class', function(d, i) {
             return 'column_'+i;
@@ -172,12 +174,12 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           .append('rect')
           .attr('class', 'cell')
           .attr({
-            'width': 32,
-            'height': 32,
+            'width': 31,
+            'height': 31,
             'x': function(d,i) {
-              return padding.left+i*32;
+              return padding.left+i*31;
             },
-            'y': padding.top+j*32,
+            'y': padding.top+j*31,
             'fill': deep_color,
             'opacity': function(d) {
               if (d != 0 && max_comment_num != 0) {
@@ -188,6 +190,78 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             }
           });
       }
+
+      /* 境界線の設定 */
+
+      // 線の基本設定表
+      var line = d3.svg.line()
+                   .x(function(d) {
+                     return d[0];
+                   })
+                   .y(function(d) {
+                     return d[1];
+                   });
+
+      // 行境界線の表示
+      svg.select('.heat_map')
+        .selectAll('.row_border')
+        .data(developers)
+        .enter()
+        .append('path')
+        .attr('class', function(d, i) {
+          return 'row_border_'+i;
+        })
+        .attr({
+          'd': function(d, i) {
+            return line([[padding.left+0, padding.top+i*31],[padding.left+developers.length*31, padding.top+i*31]]);
+          },
+          'stroke': '#aaaaaa',
+          'stroke-width': 1,
+          'opacity': 1
+        });
+
+      // 列境界線の表示
+      svg.select('.heat_map')
+        .selectAll('.column_border')
+        .data(developers)
+        .enter()
+        .append('path')
+        .attr('class', function(d, i) { 
+            return 'column_border_'+i;
+        })
+        .attr({
+          'd': function(d, i) {
+            return line([[padding.left+i*31, padding.top],[padding.left+i*31, padding.top+developers.length*31]]);
+          },
+          'stroke': '#aaaaaa',
+          'stroke-width': 1,
+          'opacity': 1
+        });
+
+      var heat_map_edgelines = [
+        [[padding.left, padding.top], [padding.left+developers.length*31, padding.top]],
+        [[padding.left+developers.length*31, padding.top], [padding.left+developers.length*31, padding.top+developers.length*31]],
+        [[padding.left, padding.top+developers.length*31], [padding.left+developers.length*31, padding.top+developers.length*31]],
+        [[padding.left, padding.top], [padding.left, padding.top+developers.length*31]]
+      ];
+      
+      // ヒートマップの縁
+      svg.select('.heat_map')
+        .selectAll('.edge_line')
+        .data(heat_map_edgelines)
+        .enter()
+        .append('path')
+        .attr('class', 'edge_line')
+        .attr({
+          'd': function(d, i) {
+            return line(heat_map_edgelines[i])
+          },
+          'stroke': '#aaaaaa',
+          'stroke-width': 1,
+          'opacity': 1
+        });
+
+
       /*
       // 各コミット数の表示
       svg.select('.chart_area')
