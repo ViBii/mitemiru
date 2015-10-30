@@ -406,7 +406,7 @@ class PortfolioController < ApplicationController
       # API呼び出し回数制限表示
       ratelimit           = Octokit.ratelimit
       ratelimit_remaining = Octokit.ratelimit_remaining
-      puts "Rate Limit Remaining: #{ratelimit_remaining} / #{ratelimit}"
+      puts "残り回数: #{ratelimit_remaining} / #{ratelimit}"
 
       project_name    = target_project.version_repository.project_name
       repository_name = target_project.version_repository.repository_name
@@ -436,39 +436,44 @@ class PortfolioController < ApplicationController
       issues = Octokit.list_issues(version_repository, state: 'all')
       issues.each do |issue|
         comment_data = []
-        if issue['assignee'] != nil && issue['comments'] != 0
+        if issue['assignee'].present? && issue['comments'] != 0
           comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
           comments.each do |comment|
             comment_data << comment
           end
           issue_comment_data["#{issue['number'].to_s}"] = comment_data
+          puts issue['number'].to_s
         end
       end
+        binding.pry
 
       speaker_data = Hash.new { |h,k| h[k] = {} }
       show_developers.each do |speaker|
-        developer_comments = []
+        speaker_comments = []
         show_developers.each do |receiver|
           if speaker == receiver
-            developer_comments << 0
+            speaker_comments << 0
             break
           end
+          count = 0
           issue_comment_data.each do |issue|
-            count = 0
             if speaker != issue['assignee']['login']
               # commentsから該当開発者の発言を取得し, 計算する
               issue.each do |comment|
                 count += 1 if comment['user']['login'] == receiver
               end
             end
-            developer_comments << count
           end
+          speaker_comments << count
         end
-        speaker_data["#{speaker}"] = developer_comments
+        puts speaker_comments
+        speaker_data["#{speaker}"] = speaker_comments
+        binding.pry
       end
-      binding.pry
 
       render :json => speaker_data
+
+
     end
   end
 end
