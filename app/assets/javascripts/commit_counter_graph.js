@@ -40,7 +40,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
     /* 描画の実行 */
     /**************/
     drawCommentGraph();
-    //sortBarChart();
+    sortHeatMap();
 
     /******************/
     /* 棒グラフの描画 */
@@ -338,90 +338,20 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .duration(event_time)
         .attr({
           'opacity': 1
-        });
-
-      // 開発者名の表示
-      svg.select('.chart_area')
-        .selectAll('.developer_label')
-        .data(developers)
-        .enter()
-        .append('text')
-        .attr('class', 'developer_label')
-        .text(function(d) {
-          return d;
-        })
-        .attr({
-          'x': function(d, i) {
-            return bar_start_x+i*60+20;
-          },
-          'y': function(d, i) {
-            return bar_max_height+10;
-          },
-          'font-family': 'sans-serif',
-          'font-size': '15px',
-          'text-anchor': 'start',
-          'dominant-baseline': 'middle',
-          'writing-mode': 'tb',
-          'fill': '#777777',
-          'opacity': 0
-        })
-        .transition()
-        .delay(event_time)
-        .duration(event_time)
-        .attr({
-          'opacity': 1
-        });
-
-      
-      // y軸の表示
-      svg.select('.chart_area')
-         .append('path')
-         .transition()
-         .duration(event_time)
-         .each('start', function() {
-           d3.select(this)
-             .attr({
-               'class': 'yaxis',
-               'd': line([[bar_start_x-20, bar_max_height], [bar_start_x-20, 0]]),
-               'stroke': '#aaaaaa',
-               'stroke-width': 1,
-               'opacity': 0
-             });
-         })
-         .attr({
-           'opacity': 1
-         });
-
-       // x軸の表示
-       svg.select('.chart_area')
-         .append('path')
-         .transition()
-         .duration(event_time)
-         .each('start', function() {
-           d3.select(this)
-             .attr({
-               'class': 'xaxis',
-               'd': line([[bar_start_x-20, bar_max_height], [bar_start_x-20+developers.length*60+20, bar_max_height]]),
-               'stroke': '#aaaaaa',
-               'stroke-width': 1,
-               'opacity': 0
-             });
-         })
-         .attr({
-           'opacity': 1
-         }); */
+        }); */
     }; // End drawCommentGraph;
 
-    /********************/
-    /* 棒グラフのソート */ 
-    /********************/
-    /*function sortBarChart() {
+    /************************/
+    /* ヒートマップのソート */ 
+    /************************/
+    function sortHeatMap() {
       var button_base_color = ['#4f81bd', '#c0504d'];
       var button_pale_color = ['#99b6d9', '#db9a98'];
       var button_radius = [10, 8];
-      var order = ['開発者の登録順', 'コミット数順'];
+      var order = ['開発者の登録順', 'コメント数順'];
       var in_order = 0;
 
+      /*
       // ソート済みデータの準備
       var swp_commit_count = [];
       var sort_commit_count = [];
@@ -451,38 +381,33 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
           }
         }
       }
+      */
 
       // ソートグループの作成
-      svg.select('.chart_area')
+      svg.select('.heat_map')
         .append('g')
         .attr('class', 'sort')
-        .attr('transform', 'translate('+(bar_start_x-20+developers.length*60+20)+', '+0+')');
+        .attr('transform', 'translate('+(padding.left+developers.length*31+40)+', '+(padding.top-50)+')');
 
       // テキストの表示
-      svg.select('.chart_area')
+      svg.select('.heat_map')
         .select('.sort')
         .append('text')
         .attr('class', 'function_name')
         .text('Sort')
         .attr({
-          'x': 20,
+          'x': 0,
           'y': 0,
           'font-family': 'sans-serif',
           'font-size': '20px',
           'text-anchor': 'start',
           'dominant-baseline': 'middle',
           'fill': '#777777',
-          'opacity': 0
-        })
-        .transition()
-        .duration(event_time)
-        .delay(event_time)
-        .attr({
           'opacity': 1
         });
 
       // ボタンの追加
-      svg.select('.chart_area')
+      svg.select('.heat_map')
         .select('.sort')
         .selectAll('.button')
         .data(button_radius)
@@ -492,7 +417,9 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .attr({
           'cx': 20,
           'cy': 30,
-          'r': 0,
+          'r': function(d, i) {
+            return button_radius[i];
+          },
           'fill': function(d, i) {
             if (i == 0) {
               return button_pale_color[0];
@@ -500,24 +427,15 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
               return button_base_color[0];
             }
           },
-          'opacity': 0
-        })
-        .transition()
-        .duration(event_time)
-        .delay(event_time)
-        .attr({
-          'r': function(d, i) {
-            return button_radius[i];
-          },
           'opacity': 1
         });
       
       // ボタンのマウスイベント
-      svg.select('.chart_area')
+      svg.select('.heat_map')
         .select('.sort')
         .selectAll('.button')
         .on('mouseover', function() {
-          svg.select('.chart_area')
+          svg.select('.heat_map')
             .select('.sort')
             .selectAll('.button')
             .data(button_radius)
@@ -530,7 +448,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
             });
         })
         .on('mouseout', function() {
-          svg.select('.chart_area')
+          svg.select('.heat_map')
             .select('.sort')
             .selectAll('.button')
             .data(button_radius)
@@ -544,7 +462,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         })
         .on('click', function() {
           in_order = (in_order+1)%order.length;
-          svg.select('.chart_area')
+          svg.select('.heat_map')
             .select('.sort')
             .select('.sort_name')
             .text(order[in_order]);
@@ -625,11 +543,11 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
                   }
                 }
               });
-          }
+          } */
         });
 
       // ソート順の表示
-      svg.select('.chart_area')
+      svg.select('.heat_map')
         .select('.sort')
         .append('text')
         .attr('class', 'sort_name')
@@ -648,9 +566,7 @@ var create_commit_graph = function(all_commit, own_commit, developer_name) {
         .duration(event_time)
         .delay(event_time)
         .attr('opacity', 1);
-
-      
-    }; // End sortBarChart();
+    }; // End sortHeatMap();
 
     /*************/
     /* Utilities */
