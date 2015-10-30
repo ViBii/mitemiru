@@ -1,5 +1,4 @@
 var create_commit_graph = function(developers,commit_count){
-
     /* 取得データの一覧 */
     // developers: 開発者のリスト
     // commit_count: 各開発者のコミット数
@@ -336,7 +335,7 @@ var create_commit_graph = function(developers,commit_count){
       svg.select('.chart_area')
         .append('g')
         .attr('class', 'sort')
-        .attr('transform', 'translate('+(bar_start_x-20+developers.length*60+20)+', '+0+')');
+        .attr('transform', 'translate('+(bar_start_x-20+developers.length*60+80)+', '+20+')');
 
       // テキストの表示
       svg.select('.chart_area')
@@ -345,10 +344,10 @@ var create_commit_graph = function(developers,commit_count){
         .attr('class', 'function_name')
         .text('Sort')
         .attr({
-          'x': 20,
+          'x': 0,
           'y': 0,
           'font-family': 'sans-serif',
-          'font-size': '20px',
+          'font-size': '15px',
           'text-anchor': 'start',
           'dominant-baseline': 'middle',
           'fill': '#777777',
@@ -370,8 +369,8 @@ var create_commit_graph = function(developers,commit_count){
         .append('circle')
         .attr('class', 'button')
         .attr({
-          'cx': 20,
-          'cy': 30,
+          'cx': 10,
+          'cy': 20,
           'r': 0,
           'fill': function(d, i) {
             if (i == 0) {
@@ -515,8 +514,8 @@ var create_commit_graph = function(developers,commit_count){
         .attr('class', 'sort_name')
         .text(order[in_order])
         .attr({
-          'x': 32,
-          'y': 32,
+          'x': 22,
+          'y': 22,
           'font-family': 'sans-serif',
           'font-size': '15px',
           'text-anchor': 'start',

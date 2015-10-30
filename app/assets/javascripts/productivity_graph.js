@@ -1,35 +1,8 @@
 var create_productivity_graph = function(developers, trackers, prospectArr, resultArr) {
-
     var developers = developers;
     var trackers = trackers;
     var prospect = prospectArr;
     var result = resultArr;
-    //var developers = ["居駒幹夫", "三末和男", "中村宇佑", "OKIRyota", "白井明", "SUNKasei", "須貝佳彦 ", "土田正士", "YAGINUMAtakuya", "SYUYichimin"];
-    //var trackers = ["バグ", "機能", "サポート", "FEATURE", "QUESTION", "MEETING", "BUG", "SUPPORT", "HELP!!!"];
-    //var prospect = [
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 1.0, 42.0, 0, 0, 0, 19.5, 0]
-    //];
-    //var result = [
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [1.0, 0, 0, 44.5, 0, 0, 1.0, 38.0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 20.5, 0, 0, 0, 20.0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [2.0, 0, 0, 1.5, 3.0, 0, 2.0, 37.0, 0],
-    //    [0, 0, 4.0, 40.0, 0, 0, 0, 31.0, 0]
-    //];
 
     // Concentration: deep > base > pale > faint
     var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
@@ -39,12 +12,12 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     var low_faint_color = ['#cbd9eb', '#eccbca', '#e4ecd1', '#d7cee2', '#cce7ef', '#fef2e9'];
 
     // SVG領域の範囲設定
-    var margin = {top: 0, right: 100, bottom: 0, left: 100};
-    var width = 960 + margin.right + margin.left;
-    var height = 960 + margin.top + margin.bottom;
-
     var box_width = 240,
         box_height = 240;
+    
+    var margin = {top: 0, right: 100, bottom: 0, left: 100};
+    var width = 960 + margin.right + margin.left;
+    var height = Math.max(640, (developers.length/4)*(box_height)+box_height); 
 
     var padding = {top: 10, right: 50, bottom: 10, left: 30};
 
@@ -94,194 +67,226 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       //   0: 初期表示
       //   1: 拡大円グラフからのReturn
 
-      var result_arc = function(base_radius, inner_radius) {
-        return d3.svg.arc()
-                 .outerRadius(function(d, i) {
-                   if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
-                     return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
-                   } else {
-                     // 最大半径は2倍までに設定
-                     return base_radius*2;
-                   }
-                 })
-                 .innerRadius(inner_radius);
-      }
-
-      svg.append("g")
-        .attr("class", "developer_"+id)
-        .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
-        .on("mouseover", function() {
-          for (var j=0; j<developers.length; j++) {
-            svg.selectAll(".developer_"+j)
-              .selectAll(".pi")
-              .data(trackers)
-              .select(".prospect")
-              .style("fill", function(d,i) {
-                if (j == id) {
-                  return pale_color[i%pale_color.length];
-                } else {
-                  return low_faint_color[i%low_faint_color.length];
-                }
-              });
-
-            svg.selectAll(".developer_"+j)
-              .selectAll(".pi")
-              .data(trackers)
-              .select(".result")
-              .style("fill", function(d,i) {
-                if (j == id) {
-                  return base_color[i%low_faint_color.length];
-                } else {
-                  return faint_color[i%faint_color.length];
-                }
-              });
-          }
-        })
-        .on("mouseout", function() {
-          for (var j=0; j<developers.length; j++) {
-            svg.selectAll(".developer_"+j)
-              .selectAll(".pi")
-              .data(trackers)
-              .select(".prospect")
-              .style("fill", function(d,i) {
-                return pale_color[i%pale_color.length];
-              });
-
-            svg.selectAll(".developer_"+j)
-              .selectAll(".pi")
-              .data(trackers)
-              .select(".result")
-              .style("fill", function(d,i) {
-                return base_color[i%base_color.length];
-              });
-          }
-        })
-        // グラフクリック時のイベント
-        .on("click", function() {
-          // 縮小グラフの削除
-          svg.selectAll(".developer_"+id)
-          .remove();
-
-          // 拡大グラフの描画
-          zoomPiChart(id);
-          drawPiChart(id);
-
-          // 開発者情報の再表示
-          svg.selectAll(".dev_name")
-            .remove();
- 
-          for (var j=0; j<developers.length; j++) {
-            var swap_name = svg.append("g")
-                              .attr("class", "swap_name")
-                              .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(j%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(j/4))+")");
-
-            // 開発者名の表示
-            swap_name.append("text")
-              .attr("class", "dev_name")
-              .text(developers[j])
-              .attr("x", 0)
-              .attr("y", 0)
-              .attr("font-family", "sans-serif")
-              .attr("font-size", "10px")
-              .attr("text-anchor", "middle")
-              .attr("dominant-baseline", "middle")
-              .attr("fill", "#ffffff")
-              .attr("opacity", 1)
-              .transition()
-              .duration(event_time/2)
-              .attr("opacity", 0);
-          }
-
-          svg.selectAll(".swap_name")
-            .transition()
-            .delay(event_time)
-            .remove();
-
-          // 他のグラフを削除する
-          for (var j=0; j<developers.length; j++) {
-            if (j != id) {
-              // 見積もりグラフ
-              svg.selectAll(".developer_"+j)
-                .selectAll("path")
-                .transition()
-                .duration(event_time)
-                .style("fill", "#ededed");
-
-              svg.selectAll(".developer_"+j)
-                .transition()
-                .delay(event_time)
-                .remove();
-            }
-          }  
-
-          // Returnボタンの表示
-          addReturnButton(id,1);
-
-          // 開発者名の表示
-          showDeveloperName(id);
-
-          // 凡例の表示
-          drawLegend();
-        });
-
-        var base_pi = svg.selectAll(".developer_"+id)
-                        .selectAll(".pi")
-                        .data(pie(prospect[id]))
-                        .enter()
-                        .append("g")
-                        .attr("class", "pi");
-
-        // 見積もり円グラフの作成
-        base_pi.append("path")
-          .attr("class", "prospect")
-          .transition()
-          .duration(event_time)
-          .delay(emerge_after)
-          .each("start", function() {
-            d3.select(this)
-              .style("fill", "#ededed");
+      if (getArraySum(prospect[id]) == 0 || getArraySum(result[id] == 0)) {
+        svg.append('g')
+          .attr('class', 'developer_'+id)
+          .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+          .append('circle')
+          .attr('class', 'none_data')
+          .attr({
+            'cx': 0,
+            'cy': 0,
+            'r': base_radius,
+            'fill': '#aaaaaa',
+            'opacity': 0
           })
-          .attr("d", arc(base_radius, 0))
-          .style("fill", function(d,i) {
-            return pale_color[i%pale_color.length];
-          });
-   
-        // 実績円グラフの生成
-        base_pi.append("path")
-          .attr("class", "result")
-          .transition()
-          .duration(event_time)
-          .delay(emerge_after)
-          .each("start", function() {
-            d3.select(this)
-              .style("fill", "#ededed");
-          })
-          .attr("d", result_arc(base_radius, 0))
-          .style("fill", function(d,i) {
-            return base_color[i%base_color.length];
-          });
-
-        var dev_name = svg.append("g")
-                         .attr("class", "dev_name")
-                         .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")");
-
-        // 開発者名の表示
-        dev_name.append("text")
-          .attr("class", "dev_name")
-          .text(developers[id])
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "10px")
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#ffffff")
-          .attr("opacity", 0)
           .transition()
           .duration(event_time)
           .delay(event_time)
-          .attr("opacity", 1);
+          .attr({
+            'opacity': 1
+          });
+      } else {
+        var result_arc = function(base_radius, inner_radius) {
+          return d3.svg.arc()
+                   .outerRadius(function(d, i) {
+                     if (Math.sqrt(prospect[id][i]/result[id][i]) < 2) {
+                       return base_radius*Math.sqrt(prospect[id][i]/result[id][i]);
+                     } else {
+                       // 最大半径は2倍までに設定
+                       return base_radius*2;
+                     }
+                   })
+                   .innerRadius(inner_radius);
+        }
 
+        svg.append("g")
+          .attr("class", "developer_"+id)
+          .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+          .on("mouseover", function() {
+            for (var j=0; j<developers.length; j++) {
+              svg.selectAll(".developer_"+j)
+                .selectAll(".pi")
+                .data(trackers)
+                .select(".prospect")
+                .style("fill", function(d,i) {
+                  if (j == id) {
+                    return pale_color[i%pale_color.length];
+                  } else {
+                    return low_faint_color[i%low_faint_color.length];
+                  }
+                });
+
+              svg.selectAll(".developer_"+j)
+                .selectAll(".pi")
+                .data(trackers)
+                .select(".result")
+                .style("fill", function(d,i) {
+                  if (j == id) {
+                    return base_color[i%low_faint_color.length];
+                  } else {
+                    return faint_color[i%faint_color.length];
+                  }
+                });
+            }
+          })
+          .on("mouseout", function() {
+            for (var j=0; j<developers.length; j++) {
+              svg.selectAll(".developer_"+j)
+                .selectAll(".pi")
+                .data(trackers)
+                .select(".prospect")
+                .style("fill", function(d,i) {
+                  return pale_color[i%pale_color.length];
+                });
+
+              svg.selectAll(".developer_"+j)
+                .selectAll(".pi")
+                .data(trackers)
+                .select(".result")
+                .style("fill", function(d,i) {
+                  return base_color[i%base_color.length];
+                });
+            }
+          })
+          // グラフクリック時のイベント
+          .on("click", function() {
+            // 縮小グラフの削除
+            svg.selectAll(".developer_"+id)
+            .remove();
+
+            // 拡大グラフの描画
+            zoomPiChart(id);
+            drawPiChart(id);
+
+            // 開発者情報の再表示
+            svg.selectAll(".dev_name")
+            .remove();
+ 
+            for (var j=0; j<developers.length; j++) {
+              var swap_name = svg.append("g")
+                                .attr("class", "swap_name")
+                                .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(j%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(j/4))+")");
+
+              // 開発者名の表示
+              swap_name.append("text")
+                .attr("class", "dev_name")
+                .text(developers[j])
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "10px")
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("fill", "#ffffff")
+                .attr("opacity", 1)
+                .transition()
+                .duration(event_time/2)
+                .attr("opacity", 0);
+              }
+
+            svg.selectAll(".swap_name")
+              .transition()
+              .delay(event_time)
+              .remove();
+
+            /* 他のグラフを削除する */
+            svg.selectAll('.none_data')
+              .transition()
+              .duration(event_time)
+              .attr({
+                'opacity': 0
+              });
+
+            svg.selectAll('.none_data')
+              .transition()
+              .delay(event_time)
+              .remove();
+
+            for (var j=0; j<developers.length; j++) {
+              if (j != id) {
+                // 見積もりグラフ
+                svg.selectAll(".developer_"+j)
+                  .selectAll("path")
+                  .transition()
+                  .duration(event_time)
+                  .style("fill", "#ededed");
+
+                svg.selectAll(".developer_"+j)
+                  .transition()
+                  .delay(event_time)
+                  .remove();
+              }
+            }
+
+            // Returnボタンの表示
+            addReturnButton(id,1);
+
+            // 開発者名の表示
+            showDeveloperName(id);
+
+            // 凡例の表示
+            drawLegend();
+          });
+
+          var base_pi = svg.selectAll(".developer_"+id)
+                          .selectAll(".pi")
+                          .data(pie(prospect[id]))
+                          .enter()
+                          .append("g")
+                          .attr("class", "pi");
+
+          // 見積もり円グラフの作成
+          base_pi.append("path")
+            .attr("class", "prospect")
+            .transition()
+            .duration(event_time)
+            .delay(emerge_after)
+            .each("start", function() {
+              d3.select(this)
+                .style("fill", "#ededed");
+            })
+            .attr("d", arc(base_radius, 0))
+            .style("fill", function(d,i) {
+              return pale_color[i%pale_color.length];
+            });
+   
+          // 実績円グラフの生成
+          base_pi.append("path")
+            .attr("class", "result")
+            .transition()
+            .duration(event_time)
+            .delay(emerge_after)
+            .each("start", function() {
+              d3.select(this)
+                .style("fill", "#ededed");
+            })  
+            .attr("d", result_arc(base_radius, 0))
+            .style("fill", function(d,i) {
+              return base_color[i%base_color.length];
+            });
+      }
+
+      var dev_name = svg.append("g")
+                       .attr("class", "dev_name")
+                       .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")");
+
+      // 開発者名の表示
+      dev_name.append("text")
+        .attr("class", "dev_name")
+        .text(developers[id])
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "10px")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#ffffff")
+        .attr("opacity", 0)
+        .transition()
+        .duration(event_time)
+        .delay(event_time)
+        .attr("opacity", 1);
     };
 
     //
@@ -896,7 +901,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       base_pi.append("path")
         .attr("class", "result")
         .style("fill", function(d,i) {
-          return base_color[i];
+          return base_color[i%base_color.length];
         })
         .attr("d", result_arc(2*base_radius, 0));
  
@@ -1019,7 +1024,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       }
 
       var bar_width = width-margin.left-margin.right;
-      var bar_height = height-margin.top-margin.bottom-100;
+      var bar_height = Math.min(480, (developers.length/4)*240);
 
       var bar_margin = {top: margin.top, left: margin.left+50, right: margin.right, bottom: margin.bottom};
 
@@ -1296,7 +1301,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                         return bar_margin.left+i*60;
                       })
                       .attr("y", bar_height)
-                      .attr("fill", base_color[tracker_id]);
+                      .attr("fill", base_color[tracker_id%base_color.length]);
                   })
                   .attr("y", function(d) {
                     if (d < 320) {
@@ -1364,7 +1369,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           .on("mouseout", function() {
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
-              .attr("fill", base_color[tracker_id]);
+              .attr("fill", base_color[tracker_id%base_color.length]);
 
             svg.select(".bar_chart")
               .selectAll(".bar_figure")
@@ -1373,7 +1378,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                 if (d < 320) {
                   return "#777777";
                 } else {
-                  return base_color[tracker_id];
+                  return base_color[tracker_id%base_color.length];
                 }
               });
           })
@@ -1708,5 +1713,16 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     // 初期画面表示
     for (var num=0; num<developers.length; num++) {
       drawBoxPiChart(num, 0, 0);
+    }
+
+    /*************/
+    /* Utilities */
+    /*************/
+    function getArraySum(array) {
+      var sum = 0;
+      for (var i=0; i<array.length; i++) {
+        sum += array[i];
+      }
+      return sum;
     }
 }
