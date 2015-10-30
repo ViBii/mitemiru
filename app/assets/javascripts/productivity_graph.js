@@ -1,35 +1,8 @@
 var create_productivity_graph = function(developers, trackers, prospectArr, resultArr) {
-
     var developers = developers;
     var trackers = trackers;
     var prospect = prospectArr;
     var result = resultArr;
-    //var developers = ["居駒幹夫", "三末和男", "中村宇佑", "OKIRyota", "白井明", "SUNKasei", "須貝佳彦 ", "土田正士", "YAGINUMAtakuya", "SYUYichimin"];
-    //var trackers = ["バグ", "機能", "サポート", "FEATURE", "QUESTION", "MEETING", "BUG", "SUPPORT", "HELP!!!"];
-    //var prospect = [
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 1.0, 42.0, 0, 0, 0, 19.5, 0]
-    //];
-    //var result = [
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [1.0, 0, 0, 44.5, 0, 0, 1.0, 38.0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 20.5, 0, 0, 0, 20.0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    //    [2.0, 0, 0, 1.5, 3.0, 0, 2.0, 37.0, 0],
-    //    [0, 0, 4.0, 40.0, 0, 0, 0, 31.0, 0]
-    //];
 
     // Concentration: deep > base > pale > faint
     var deep_color = ['#4070aa', '#ae403d', '#8bac46', '#6f568f', '#399bb6', '#f68425'];
@@ -39,12 +12,12 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     var low_faint_color = ['#cbd9eb', '#eccbca', '#e4ecd1', '#d7cee2', '#cce7ef', '#fef2e9'];
 
     // SVG領域の範囲設定
-    var margin = {top: 0, right: 100, bottom: 0, left: 100};
-    var width = 960 + margin.right + margin.left;
-    var height = 960 + margin.top + margin.bottom;
-
     var box_width = 240,
         box_height = 240;
+    
+    var margin = {top: 0, right: 100, bottom: 0, left: 100};
+    var width = 960 + margin.right + margin.left;
+    var height = Math.max(640, (developers.length/4)*(box_height)+box_height); 
 
     var padding = {top: 10, right: 50, bottom: 10, left: 30};
 
@@ -928,7 +901,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       base_pi.append("path")
         .attr("class", "result")
         .style("fill", function(d,i) {
-          return base_color[i];
+          return base_color[i%base_color.length];
         })
         .attr("d", result_arc(2*base_radius, 0));
  
@@ -1051,7 +1024,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       }
 
       var bar_width = width-margin.left-margin.right;
-      var bar_height = height-margin.top-margin.bottom-100;
+      var bar_height = Math.min(480, (developers.length/4)*240);
 
       var bar_margin = {top: margin.top, left: margin.left+50, right: margin.right, bottom: margin.bottom};
 
@@ -1328,7 +1301,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                         return bar_margin.left+i*60;
                       })
                       .attr("y", bar_height)
-                      .attr("fill", base_color[tracker_id]);
+                      .attr("fill", base_color[tracker_id%base_color.length]);
                   })
                   .attr("y", function(d) {
                     if (d < 320) {
@@ -1396,7 +1369,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           .on("mouseout", function() {
             svg.selectAll(".bar_chart")
               .selectAll(".bar")
-              .attr("fill", base_color[tracker_id]);
+              .attr("fill", base_color[tracker_id%base_color.length]);
 
             svg.select(".bar_chart")
               .selectAll(".bar_figure")
@@ -1405,7 +1378,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                 if (d < 320) {
                   return "#777777";
                 } else {
-                  return base_color[tracker_id];
+                  return base_color[tracker_id%base_color.length];
                 }
               });
           })
