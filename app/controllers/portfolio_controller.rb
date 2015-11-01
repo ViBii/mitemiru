@@ -1,25 +1,8 @@
 class PortfolioController < ApplicationController
 
   def index
-    #@project_id = params[:project_info][:project_id]
-    @developer_id = params[:developer_info][:id]
-
-    @info = Hash.new
-    @info[:status] = true
-
     # プロジェクト情報を取得
-    @project = Project.find_by_sql("SELECT projects.id, projects.name FROM projects, assign_logs WHERE assign_logs.project_id = projects.id AND assign_logs.developer_id = "+params[:developer_info][:id])
-    if (@project.empty?)
-      @info[:status] = false
-    end
-
-    @developer_info= Hash.new
-    @developer_info[:id] = params[:developer_info][:id]
-
-  end
-
-  def productivity_info
-    @developer = Developer.all
+    @project = Project.all
   end
 
   def productivity_ajax
@@ -38,9 +21,10 @@ class PortfolioController < ApplicationController
       @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
 
       # 開発者の一覧をRedmineから取得
-      developer_info = JSON.parse(RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/users.json',
-                                                              user: @redmine_info[:login_id], password: @redmine_info[:password_digest])['users']
-
+      developer_info = JSON.parse(RestClient::Request.execute method: :get,
+                                  url: @redmine_info[:url] + '/users.json',
+                                  user: @redmine_info[:login_id],
+                                  password: @redmine_info[:password_digest])['users']
       # Redmine開発者リスト
       redmine_developers = []
       # 予定工数Array
@@ -53,7 +37,10 @@ class PortfolioController < ApplicationController
       @productivity_info[:tracker] = []
 
       # トラッカー名の取得
-      tracker_req = RestClient::Request.execute method: :get, url: @redmine_info[:url] + '/trackers.json', user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+      tracker_req = RestClient::Request.execute method: :get,
+        url: @redmine_info[:url] + '/trackers.json',
+        user: @redmine_info[:login_id],
+        password: @redmine_info[:password_digest]
       tracker_json = JSON.parse(tracker_req)
 
       tracker_json['trackers'].each do |tracker|
@@ -72,7 +59,10 @@ class PortfolioController < ApplicationController
       #全てのtime entry情報を保存するarray、最後json形式に変更する
       time_entry_Arr = []
 
-      first_time_entry_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100', user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+      first_time_entry_req = RestClient::Request.execute method: :get,
+        url: redmine_url+'/time_entries.json?limit=100',
+        user: @redmine_info[:login_id],
+        password: @redmine_info[:password_digest]
       first_time_entry_json = JSON.parse(first_time_entry_req)
 
       #第一回問い合わせしてもらった情報をarrayに保存
@@ -180,7 +170,6 @@ class PortfolioController < ApplicationController
       puts finalStr
 
       render :json => JSON.parse(finalStr)
-
     end
 
   end
@@ -229,7 +218,9 @@ class PortfolioController < ApplicationController
 
       # 認証
       login_id = target_project.version_repository.github_keys.first.login_id
-      password = RedmineKey.decrypt(target_project.version_repository.github_keys.first.password_digest)
+      password = RedmineKey.decrypt(
+        target_project.version_repository.github_keys.first.password_digest
+      )
       Octokit.configure do |f|
         f.login    = login_id
         f.password = password
@@ -260,7 +251,9 @@ class PortfolioController < ApplicationController
                                       url: 'https://api.github.com/users/' + contributor['login'],
                                       user: login_id,
                                       password: password)
-        show_developers << contributor_data['login'] if developers_email.include?(contributor_data['email'])
+         if developers_email.include?(contributor_data['email'])
+           show_developers << contributor_data['login']
+         end
       end
 
       # issue情報を取る
@@ -287,6 +280,14 @@ class PortfolioController < ApplicationController
           puts issue['number'].to_s
           puts issue_comment_data
         end
+      end
+
+      speaker_data = Hash.new { |h,k| h[k] = {} }
+      speaker_data["speakers"] = []
+      speaker_data["comments"] = []
+      issue_comment_data.values.each_with_index do |comment, i|
+        speaker_data["speakers"] << show_developers[i]
+        speaker_data["comments"] << comment.values
       end
       render :json => speaker_data
     end

@@ -1,11 +1,8 @@
 Rails.application.routes.draw do
-  root 'portfolio#productivity_info'
+  root 'portfolio#index'
 
   get 'portfolio/setting'
   post 'portfolio/index'
-  post 'portfolio/show_projects'
-
-  get 'portfolio/productivity_info'
   post 'portfolio/productivity_ajax'
   post 'portfolio/commits_ajax'
   post 'portfolio/comments_ajax'

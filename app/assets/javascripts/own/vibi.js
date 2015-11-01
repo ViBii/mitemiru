@@ -24,14 +24,7 @@ Vibi.load = function(e) {
         orientation: "bottom",
         todayHighlight: true
       });
-
-      $('#new_project_button').click(function() {
-        signUpRedmine();
-      });
     }
-  };
-
-  if(gon.controller === "comp") {
   };
 
   if(gon.controller === 'portfolio'){
@@ -41,13 +34,10 @@ Vibi.load = function(e) {
             //前回実行したグラフの削除
             $("svg").remove();
 
-            $('#selected_project_id').val($('#project_info_project_id').val());
-            //ticketDigestionAjax();
             commitAjax();
         });
     }
   }
-
 };
 
 //Windowの読込が完了したらVibi.loadを実行する

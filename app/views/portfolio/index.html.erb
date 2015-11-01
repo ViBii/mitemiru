@@ -1,21 +1,8 @@
-<div xmlns="http://www.w3.org/1999/html">
-      <% if @info[:status] == true then %>
-          <div class="control-group">
-            <%= label_tag(:project_id, "プロジェクト名") %>
-            <%= collection_select(:project_info, :project_id, @project, :id, :name) %>
-            <button id="selectProjectBtn">Select</button>
-          </div>
-      <% else %>
-          <p>開発者が所属するプロジェクトはありません</p>
-      <% end %>
+<div class="control-group">
+  <%= label_tag(:project_id, "プロジェクト名") %>
+  <%= collection_select(:project_info, :id, @project, :id, :name) %>
+  <button id="selectProjectBtn" class="btn btn-default">選択</button>
 </div>
 
 <h1 id="ticket_digestion_graph_h1"></h1>
-
-<p id="ticket_digestion_graph_p">
-</p>
-<%= hidden_field_tag 'selected_project_id'%>
-<%= hidden_field_tag 'selected_developer_id', @developer_id %>
-
-<%= javascript_include_tag "commit_counter_graph" %>
-<%= javascript_include_tag "productivity_graph" %>
+<p id="ticket_digestion_graph_p"></p>

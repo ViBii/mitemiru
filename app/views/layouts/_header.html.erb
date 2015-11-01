@@ -9,7 +9,8 @@
           <%= link_to "プロジェクトを登録する", '/projects/new', data: { no_turbolink: true } %>
         </li>
         <li>
-          <%= link_to "メトリクスを見る", '/portfolio/productivity_info', data: { no_turbolink: true } %>
+          <%= link_to "メトリクスを見る", '/',
+            data: { no_turbolink: true } %>
         </li>
         <li>
           <% if has_admin? %>
@@ -27,8 +28,10 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <% if user_signed_in? %>
-          <li><%= link_to current_user.login_id, edit_user_registration_path, :class => "navbar-link" %></li>
-          <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete, :class => "navbar-link" %></li>
+          <li><%= link_to current_user.login_id, edit_user_registration_path,
+            :class => "navbar-link" %></li>
+          <li><%= link_to "ログアウト", destroy_user_session_path,
+            method: :delete, :class => "navbar-link" %></li>
         <% else %>
           <li><%= link_to "ユーザー登録", new_user_registration_path, :class => 'navbar-link' %></li>
           <li><%= link_to "ログイン", new_user_session_path, :class => 'navbar-link' %></li>
