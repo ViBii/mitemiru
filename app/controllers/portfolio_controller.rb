@@ -428,52 +428,35 @@ class PortfolioController < ApplicationController
                                       url: 'https://api.github.com/users/' + contributor['login'],
                                       user: login_id,
                                       password: password)
-        show_developers << contributor_data['login'] if developers_email.include?(contributor['email'])
+        show_developers << contributor_data['login'] if developers_email.include?(contributor_data['email'])
       end
 
       # issue情報を取る
       issue_comment_data = Hash.new { |h,k| h[k] = {} }
+
+      show_developers.each do |speaker|
+        show_developers.each do |receiver|
+          issue_comment_data["#{speaker}"]["#{receiver}"] = 0
+        end
+      end
+
       issues = Octokit.list_issues(version_repository, state: 'all')
       issues.each do |issue|
-        comment_data = []
         if issue['assignee'].present? && issue['comments'] != 0
+          comment_user_data = []
           comments = Octokit.issue_comments(version_repository, issue['number'].to_s)
           comments.each do |comment|
-            comment_data << comment
+            comment_user_data << comment['user']['login']
           end
-          issue_comment_data["#{issue['number'].to_s}"] = comment_data
+          show_developers.each do |show_developer|
+            count = comment_user_data.count(show_developer)
+            issue_comment_data["#{show_developer}"]["#{issue['assignee']['login']}"] += count
+          end
           puts issue['number'].to_s
+          puts issue_comment_data
         end
       end
-        binding.pry
-
-      speaker_data = Hash.new { |h,k| h[k] = {} }
-      show_developers.each do |speaker|
-        speaker_comments = []
-        show_developers.each do |receiver|
-          if speaker == receiver
-            speaker_comments << 0
-            break
-          end
-          count = 0
-          issue_comment_data.each do |issue|
-            if speaker != issue['assignee']['login']
-              # commentsから該当開発者の発言を取得し, 計算する
-              issue.each do |comment|
-                count += 1 if comment['user']['login'] == receiver
-              end
-            end
-          end
-          speaker_comments << count
-        end
-        puts speaker_comments
-        speaker_data["#{speaker}"] = speaker_comments
-        binding.pry
-      end
-
       render :json => speaker_data
-
-
     end
   end
 end
