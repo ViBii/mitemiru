@@ -1,8 +1,11 @@
 class PortfolioController < ApplicationController
 
   def index
-    # プロジェクト情報を取得
-    @project = Project.all
+    projects = []
+    Project.all.each do |project|
+      projects << project if ApplicationController.helpers.show_project?(current_user, project)
+    end
+    @projects = projects
   end
 
   def productivity_ajax
