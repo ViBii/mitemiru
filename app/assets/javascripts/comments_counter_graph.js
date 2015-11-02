@@ -13,7 +13,7 @@ var create_comment_graph = function(nodes, links) {
       [9, 59, 8, 23, 33]
     ];
 
-    // ソート済みコメントリストの作成
+    // ソート済みコメントリストの初期化
     var sort_comments = [];
     sortDefault();
 
@@ -25,6 +25,10 @@ var create_comment_graph = function(nodes, links) {
         }
       }
     }
+
+    // ソート時の交換行と列の保存
+    var swp_row = [];
+    var swp_column = [];
 
     /* コメント数の合計値 */
     var send_comments_sum = [];
@@ -157,10 +161,26 @@ var create_comment_graph = function(nodes, links) {
                 'width': 30,
                 'height': 18,
                 'x': function() {
-                  return padding.left+i*31+1;
+                  if (in_order == 1) {
+                    for (var k=0; k<developers.length; k++) {
+                      if (i == swp_column[k]) {
+                        return padding.left+(developers.length-1-k)*31+1;
+                      }
+                    }
+                  } else {
+                    return padding.left+i*31+1;
+                  }
                 },
                 'y': function() {
-                  return padding.top+j*31-25;
+                  if (in_order == 1) {
+                    for (var k=0; k<developers.length; k++) {
+                      if (j == swp_row[k]) {
+                        return padding.top+(developers.length-1-k)*31-25;
+                      }
+                    }
+                  } else {
+                    return padding.top+j*31-25;
+                  }
                 },
                 'fill': '#000000',
                 'opacity': 0.5
@@ -172,10 +192,25 @@ var create_comment_graph = function(nodes, links) {
               .attr('class', 'arrow')
               .attr({
                 'd': function() {
-                  return 'M '+(padding.left+i*31+16)+' '+(padding.top+j*31)+
-                         'l 5 -5'+
-                         'l -10 0'+
-                         'l 5 5';
+                  if (in_order == 1) {
+                    for (var m=0; m<developers.length; m++) {
+                      if (i == swp_column[m]) {
+                        for (var n=0; n<developers.length; n++) {
+                          if (j == swp_row[n]) {
+                            return 'M '+(padding.left+(developers.length-1-m)*31+16)+' '+(padding.top+(developers.length-1-n)*31)+
+                                   'l 5 -5'+
+                                   'l -10 0'+
+                                   'l 5 5';
+                          }
+                        }
+                      }
+                    }
+                  } else {
+                    return 'M '+(padding.left+i*31+16)+' '+(padding.top+j*31)+
+                           'l 5 -5'+
+                           'l -10 0'+
+                           'l 5 5';
+                  }
                 },
                 'stroke': '#000000',
                 'stroke-width': 1,
@@ -190,10 +225,26 @@ var create_comment_graph = function(nodes, links) {
               .text(comments[j][i])
               .attr({
                 'x': function() {
-                  return padding.left+i*31+16;
+                  if (in_order == 1) {
+                    for (var k=0; k<developers.length; k++) {
+                      if (i == swp_column[k]) {
+                        return padding.left+(developers.length-1-k)*31+16;
+                      }
+                    }
+                  } else {
+                    return padding.left+i*31+16;
+                  }
                 },
                 'y': function() {
-                  return padding.top+j*31-15;
+                  if (in_order == 1) {
+                    for (var k=0; k<developers.length; k++) {
+                      if (j == swp_row[k]) {
+                        return padding.top+(developers.length-1-k)*31-15;
+                      }
+                    }
+                  } else {
+                    return padding.top+j*31-15;
+                  }
                 },
                 'font-family': 'sans-serif',
                 'font-size': '10px',
@@ -222,34 +273,6 @@ var create_comment_graph = function(nodes, links) {
       for (var j=0; j<developers.length; j++) {
         setMauseEventOnCells(j);
       }
-      /*
-        svg.select('.heat_map')
-          .selectAll('.row')
-          .data(comments)
-          .selectAll(function(row, i) {
-            return '.column_'+i;
-          })
-          .data(function(row) {
-            return d3.entries(row);
-          })
-          .on('mouseover', function(d) {
-            console.log(d.value);
-          });
-
-      
-      /*
-        for (var j=0; j<recieve_comments_sum.length; j++) {
-          // マウスイベント
-          svg.select('.heat_map')
-            .select('.row_')
-            .data(comments[j])
-            .on('mouseover', function(d, i) {
-              console.log(j+', '+i);
-            })
-            .on('mouseout', function() {
-            });
-        } */
-
 
       /* 境界線の設定 */
       // 行境界線の表示
@@ -485,14 +508,19 @@ var create_comment_graph = function(nodes, links) {
         return 0;
       });
 
+      // ソート行列の初期化
+      swp_row = [];
+      swp_column = [];
       /* 開発者名のソート */
       // 送信者
       for (var i=0; i<developers.length; i++) {
         for (var j=0; j<developers.length; j++) {
           if (sort_send_comments_sum[i] == swp_send_comments_sum[j]) {
             sort_send_developers.push(swp_send_developers[j]);
-            swp_send_comments_sum.splice(j,1);
-            swp_send_developers.splice(j,1);
+            // ソート済みのコメント数は-1とする
+            swp_send_comments_sum.splice(j,1,-1);
+            swp_send_developers.splice(j,1,-1);
+            swp_row.push(j);
             break;
           }
         }
@@ -503,8 +531,10 @@ var create_comment_graph = function(nodes, links) {
         for (var j=0; j<developers.length; j++) {
           if (sort_recieve_comments_sum[i] == swp_recieve_comments_sum[j]) {
             sort_recieve_developers.push(swp_recieve_developers[j]);
-            swp_recieve_comments_sum.splice(j,1);
-            swp_recieve_developers.splice(j,1);
+            // ソート済みのコメント数は-1とする
+            swp_recieve_comments_sum.splice(j,1,-1);
+            swp_recieve_developers.splice(j,1,-1);
+            swp_column.push(j);
             break;
           }
         }
