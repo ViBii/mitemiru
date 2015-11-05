@@ -13,8 +13,6 @@ class PortfolioController < ApplicationController
     if request.xhr?
       projectId = params['project_id']
 
-      puts '---------------------------------------------------------------------'
-      puts projectId
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id
       @redmine_info[:url] = TicketRepository.find_by(id: @redmine_info[:id]).host_name
