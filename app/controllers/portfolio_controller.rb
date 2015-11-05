@@ -11,10 +11,12 @@ class PortfolioController < ApplicationController
   def productivity_ajax
     #画面からデータの取得
     if request.xhr?
-      projectId   = params['projectId']
+      projectId   = params['project_id']
 
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id
+      puts projectId
+      puts @redmine_info[:id]
       @redmine_info[:url] = TicketRepository.find_by(id: @redmine_info[:id]).host_name
       @redmine_info[:login_id] = RedmineKey.find_by(id: @redmine_info[:id]).login_id
       @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(id: @redmine_info[:id]).password_digest)
@@ -83,7 +85,10 @@ class PortfolioController < ApplicationController
       #time entryのpagination処理
       while time_entry_total_count > time_entry_limit do
         time_entry_offset = time_entry_offset + time_entry_limit
-        time_entry_req = RestClient::Request.execute method: :get, url: redmine_url+'/time_entries.json?limit=100&offset='+ time_entry_offset.to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+        time_entry_req = RestClient::Request.execute method: :get,
+          url: redmine_url+'/time_entries.json?limit=100&offset='+ time_entry_offset.to_s,
+          user: @redmine_info[:login_id],
+          password: @redmine_info[:password_digest]
         time_entry_total_count = time_entry_total_count - time_entry_limit
         JSON.parse(time_entry_req)['time_entries'].each do |time_entry|
           time_entry_Arr.push(time_entry)
@@ -97,7 +102,10 @@ class PortfolioController < ApplicationController
         redmine_developers.push(developer['lastname'] + developer['firstname'])
 
         roop_issues_Arr = []
-        first_issues_json = JSON.parse(RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['id'].to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest])
+        first_issues_json = JSON.parse(RestClient::Request.execute method: :get,
+                                       url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['id'].to_s,
+                                       user: @redmine_info[:login_id],
+                                       password: @redmine_info[:password_digest])
 
         first_issues_json['issues'].each do |issue|
           roop_issues_Arr.push(issue)
@@ -113,7 +121,10 @@ class PortfolioController < ApplicationController
         #issueのpagination処理
         while total_count > limit do
           issue_offset = issue_offset + roop_limit
-          issues_req = RestClient::Request.execute method: :get, url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['id'].to_s, user: @redmine_info[:login_id], password: @redmine_info[:password_digest]
+          issues_req = RestClient::Request.execute method: :get,
+            url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['id'].to_s,
+            user: @redmine_info[:login_id],
+            password: @redmine_info[:password_digest]
           total_count = total_count - limit
           JSON.parse(roop_issues_req)['issues'].each do |issue|
             roop_issues_Arr.push(issue)
@@ -179,7 +190,7 @@ class PortfolioController < ApplicationController
 
   def commits_ajax
     if request.xhr?
-      projectId   = params['projectId']
+      projectId   = params['project_id']
 
       #repo設定
       @version_repo_id = Project.find(projectId)[:version_repository_id]
@@ -217,7 +228,7 @@ class PortfolioController < ApplicationController
   def comments_ajax
     if request.xhr?
       # TODO: 変数はスネークで記述します
-      target_project = Project.find_by(id: params['projectId'])
+      target_project = Project.find_by(id: params['project_id'])
 
       # 認証
       login_id = target_project.version_repository.github_keys.first.login_id

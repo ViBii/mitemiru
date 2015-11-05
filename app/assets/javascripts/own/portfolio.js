@@ -3,7 +3,7 @@ var commitAjax = function() {
     type: 'post',
     url: '/portfolio/commits_ajax',
     data: {
-      projectId: $('#project_info_id').val()
+      project_id: $('#project_info_id').val()
     },
     error: function(){
       costAjax();
@@ -22,7 +22,7 @@ var costAjax = function() {
     type: 'post',
     url: '/portfolio/productivity_ajax',
     data: {
-      projectId: $('#project_info_id').val()
+      project_id: $('#project_info_id').val()
     },
     error: function(){
       commentAjax();
@@ -43,7 +43,7 @@ var commentAjax = function() {
     type: 'post',
     url: '/portfolio/comments_ajax',
     data: {
-      projectId: $('#project_info_id').val()
+      project_id: $('#project_info_id').val()
     },
     error: function(){
       removeLoading();
