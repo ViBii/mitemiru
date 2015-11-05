@@ -11,7 +11,7 @@ class PortfolioController < ApplicationController
   def productivity_ajax
     #画面からデータの取得
     if request.xhr?
-      projectId   = params['project_id']
+      projectId = params['project_id']
 
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id

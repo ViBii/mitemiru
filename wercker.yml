@@ -45,3 +45,4 @@ deploy:
         code: |
           heroku run:detached rake db:migrate --app $APP_NAME
           heroku run:detached rake db:seed:init --app $APP_NAME
+          heroku run:detached rake assets:precompile RAILS_ENV=production
