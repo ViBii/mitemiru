@@ -7,10 +7,10 @@
 </div>
 
 <div class="table-responsive">
-  <table class="table table-striped table-bordered table-hover">
+  <table class="table table-striped table-bordered table-hover" >
     <% if @projects.present? %>
       <thead>
-        <tr>
+        <tr >
           <th>プロジェクト名前</th>
           <th>プロジェクト開始日</th>
           <th>redmine認証状態</th>
@@ -26,24 +26,20 @@
           <td><%= project.project_start_date %></td>
           <% if auth_red(project.id) %>
             <td>
-              <%= link_to '認証済み', project_edit_redmine_path(project) %>
-              <%= image_tag('green.png', { :border => '0', :alt => 'green'}) %>
+              <%= link_to '認証済み', project_edit_redmine_path(project), class: 'btn btn-primary' %>
             </td>
           <% else %>
             <td>
-              <%= link_to '未認証', project_new_redmine_path(project) %>
-              <%= image_tag('red.png', { :border => '0', :alt => 'red'}) %>
+              <%= link_to '未認証', project_edit_redmine_path(project), class: 'btn btn-default' %>
             </td>
           <% end %>
           <% if auth_git(project.id) %>
             <td>
-              <%= link_to '認証済み', project_edit_github_path(project) %>
-              <%= image_tag('green.png', { :border => '0', :alt => 'green'}) %>
+              <%= link_to '認証済み', project_edit_github_path(project), class: 'btn btn-primary' %>
             </td>
           <% else %>
             <td>
-              <%= link_to '未認証', project_new_github_path(project)%>
-              <%=  image_tag('red.png', { :border => '0', :alt => 'red'}) %>
+              <%= link_to '未認証', project_edit_github_path(project), class: 'btn btn-default' %>
             </td>
           <% end %>
           <td><%= link_to '編集', edit_project_path(project) %></td>

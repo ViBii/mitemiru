@@ -14,6 +14,9 @@ function jump(action, method) {
 
 Vibi.load = function(e) {
   if(gon.controller === "projects") {
+    $('.new_project_button').click(function() {
+      dispLoading("処理中...");
+    });
     if(gon.action === "new") {
       datetimepickerJapanese();
 
@@ -24,18 +27,22 @@ Vibi.load = function(e) {
         orientation: "bottom",
         todayHighlight: true
       });
+    }else if(gon.action === "confirm"){
+      removeLoading();
+    }else if(gon.action === "index"){
+      removeLoading();
     }
   };
 
   if(gon.controller === 'portfolio'){
     if(gon.action === "index") {
-        $('#selectProjectBtn').click(function() {
+      $('#selectProjectBtn').click(function() {
+        dispLoading("処理中...");
 
-            //前回実行したグラフの削除
-            $("svg").remove();
-
-            commitAjax();
-        });
+        //前回実行したグラフの削除
+        $("svg").remove();
+        commitAjax();
+      });
     }
   }
 };

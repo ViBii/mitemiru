@@ -49,6 +49,3 @@
     <input type="submit" value="変更する" id="new_project_button" class="btn btn-primary" />
   </div>
 <% end %>
-
-<%= button_to "認証を解除する", { action: 'unauth', project_id: @project.id },
-  confirm: "本当によろしいですか？", class: 'btn btn-danger' %>
