@@ -16,8 +16,8 @@ class PortfolioController < ApplicationController
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id
       @redmine_info[:url] = TicketRepository.find_by(id: @redmine_info[:id]).host_name
-      @redmine_info[:login_id] = RedmineKey.find_by(id: @redmine_info[:id]).login_id
-      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(id: @redmine_info[:id]).password_digest)
+      @redmine_info[:login_id] = RedmineKey.find_by(ticket_repository_id: @redmine_info[:id]).login_id
+      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(ticket_repository_id: @redmine_info[:id]).password_digest)
 
       @project = Hash.new
       # プロジェクト名を取得
