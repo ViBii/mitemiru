@@ -267,6 +267,7 @@ class PortfolioController < ApplicationController
           issue_comment_data["#{speaker}"]["#{receiver}"] = 0
         end
       end
+      binding.pry
 
       issues = Octokit.list_issues(version_repository, state: 'all')
       issues.each do |issue|

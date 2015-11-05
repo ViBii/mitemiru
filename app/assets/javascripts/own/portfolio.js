@@ -5,8 +5,10 @@ var commitAjax = function() {
     data: {
       projectId: $('#project_info_id').val()
     },
+    error: function(){
+      costAjax();
+    },
     success: function(commit_data) {
-      //alert("success" + commit_data.developer_name);
     }
   })
   .done(function(commit_data) {
@@ -22,8 +24,10 @@ var costAjax = function() {
     data: {
       projectId: $('#project_info_id').val()
     },
+    error: function(){
+      commentAjax();
+    },
     success: function(data) {
-
     }
   })
   .done(function(data) {
@@ -40,6 +44,9 @@ var commentAjax = function() {
     url: '/portfolio/comments_ajax',
     data: {
       projectId: $('#project_info_id').val()
+    },
+    error: function(){
+      removeLoading();
     },
     success: function(comment_data) {
       //alert("success" + comment_data.nodes);
