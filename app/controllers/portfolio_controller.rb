@@ -13,10 +13,10 @@ class PortfolioController < ApplicationController
     if request.xhr?
       projectId = params['project_id']
 
+      puts '---------------------------------------------------------------------'
+      puts projectId
       @redmine_info = Hash.new
       @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id
-      puts projectId
-      puts @redmine_info[:id]
       @redmine_info[:url] = TicketRepository.find_by(id: @redmine_info[:id]).host_name
       @redmine_info[:login_id] = RedmineKey.find_by(id: @redmine_info[:id]).login_id
       @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(id: @redmine_info[:id]).password_digest)
