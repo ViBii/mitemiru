@@ -16,4 +16,5 @@
 //= require turbolinks
 //= require bootstrap
 //= require_directory ./lib
-//= require_tree ./own
+//= require_directory ./own
+//= require_tree .

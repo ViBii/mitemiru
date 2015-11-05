@@ -4,14 +4,18 @@ var create_comment_graph = function(nodes, links) {
     // comments: 各開発者のコメント数
 
     // 取得データサンプル(連携後に消去)
-    var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
-    var comments = [
-      [0, 28, 48, 9, 10],
-      [19, 0, 38, 23, 10],
-      [44, 65, 0, 13, 20],
-      [5, 10, 15, 0, 25],
-      [9, 59, 8, 23, 33]
-    ];
+    // var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
+    // var comments = [
+    //   [0, 28, 48, 9, 10],
+    //   [19, 0, 38, 23, 10],
+    //   [44, 65, 0, 13, 20],
+    //   [5, 10, 15, 0, 25],
+    //   [9, 59, 8, 23, 33]
+    // ];
+    var developers = nodes;
+    var comments   = links;
+    console.log(developers);
+    console.log(comments);
 
     // ソート済みコメントリストの初期化
     var sort_comments = [];
@@ -33,7 +37,7 @@ var create_comment_graph = function(nodes, links) {
     /* コメント数の合計値 */
     var send_comments_sum = [];
     var recieve_comments_sum = [];
-    
+
     for (var i=0; i<developers.length; i++) {
       // 送信コメント数
       send_comments_sum.push(getSum(comments[i]));
@@ -185,7 +189,7 @@ var create_comment_graph = function(nodes, links) {
                 'fill': '#000000',
                 'opacity': 0.5
               });
-            
+
             // 矢印の表示
             svg.select('.heat_map')
               .append('path')
@@ -317,7 +321,7 @@ var create_comment_graph = function(nodes, links) {
         [[padding.left, padding.top+developers.length*31], [padding.left+developers.length*31, padding.top+developers.length*31]],
         [[padding.left, padding.top], [padding.left, padding.top+developers.length*31]]
       ];
-      
+
       // ヒートマップの縁の表示
       svg.select('.heat_map')
         .selectAll('.edge_line')
