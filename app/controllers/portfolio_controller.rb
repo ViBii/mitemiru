@@ -258,7 +258,6 @@ class PortfolioController < ApplicationController
            show_developers << contributor_data['login']
          end
       end
-      binding.pry
 
       # issue情報を取る
       issue_comment_data = Hash.new { |h,k| h[k] = {} }
