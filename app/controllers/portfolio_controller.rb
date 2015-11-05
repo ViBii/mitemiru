@@ -14,14 +14,14 @@ class PortfolioController < ApplicationController
       projectId   = params['projectId']
 
       @redmine_info = Hash.new
-      @redmine_info[:id] = Project.find_by_sql("SELECT ticket_repository_id FROM projects WHERE id = "+projectId)[0].ticket_repository_id
-      @redmine_info[:url] = TicketRepository.find_by_sql("SELECT host_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].host_name
-      @redmine_info[:login_id] = RedmineKey.find_by_sql("SELECT login_id FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].login_id
-      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by_sql("SELECT password_digest FROM redmine_keys WHERE ticket_repository_id = "+@redmine_info[:id].to_s)[0].password_digest)
+      @redmine_info[:id] = Project.find_by(id: projectId).ticket_repository_id
+      @redmine_info[:url] = TicketRepository.find_by(id: @redmine_info[:id]).host_name
+      @redmine_info[:login_id] = RedmineKey.find_by(id: @redmine_info[:id]).login_id
+      @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(id: @redmine_info[:id]).password_digest)
 
       @project = Hash.new
       # プロジェクト名を取得
-      @project[:name] = TicketRepository.find_by_sql("SELECT project_name FROM ticket_repositories WHERE id = "+@redmine_info[:id].to_s)[0].project_name
+      @project[:name] = TicketRepository.find_by(id: @redmine_info[:id]).project_name
 
       # 開発者の一覧をRedmineから取得
       developer_info = JSON.parse(RestClient::Request.execute method: :get,
@@ -267,7 +267,6 @@ class PortfolioController < ApplicationController
           issue_comment_data["#{speaker}"]["#{receiver}"] = 0
         end
       end
-      binding.pry
 
       issues = Octokit.list_issues(version_repository, state: 'all')
       issues.each do |issue|
