@@ -244,7 +244,7 @@ class PortfolioController < ApplicationController
 
       # 開発者取得
       # TODO: 開発者とプロジェクトのリレーションなってない..
-      assign_logs = AssignLog.where(project_id: target_project).pluck(:id)
+      assign_logs = AssignLog.where(project_id: target_project).pluck(:developer_id)
       developers_email = Developer.where(id: assign_logs).pluck(:email)
 
       # 表示する開発者
@@ -258,6 +258,7 @@ class PortfolioController < ApplicationController
            show_developers << contributor_data['login']
          end
       end
+      binding.pry
 
       # issue情報を取る
       issue_comment_data = Hash.new { |h,k| h[k] = {} }
