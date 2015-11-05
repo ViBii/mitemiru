@@ -30,7 +30,7 @@
             </td>
           <% else %>
             <td>
-              <%= link_to '未認証', project_edit_redmine_path(project), class: 'btn btn-default' %>
+              <%= link_to '未認証', project_new_redmine_path(project), class: 'btn btn-default' %>
             </td>
           <% end %>
           <% if auth_git(project.id) %>
@@ -39,7 +39,7 @@
             </td>
           <% else %>
             <td>
-              <%= link_to '未認証', project_edit_github_path(project), class: 'btn btn-default' %>
+              <%= link_to '未認証', project_new_github_path(project), class: 'btn btn-default' %>
             </td>
           <% end %>
           <td><%= link_to '編集', edit_project_path(project) %></td>
