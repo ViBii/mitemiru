@@ -304,7 +304,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           d3.select(this)
             .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(developer_id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(developer_id/4))+")");
         })
-        .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")");
+        .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")");
 
       // Zoomイベント用Piのクラス設定
       var zoom_event_pi = svg.selectAll(".developer_"+developer_id)
@@ -357,7 +357,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         .attr("class", "developer_"+developer_id)
         .append("g")
         .attr("class", "emerge_event_circle")
-        .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")");
+        .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")");
 
       // 出現イベント用Piのクラス設定
       var emerge_event_pi = svg.selectAll(".developer_"+developer_id)
@@ -423,7 +423,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       var base_pi = svg.selectAll(".developer_"+id)
                       .append("g")
                       .attr("class", "circle")
-                      .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
+                      .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")")
                       .selectAll(".pi")
                       .data(pie(prospect[id]))
                       .enter()
@@ -882,7 +882,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       var base_pi = svg.selectAll(".developer_"+developer_id)
                       .append("g")
                       .attr("class", "event_circle")
-                      .attr("transform", "translate("+(margin.left+(width/4))+", "+(margin.top+(height/2))+")")
+                      .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")")
                       .selectAll(".pi")
                       .data(pie(prospect[developer_id]))
                       .enter()
