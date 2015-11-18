@@ -36,11 +36,40 @@ class PortfolioController < ApplicationController
         end
       end
 
+      #全てのmemebership情報を保存するarray、最後json形式に変更する
+      membership_Arr = []
       # 開発者の一覧をRedmineから取得
       developer_info = JSON.parse(RestClient::Request.execute method: :get,
                                   url: @redmine_info[:url] + '/projects/' + @project[:name] + '/memberships.json?limit=100',
                                   user: @redmine_info[:login_id],
-                                  password: @redmine_info[:password_digest])['memberships']
+                                  password: @redmine_info[:password_digest])
+
+      developer_info['memberships'].each do |membership|
+        membership_Arr.push(membership)
+      end
+
+      #最初のデータのindex
+      membership_offset = 0
+      #総数
+      membership_total_count = developer_info['total_count']
+      #一回問い合わせする最大値
+      membership_limit = developer_info['limit']
+
+      #membershipのpagination処理
+      while membership_total_count > membership_limit do
+        membership_offset = membership_offset + membership_limit
+        membership_req = RestClient::Request.execute method: :get,
+                         url: @redmine_info[:url] + '/projects/' + @project[:name] + '/memberships.json?limit=100',
+                         user: @redmine_info[:login_id],
+                         password: @redmine_info[:password_digest]
+        membership_total_count = membership_total_count - membership_limit
+
+        JSON.parse(membership_req)['memberships'].each do |membership|
+          membership_Arr.push(membership)
+        end
+      end
+
+      membership_json = JSON.parse(membership_Arr.to_json)
 
       # Redmine開発者リスト
       redmine_developers = []
@@ -110,7 +139,7 @@ class PortfolioController < ApplicationController
       time_entry_json = JSON.parse(time_entry_Arr.to_json)
 
       # 各対象開発者情報の統計
-      for developer in developer_info do
+      for developer in membership_json do
         if developer['project']['id'] == redmine_project_id then
           redmine_developers.push(developer['user']['name'])
 
@@ -133,7 +162,7 @@ class PortfolioController < ApplicationController
 
           #issueのpagination処理
           while total_count > limit do
-            issue_offset = issue_offset + roop_limit
+            issue_offset = issue_offset + limit
             issues_req = RestClient::Request.execute method: :get,
                                                      url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['user']['id'].to_s,
                                                      user: @redmine_info[:login_id],
@@ -193,8 +222,6 @@ class PortfolioController < ApplicationController
       end
 
       finalStr = "{\"developers\":" + redmine_developers.to_s + ",\"trackers\":" + @productivity_info[:tracker].to_s + ",\"prospect\":" + prospect.to_s + ",\"result\":" + result.to_s + "}"
-
-      puts finalStr
 
       render :json => JSON.parse(finalStr)
     end
