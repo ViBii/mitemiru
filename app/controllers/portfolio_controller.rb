@@ -20,14 +20,28 @@ class PortfolioController < ApplicationController
       @redmine_info[:password_digest] = RedmineKey.decrypt(RedmineKey.find_by(ticket_repository_id: @redmine_info[:id]).password_digest)
 
       @project = Hash.new
-      # プロジェクト名を取得
+
+      # プロジェクト名(識別子)を取得する
       @project[:name] = TicketRepository.find_by(id: @redmine_info[:id]).project_name
+
+      #プロジェクト名(識別子)からredmine上のprojectIdを所得する
+      redmine_projects = JSON.parse(RestClient::Request.execute method: :get,
+                                    url: @redmine_info[:url]  + '/projects.json',
+                                    user: @redmine_info[:login_id],
+                                    password: @redmine_info[:password_digest])['projects']
+
+      for project in redmine_projects do
+        if @project[:name] == project['identifier'] then
+          redmine_project_id = project['id']
+        end
+      end
 
       # 開発者の一覧をRedmineから取得
       developer_info = JSON.parse(RestClient::Request.execute method: :get,
-                                  url: @redmine_info[:url] + '/users.json',
+                                  url: @redmine_info[:url] + '/projects/' + @project[:name] + '/memberships.json?limit=100',
                                   user: @redmine_info[:login_id],
-                                  password: @redmine_info[:password_digest])['users']
+                                  password: @redmine_info[:password_digest])['memberships']
+
       # Redmine開発者リスト
       redmine_developers = []
       # 予定工数Array
@@ -97,84 +111,85 @@ class PortfolioController < ApplicationController
 
       # 各対象開発者情報の統計
       for developer in developer_info do
-        redmine_developers.push(developer['lastname'] + developer['firstname'])
+        if developer['project']['id'] == redmine_project_id then
+          redmine_developers.push(developer['user']['name'])
 
-        roop_issues_Arr = []
-        first_issues_json = JSON.parse(RestClient::Request.execute method: :get,
-                                       url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['id'].to_s,
-                                       user: @redmine_info[:login_id],
-                                       password: @redmine_info[:password_digest])
+          roop_issues_Arr = []
+          first_issues_json = JSON.parse(RestClient::Request.execute method: :get,
+                                                                     url: redmine_url+'/issues.json?status_id=*&limit=100&assigned_to_id='+ developer['user']['id'].to_s,
+                                                                     user: @redmine_info[:login_id],
+                                                                     password: @redmine_info[:password_digest])
 
-        first_issues_json['issues'].each do |issue|
-          roop_issues_Arr.push(issue)
-        end
-
-        #最初のデータのindex
-        issue_offset = 0
-        #総数
-        total_count = first_issues_json['total_count']
-        #一回問い合わせする最大値
-        limit = first_issues_json['limit']
-
-        #issueのpagination処理
-        while total_count > limit do
-          issue_offset = issue_offset + roop_limit
-          issues_req = RestClient::Request.execute method: :get,
-            url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['id'].to_s,
-            user: @redmine_info[:login_id],
-            password: @redmine_info[:password_digest]
-          total_count = total_count - limit
-          JSON.parse(roop_issues_req)['issues'].each do |issue|
+          first_issues_json['issues'].each do |issue|
             roop_issues_Arr.push(issue)
           end
-        end
 
-        # 対象者の全てのissue
-        issues_json = JSON.parse(roop_issues_Arr.to_json)
+          #最初のデータのindex
+          issue_offset = 0
+          #総数
+          total_count = first_issues_json['total_count']
+          #一回問い合わせする最大値
+          limit = first_issues_json['limit']
 
-        #予定工数Hash
-        roop_estimated_hours = Hash.new
-        #実績工数Hash
-        roop_result_hours = Hash.new
-
-        #工数Hash初期化
-        @productivity_info[:tracker].each do |tracker|
-          roop_estimated_hours[tracker] = 0
-          roop_result_hours[tracker] = 0
-        end
-
-        #*************************************************工数計算部分
-        #予定工数の計算
-        issues_json.each do |issue|
-
-          #予定工数計算部分
-          if nil != issue['estimated_hours'] then
-            roop_estimated_hours[issue['tracker']['name']] = roop_estimated_hours[issue['tracker']['name']] + issue['estimated_hours']
-          end
-
-          #実績工数計算部分
-          time_entry_json.each do |time_entry|
-            if issue['id'] == time_entry['issue']['id'] then
-              roop_result_hours[issue['tracker']['name']] = roop_result_hours[issue['tracker']['name']] + time_entry['hours']
+          #issueのpagination処理
+          while total_count > limit do
+            issue_offset = issue_offset + roop_limit
+            issues_req = RestClient::Request.execute method: :get,
+                                                     url: redmine_url+'/issues.json?status_id=*&offset='+ issue_offset +'&limit=100&assigned_to_id='+ developer['user']['id'].to_s,
+                                                     user: @redmine_info[:login_id],
+                                                     password: @redmine_info[:password_digest]
+            total_count = total_count - limit
+            JSON.parse(roop_issues_req)['issues'].each do |issue|
+              roop_issues_Arr.push(issue)
             end
           end
 
+          # 対象者の全てのissue
+          issues_json = JSON.parse(roop_issues_Arr.to_json)
+
+          #予定工数Hash
+          roop_estimated_hours = Hash.new
+          #実績工数Hash
+          roop_result_hours = Hash.new
+
+          #工数Hash初期化
+          @productivity_info[:tracker].each do |tracker|
+            roop_estimated_hours[tracker] = 0
+            roop_result_hours[tracker] = 0
+          end
+
+          #*************************************************工数計算部分
+          #予定工数の計算
+          issues_json.each do |issue|
+
+            #予定工数計算部分
+            if nil != issue['estimated_hours'] then
+              roop_estimated_hours[issue['tracker']['name']] = roop_estimated_hours[issue['tracker']['name']] + issue['estimated_hours']
+            end
+
+            #実績工数計算部分
+            time_entry_json.each do |time_entry|
+              if issue['id'] == time_entry['issue']['id'] then
+                roop_result_hours[issue['tracker']['name']] = roop_result_hours[issue['tracker']['name']] + time_entry['hours']
+              end
+            end
+
+          end
+
+          #予定工数Arrayの設定
+          roop_estimated_hours_result = []
+          roop_estimated_hours.each{|key, value|
+            roop_estimated_hours_result.push(value)
+          }
+          #実績工数Arrayの設定
+          roop_result_hours_result = []
+          roop_result_hours.each{|key, value|
+            roop_result_hours_result.push(value)
+          }
+
+          prospect.push(roop_estimated_hours_result)
+          result.push(roop_result_hours_result)
         end
-
-        #予定工数Arrayの設定
-        roop_estimated_hours_result = []
-        roop_estimated_hours.each{|key, value|
-          roop_estimated_hours_result.push(value)
-        }
-        #実績工数Arrayの設定
-        roop_result_hours_result = []
-        roop_result_hours.each{|key, value|
-          roop_result_hours_result.push(value)
-        }
-
-        prospect.push(roop_estimated_hours_result)
-        result.push(roop_result_hours_result)
-
       end
 
       finalStr = "{\"developers\":" + redmine_developers.to_s + ",\"trackers\":" + @productivity_info[:tracker].to_s + ",\"prospect\":" + prospect.to_s + ",\"result\":" + result.to_s + "}"
