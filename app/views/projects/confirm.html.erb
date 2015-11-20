@@ -11,7 +11,7 @@
   <br>
   <h4>プロジェクト開始日: <%= @confirm_data[:project_start_date] %></h4>
   <br>
-  <h4>Redmineホスト名: <%= @confirm_data[:redmine_host] %></h4>
+  <h4>Redmineパス: <%= @confirm_data[:redmine_host] %></h4>
   <br>
   <h4>Redmineプロジェクト名(識別子): <%= @confirm_data[:redmine_project_name] %></h4>
   <br>
@@ -21,8 +21,7 @@
   <%= hidden_field_tag :url, @url %>
   <%= hidden_field_tag :name, @confirm_data[:name] %>
   <%= hidden_field_tag :project_start_date, @confirm_data[:project_start_date] %>
-  <%= hidden_field_tag :redmine_host, @confirm_data[:redmine_host] %>
-  <%= hidden_field_tag :redmine_project_name, @confirm_data[:redmine_project_name] %>
+  <%= hidden_field_tag :redmine_url, @confirm_data[:redmine_url] %>
   <%= hidden_field_tag :redmine_login_id, @confirm_data[:redmine_login_id] %>
   <%= hidden_field_tag :redmine_password_digest, @confirm_data[:redmine_password_digest] %>
   <%= hidden_field_tag :redmine_api_key, @confirm_data[:redmine_api_key] %>
