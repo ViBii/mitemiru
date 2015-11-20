@@ -1,4 +1,6 @@
-Rails.application.config.assets.version = '1.6'
+Rails.application.config.assets.version = '1.7'
+
+Rails.application.config.assets.precompile += %w( loading.gif )
 
 Rails.application.config.assets.precompile += %w( lib/bootstrap-datepicker.ja.min.js )
 Rails.application.config.assets.precompile += %w( lib/bootstrap-datepicker.min.js )
