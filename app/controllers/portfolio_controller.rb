@@ -329,7 +329,9 @@ class PortfolioController < ApplicationController
           end
           show_developers.each do |show_developer|
             count = comment_user_data.count(show_developer)
-            issue_comment_data["#{show_developer}"]["#{issue['assignee']['login']}"] += count
+            if show_developers.include?(issue['assignee']['login'])
+              issue_comment_data["#{show_developer}"]["#{issue['assignee']['login']}"] += count
+            end
           end
           puts issue['number'].to_s
           puts issue_comment_data
