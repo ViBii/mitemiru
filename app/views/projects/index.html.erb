@@ -1,0 +1,54 @@
+<div class="page-header">
+  <%= link_to '/portfolio/setting', class: 'btn btn-default' do %>
+    <span class="glyphicon glyphicon-list-alt"></span>
+    戻る
+  <% end %>
+  <h1>プロジェクト一覧</h1>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-bordered table-hover" >
+    <% if @projects.present? %>
+      <thead>
+        <tr >
+          <th>プロジェクト名前</th>
+          <th>プロジェクト開始日</th>
+          <th>redmine認証状態</th>
+          <th>github認証状態</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <%= content_tag_for(:tr, @projects) do |project| %>
+          <td><%= link_to project.name, project %></td>
+          <td><%= project.project_start_date %></td>
+          <% if auth_red(project.id) %>
+            <td>
+              <%= link_to '認証済み', project_edit_redmine_path(project), class: 'btn btn-primary' %>
+            </td>
+          <% else %>
+            <td>
+              <%= link_to '未認証', project_new_redmine_path(project), class: 'btn btn-default' %>
+            </td>
+          <% end %>
+          <% if auth_git(project.id) %>
+            <td>
+              <%= link_to '認証済み', project_edit_github_path(project), class: 'btn btn-primary' %>
+            </td>
+          <% else %>
+            <td>
+              <%= link_to '未認証', project_new_github_path(project), class: 'btn btn-default' %>
+            </td>
+          <% end %>
+          <td><%= link_to '編集', edit_project_path(project) %></td>
+          <td><%= link_to '削除', project, method: :delete, data: { confirm: '本当によろしいですか？' } %></td>
+        <% end %>
+      </tbody>
+    <% else %>
+      <p>プロジェクトデータは存在しません</p>
+    <% end %>
+  </table>
+  <%= paginate @projects %>
+</div>
