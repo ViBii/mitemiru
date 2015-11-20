@@ -15,6 +15,4 @@
 //= require bootstrap-sprockets
 //= require turbolinks
 //= require bootstrap
-//= require_directory ./lib
-//= require_directory ./own
 //= require_tree .
