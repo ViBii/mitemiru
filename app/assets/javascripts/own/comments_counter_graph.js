@@ -4,35 +4,26 @@ var create_comment_graph = function(nodes, links) {
     // comments: 各開発者のコメント数
 
     // 取得データサンプル(連携後に消去)
-    // var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
-    // var comments = [
-    //   [0, 28, 48, 9, 10],
-    //   [19, 0, 38, 23, 10],
-    //   [44, 65, 0, 13, 20],
-    //   [5, 10, 15, 0, 25],
-    //   [9, 59, 8, 23, 33]
-    // ];
-    var developers = nodes;
-    var comments   = links;
-    console.log(developers);
-    console.log(comments);
-
-    // ソート済みコメントリストの初期化
-    var sort_comments = [];
-    sortDefault();
-
-    function sortDefault() {
-      for (var i=0; i<comments.length; i++) {
-        sort_comments[i] = [];
-        for (var j=0; j<comments[i].length; j++) {
-          sort_comments[i].push(comments[i][j]);
-        }
-      }
-    }
+     var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
+     var comments = [
+       [0, 28, 48, 11, 10],
+       [19, 0, 38, 30, 10],
+       [44, 65, 0, 13, 20],
+       [5, 10, 15, 0, 25],
+       [9, 59, 8, 23, 33]
+     ];
+    //var developers = nodes;
+    //var comments   = links;
+    console.log("Developers: "+developers);
+    console.log("Comments: "+comments);
 
     // ソート時の交換行と列の保存
     var swp_row = [];
     var swp_column = [];
+
+    // ソート時の転移先
+    var rowSortIndex = [];
+    var columnSortIndex = [];
 
     /* コメント数の合計値 */
     var send_comments_sum = [];
@@ -488,6 +479,10 @@ var create_comment_graph = function(nodes, links) {
 
       // データの準備
       for (var i=0; i<developers.length; i++) {
+        // 転移先の初期化
+        rowSortIndex.push(i);
+        columnSortIndex.push(i);
+
         //  開発者
         swp_send_developers.push(developers[i]);
         swp_recieve_developers.push(developers[i]);
@@ -520,7 +515,11 @@ var create_comment_graph = function(nodes, links) {
       for (var i=0; i<developers.length; i++) {
         for (var j=0; j<developers.length; j++) {
           if (sort_send_comments_sum[i] == swp_send_comments_sum[j]) {
+            // 転移先の記録(降順)
+            rowSortIndex[j] = rowSortIndex.length-1-i;
+
             sort_send_developers.push(swp_send_developers[j]);
+            
             // ソート済みのコメント数は-1とする
             swp_send_comments_sum.splice(j,1,-1);
             swp_send_developers.splice(j,1,-1);
@@ -534,7 +533,11 @@ var create_comment_graph = function(nodes, links) {
       for (var i=0; i<developers.length; i++) {
         for (var j=0; j<developers.length; j++) {
           if (sort_recieve_comments_sum[i] == swp_recieve_comments_sum[j]) {
+            // 転移先の記録(降順)
+            columnSortIndex[j] = columnSortIndex.length-1-i;
+
             sort_recieve_developers.push(swp_recieve_developers[j]);
+            
             // ソート済みのコメント数は-1とする
             swp_recieve_comments_sum.splice(j,1,-1);
             swp_recieve_developers.splice(j,1,-1);
@@ -733,11 +736,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'y': function(d, i) {
-                  for (var j=0; j<developers.length; j++) {
-                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
-                      return padding.top+(developers.length-1-j)*31+18;
-                    }
-                  }
+                  return padding.top+rowSortIndex[i]*31+18;
                 }
               });
 
@@ -749,11 +748,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'x': function(d, i) {
-                  for (var j=0; j<developers.length; j++) {
-                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
-                      return padding.left+(developers.length-1-j)*31+16;
-                    }
-                  }
+                  return padding.left+columnSortIndex[i]*31+16;
                 }
               });
              
@@ -769,26 +764,10 @@ var create_comment_graph = function(nodes, links) {
                   .duration(2*event_time)
                   .attr({
                     'x': function() {
-                      for (var k=0; k<developers.length; k++) {
-                        if (recieve_comments_sum[j] == sort_recieve_comments_sum[k]) {
-                          // コメントリストの置換
-                          sort_comments[i][j] = comments[i][k];
-                          sort_comments[i][k] = comments[i][j];
-                          // x座標の返却
-                          return padding.left+(developers.length-1-k)*31;
-                        }
-                      }
+                      return padding.left+columnSortIndex[j]*31;
                     },
                     'y': function() {
-                      for (var k=0; k<developers.length; k++) {
-                        if (send_comments_sum[i] == sort_send_comments_sum[k]) {
-                          // コメントリストの置換
-                          sort_comments[i][j] = comments[k][j];
-                          sort_comments[k][j] = comments[i][j];
-                          // y座標の返却
-                          return padding.top+(developers.length-1-k)*31;
-                        }
-                      }
+                      return padding.top+rowSortIndex[i]*31;
                     }
                   });
               }
@@ -802,11 +781,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'd': function(d, i) {
-                  for (var j=0; j<developers.length; j++) {
-                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
-                      return line([[padding.left+0, padding.top+(developers.length-1-j)*31],[padding.left+developers.length*31, padding.top+(developers.length-1-j)*31]]);
-                    }
-                  }
+                  return line([[padding.left+0, padding.top+rowSortIndex[i]*31],[padding.left+developers.length*31, padding.top+rowSortIndex[i]*31]]);
                 }
               });
 
@@ -818,11 +793,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'd': function(d, i) {
-                  for (var j=0; j<developers.length; j++) {
-                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
-                      return line([[padding.left+(developers.length-1-j)*31, padding.top],[padding.left+(developers.length-1-j)*31, padding.top+developers.length*31]]);
-                    }
-                  }
+                  return line([[padding.left+columnSortIndex[i]*31, padding.top],[padding.left+columnSortIndex[i]*31, padding.top+developers.length*31]]);
                 }
               });
 
@@ -834,11 +805,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'y': function(d, i) {
-                  for (var j=0; j<send_comments_sum.length; j++) {
-                    if (send_comments_sum[i] == sort_send_comments_sum[j]) {
-                      return padding.top+(send_comments_sum.length-1-j)*31+18;
-                    }
-                  }
+                  return padding.top+rowSortIndex[i]*31+18;
                 }
               });
 
@@ -850,11 +817,7 @@ var create_comment_graph = function(nodes, links) {
               .duration(2*event_time)
               .attr({
                 'x': function(d, i) {
-                  for (var j=0; j<recieve_comments_sum.length; j++) {
-                    if (recieve_comments_sum[i] == sort_recieve_comments_sum[j]) {
-                      return padding.left+(recieve_comments_sum.length-1-j)*31+16;
-                    }
-                  }
+                  return padding.left+columnSortIndex[i]*31+16;
                 }
               });
           }
@@ -885,7 +848,7 @@ var create_comment_graph = function(nodes, links) {
     /*************/
     /* Utilities */
     /*************/
-    
+
     // コメント数の最大値
     function getMaxCommentNum() {
       var max = 0;
