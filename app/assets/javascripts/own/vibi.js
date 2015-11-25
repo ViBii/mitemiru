@@ -42,7 +42,11 @@ Vibi.load = function(e) {
         //前回実行したグラフの削除
         //$("svg").remove();
           $("svg").empty();
+
+        //グラフの生成
         commitAjax();
+        costAjax();
+        commentAjax();
       });
     }
   }

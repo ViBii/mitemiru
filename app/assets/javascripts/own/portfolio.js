@@ -13,7 +13,7 @@ var commitAjax = function() {
   })
   .done(function(commit_data) {
     create_commit_graph(commit_data.developers,commit_data.commit_count);
-    costAjax();
+    //costAjax();
   });
 }
 
@@ -31,10 +31,8 @@ var costAjax = function() {
     }
   })
   .done(function(data) {
-    //alert(data.prospect[9][3]);
-    //alert(data.result[3][3]);
     create_productivity_graph(data.developers, data.trackers, data.prospect, data.result);
-    commentAjax();
+    //commentAjax();
   });
 }
 
@@ -49,7 +47,6 @@ var commentAjax = function() {
       removeLoading();
     },
     success: function(comment_data) {
-      //alert("success" + comment_data.nodes);
     }
   })
   .done(function(comment_data) {
