@@ -57,7 +57,7 @@ var create_comment_graph = function(nodes, links) {
     // SVG領域の設定
     var width = 960;
     var height = 540;
-    var margin = {top: 50, right: 100, bottom: 0, left: 100};
+    var margin = {top: 300, right: 100, bottom: 0, left: 350};
     var padding = {top: 100, right:0, bottom: 0, left: 100};
 
     // SVG領域の描画
