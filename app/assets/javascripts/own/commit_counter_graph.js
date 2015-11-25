@@ -15,13 +15,14 @@ var create_commit_graph = function(developers,commit_count){
     var margin = {top: 50, right: 100, bottom: 0, left: 150};
 
     // SVG領域の描画
-    var svg = d3.select('body')
-          .append('svg')
-          .attr({
-            'class': 'commit_counter_graph',
-            'width': width,
-            'height': height
-          });
+    var svg = d3.select("#commit_counter_graph");
+    //var svg = d3.select('body')
+    //      .append('svg')
+    //      .attr({
+    //        'class': 'commit_counter_graph',
+    //        'width': width,
+    //        'height': height
+    //      });
 
     // イベントの所要時間
     var event_time = 800;

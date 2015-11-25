@@ -61,13 +61,14 @@ var create_comment_graph = function(nodes, links) {
     var padding = {top: 100, right:0, bottom: 0, left: 100};
 
     // SVG領域の描画
-    var svg = d3.select('body')
-          .append('svg')
-          .attr({
-            'class': 'comment_graph',
-            'width': width,
-            'height': height
-          });
+    var svg = d3.select("#comments_counter_graph");
+    //var svg = d3.select('body')
+    //      .append('svg')
+    //      .attr({
+    //        'class': 'comment_graph',
+    //        'width': width,
+    //        'height': height
+    //      });
 
     // イベントの所要時間
     var event_time = 800;

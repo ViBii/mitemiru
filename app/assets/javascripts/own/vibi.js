@@ -40,7 +40,8 @@ Vibi.load = function(e) {
         dispLoading("処理中...");
 
         //前回実行したグラフの削除
-        $("svg").remove();
+        //$("svg").remove();
+          $("svg").empty();
         commitAjax();
       });
     }
