@@ -21,10 +21,12 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
 
     var padding = {top: 10, right: 50, bottom: 10, left: 30};
 
-    var svg = d3.select("body")
-                .append("svg")
-                .attr("width", width)
+    var svg = d3.select("#productivity_graph")
                 .attr ("height", height);
+    //var svg = d3.select("body")
+    //            .append("svg")
+    //            .attr("width", width)
+    //            .attr ("height", height);
 
     var bar_svg;
     var box_circle_svg;

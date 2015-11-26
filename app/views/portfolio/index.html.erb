@@ -3,3 +3,15 @@
   <%= collection_select(:project_info, :id, @projects, :id, :name) %>
   <button id="selectProjectBtn" class="btn btn-default">選択</button>
 </div>
+<svg id="commit_counter_graph" class="commit_counter_graph" width="1160" height="840">
+  <rect x="0" y="0" width="1160" height="840" style="fill:white;stroke:gray;stroke-width:5;opacity:0.5" />
+  <text x="530" y="400" font-size="20px">コミットグラフ</text>
+</svg>
+<svg id="productivity_graph" width="1160" height="840">
+  <rect x="0" y="0" width="1160" height="840" style="fill:white;stroke:gray;stroke-width:5;opacity:0.5" />
+  <text x="530" y="400" font-size="20px">生産性グラフ</text>
+</svg>
+<svg id="comments_counter_graph" class="comment_graph" width="1160" height="840">
+  <rect x="0" y="0" width="1160" height="840" style="fill:white;stroke:gray;stroke-width:5;opacity:0.5" />
+  <text x="530" y="400" font-size="20px">コメントグラフ</text>
+</svg>

@@ -6,14 +6,21 @@ var commitAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
-      costAjax();
+      d3.select("#commit_counter_graph")
+          .append('text')
+          .attr({
+              'x':"470",
+              'y':"400",
+              'font-size': '20px'
+          })
+          .text('データの取得に失敗しました');
     },
     success: function(commit_data) {
     }
   })
   .done(function(commit_data) {
     create_commit_graph(commit_data.developers,commit_data.commit_count);
-    costAjax();
+    //costAjax();
   });
 }
 
@@ -25,16 +32,22 @@ var costAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
-      commentAjax();
+      d3.select("#productivity_graph")
+          .append('text')
+          .attr({
+              'x':"470",
+              'y':"400",
+              'font-size': '20px'
+            })
+            .text('データの取得に失敗しました');
+      //commentAjax();
     },
     success: function(data) {
     }
   })
   .done(function(data) {
-    //alert(data.prospect[9][3]);
-    //alert(data.result[3][3]);
     create_productivity_graph(data.developers, data.trackers, data.prospect, data.result);
-    commentAjax();
+    //commentAjax();
   });
 }
 
@@ -46,10 +59,17 @@ var commentAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
+      d3.select("#comments_counter_graph")
+          .append('text')
+          .attr({
+              'x':"470",
+              'y':"400",
+              'font-size': '20px'
+          })
+            .text('データの取得に失敗しました');
       removeLoading();
     },
     success: function(comment_data) {
-      //alert("success" + comment_data.nodes);
     }
   })
   .done(function(comment_data) {
