@@ -57,18 +57,6 @@ Vibi.load = function(e) {
                     'opacity':0.5
                 });
 
-        //svg.append('rect')
-        //    .attr({
-        //        'x': 0,
-        //        'y': 0,
-        //        'width': 1160,
-        //        'height': 540,
-        //        'fill':'white',
-        //        'stroke':'gray',
-        //        'stroke-width':5,
-        //        'opacity':0.5
-        //    });
-
         //グラフの生成
         commitAjax();
         costAjax();

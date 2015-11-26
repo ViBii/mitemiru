@@ -13,7 +13,7 @@ var commitAjax = function() {
               'y':"400",
               'font-size': '20px'
           })
-          .text('コミットデータ取得失敗した');
+          .text('データの取得に失敗しました');
     },
     success: function(commit_data) {
     }
@@ -39,7 +39,7 @@ var costAjax = function() {
               'y':"400",
               'font-size': '20px'
             })
-            .text('生産性データ取得失敗した');
+            .text('データの取得に失敗しました');
       //commentAjax();
     },
     success: function(data) {
@@ -66,7 +66,7 @@ var commentAjax = function() {
               'y':"400",
               'font-size': '20px'
           })
-            .text('コメントデータ取得失敗した');
+            .text('データの取得に失敗しました');
       removeLoading();
     },
     success: function(comment_data) {
