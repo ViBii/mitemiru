@@ -14,26 +14,28 @@ class ProjectsController < ApplicationController
   end
 
   def confirm
-    redmine_host         = params[:redmine_host]
-    redmine_project_name = params[:redmine_project_name]
-    github_project_name  = params[:github_project_name]
-    github_repo          = params[:github_repo]
+    redmine_url         = params[:redmine_url]
+    github_project_name = params[:github_project_name]
+    github_repo         = params[:github_repo]
 
     # Redmineホスト名の整形
-    if redmine_host.match(/https:\/\//)
-      redmine_host.slice!(/https:\/\//)
-    elsif redmine_host.match(/http:\/\//)
-      redmine_host.slice!(/http:\/\//)
+    if redmine_url.match(/https:\/\//)
+      redmine_url.slice!(/https:\/\//)
+    elsif redmine_url.match(/http:\/\//)
+      redmine_url.slice!(/http:\/\//)
     end
-    if redmine_host.match(/\//)
-      redmine_host.slice!(/\//)
+    /\/projects\// =~ redmine_url
+    redmine_host = $`
+    redmine_project_name = $'
+    if redmine_project_name.match(/\//)
+      redmine_url.slice!(/\//)
     end
 
     # Validate
-    if params['redmine_host'].present?
+    if params['redmine_url'].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'https://' + params['redmine_host'] + '/projects/' + params['redmine_project_name'] + '/memberships.json',
+          url:      'https://' + redmine_host + '/projects/' + redmine_project_name + '/memberships.json',
           user:     params['redmine_login_id'],
           password: params['redmine_password_digest']
       rescue
@@ -81,7 +83,6 @@ class ProjectsController < ApplicationController
       redmine_project_name:    redmine_project_name,
       redmine_login_id:        params['redmine_login_id'],
       redmine_password_digest: params['redmine_password_digest'],
-      redmine_api_key:         params['redmine_api_key'],
       github_project_name:     github_project_name,
       github_repo:             github_repo,
       github_login_id:         params['github_login_id'],
