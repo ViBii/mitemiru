@@ -9,7 +9,7 @@ var commitAjax = function() {
       d3.select("#commit_counter_graph")
           .append('text')
           .attr({
-              'x':"480",
+              'x':"470",
               'y':"400",
               'font-size': '20px'
           })
@@ -35,7 +35,7 @@ var costAjax = function() {
       d3.select("#productivity_graph")
           .append('text')
           .attr({
-              'x':"480",
+              'x':"470",
               'y':"400",
               'font-size': '20px'
             })
@@ -62,7 +62,7 @@ var commentAjax = function() {
       d3.select("#comments_counter_graph")
           .append('text')
           .attr({
-              'x':"480",
+              'x':"470",
               'y':"400",
               'font-size': '20px'
           })
