@@ -43,6 +43,12 @@ Vibi.load = function(e) {
         //$("svg").remove();
           $("svg").empty();
 
+        //変動したsvgの高さを一致にする
+        d3.selectAll('svg')
+            .attr({
+                'height': 840
+            });
+
         //枠の設定
         d3.selectAll('svg')
             .append('rect')
