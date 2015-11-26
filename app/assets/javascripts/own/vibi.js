@@ -40,8 +40,33 @@ Vibi.load = function(e) {
         dispLoading("処理中...");
 
         //前回実行したグラフの削除
-        $("svg").remove();
+        //$("svg").remove();
+          $("svg").empty();
+
+        //変動したsvgの高さを一致にする
+        d3.selectAll('svg')
+            .attr({
+                'height': 840
+            });
+
+        //枠の設定
+        d3.selectAll('svg')
+            .append('rect')
+            .attr({
+                    'x': 0,
+                    'y': 0,
+                    'width': 1160,
+                    'height': 840,
+                    'fill':'white',
+                    'stroke':'gray',
+                    'stroke-width':5,
+                    'opacity':0.5
+                });
+
+        //グラフの生成
         commitAjax();
+        costAjax();
+        commentAjax();
       });
     }
   }
