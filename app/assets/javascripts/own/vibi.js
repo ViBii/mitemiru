@@ -43,25 +43,49 @@ Vibi.load = function(e) {
         //$("svg").remove();
           $("svg").empty();
 
-        //変動したsvgの高さを一致にする
-        d3.selectAll('svg')
-            .attr({
-                'height': 840
-            });
+         // 既存の枠の削除
+         d3.selectAll('svg')
+           .selectAll('.frame')
+           .transition()
+           .duration(500)
+           .attr({
+             'opacity': 0
+           });
 
-        //枠の設定
+        // svg領域のリセット
         d3.selectAll('svg')
-            .append('rect')
-            .attr({
-                    'x': 0,
-                    'y': 0,
-                    'width': 1160,
-                    'height': 840,
-                    'fill':'white',
-                    'stroke':'gray',
-                    'stroke-width':5,
-                    'opacity':0.5
-                });
+          .transition()
+          .delay(500)
+          .empty();
+
+        d3.selectAll('svg')
+          .transition()
+          .delay(500)
+          .attr({
+            'height': 480
+          });
+
+        //枠の再設定
+        d3.selectAll('svg')
+          .append('rect')
+          .attr('class', 'frame')
+          .transition()
+          .delay(500)
+          .attr({
+            'x': 0,
+            'y': 0,
+            'width': 1080,
+            'height': 480,
+            'fill':'white',
+            'stroke':'gray',
+            'stroke-width':5,
+            'opacity':0
+          })
+          .transition()
+          .duration(500)
+          .attr({
+            'opacity': 0.5
+          });
 
         //グラフの生成
         commitAjax();
