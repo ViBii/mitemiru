@@ -4,16 +4,17 @@ var create_comment_graph = function(nodes, links) {
     // comments: 各開発者のコメント数
 
     // 取得データサンプル(連携後に消去)
-     var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
-     var comments = [
-       [0, 28, 48, 11, 10],
-       [19, 0, 38, 30, 10],
-       [44, 65, 0, 13, 20],
-       [5, 10, 15, 0, 25],
-       [9, 59, 8, 23, 33]
-     ];
-    //var developers = nodes;
-    //var comments   = links;
+    //var developers = ['DeveloperA', 'DeveloperB', 'DeveloperC', 'DeveloperD', '玄葉 条士郎'];
+    //var comments = [
+    //   [0, 28, 48, 11, 10],
+    //   [19, 0, 38, 30, 10],
+    //    [44, 65, 0, 13, 20],
+    //   [5, 10, 15, 0, 25],
+    //   [9, 59, 8, 23, 33]
+    // ];
+
+    var developers = nodes;
+    var comments   = links;
     console.log("Developers: "+developers);
     console.log("Comments: "+comments);
 
