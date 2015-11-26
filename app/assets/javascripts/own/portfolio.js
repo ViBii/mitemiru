@@ -6,7 +6,14 @@ var commitAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
-      costAjax();
+      d3.select("#commit_counter_graph")
+          .append('text')
+          .attr({
+              'x':"480",
+              'y':"400",
+              'font-size': '20px'
+          })
+          .text('コミットデータ取得失敗した');
     },
     success: function(commit_data) {
     }
@@ -25,7 +32,15 @@ var costAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
-      commentAjax();
+      d3.select("#productivity_graph")
+          .append('text')
+          .attr({
+              'x':"480",
+              'y':"400",
+              'font-size': '20px'
+            })
+            .text('生産性データ取得失敗した');
+      //commentAjax();
     },
     success: function(data) {
     }
@@ -44,6 +59,14 @@ var commentAjax = function() {
       project_id: $('#project_info_id').val()
     },
     error: function(){
+      d3.select("#comments_counter_graph")
+          .append('text')
+          .attr({
+              'x':"480",
+              'y':"400",
+              'font-size': '20px'
+          })
+            .text('コメントデータ取得失敗した');
       removeLoading();
     },
     success: function(comment_data) {
