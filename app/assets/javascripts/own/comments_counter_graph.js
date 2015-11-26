@@ -632,9 +632,6 @@ var create_comment_graph = function(nodes, links) {
             .text(order[in_order]);
 
           if (in_order == 0) {
-            // コメント数リストのソート
-            sortDefault();
-
             // 開発者名のソート(行)
             svg.select('.heat_map')
               .selectAll('.row_developer_label')
