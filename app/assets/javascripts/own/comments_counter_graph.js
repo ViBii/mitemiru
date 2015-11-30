@@ -8,15 +8,14 @@ var create_comment_graph = function(nodes, links) {
     //var comments = [
     //   [0, 28, 48, 11, 10],
     //   [19, 0, 38, 30, 10],
-    //    [44, 65, 0, 13, 20],
+    //   [44, 65, 0, 13, 20],
     //   [5, 10, 15, 0, 25],
     //   [9, 59, 8, 23, 33]
     // ];
 
+    console.log(nodes);
     var developers = nodes;
     var comments   = links;
-    console.log("Developers: "+developers);
-    console.log("Comments: "+comments);
 
     // ソート時の交換行と列の保存
     var swp_row = [];
@@ -47,8 +46,8 @@ var create_comment_graph = function(nodes, links) {
     var deep_color = '#ae403d';
 
     // SVG領域の設定
-    var width = 960;
-    var height = 540;
+    var width = 1080;
+    var height = 480;
     var margin = {top: 300, right: 100, bottom: 0, left: 350};
     var padding = {top: 100, right:0, bottom: 0, left: 100};
 

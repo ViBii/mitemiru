@@ -15,25 +15,33 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     var box_width = 240,
         box_height = 240;
     
-    var margin = {top: 0, right: 100, bottom: 0, left: 100};
-    var width = 960 + margin.right + margin.left;
-    var height = Math.max(640, (developers.length/4)*(box_height)+box_height); 
+    var margin = {top: 60, right: 45, bottom: 60, left: 45};
+    var width = 1080;
+    var height = Math.max(480+margin.top+margin.bottom, Math.ceil(developers.length/4)*(box_height+10)-10+margin.top+margin.bottom); 
 
-    var padding = {top: 10, right: 50, bottom: 10, left: 30};
+    var event_time = 700;
+    
+    // SVG領域の設定
+    var svg = d3.select("#productivity_graph");
+    
+    svg.transition()
+       .duration(event_time)
+       .attr({
+         'height': height
+       });
 
-    var svg = d3.select("#productivity_graph")
-                .attr ("height", height);
-    //var svg = d3.select("body")
-    //            .append("svg")
-    //            .attr("width", width)
-    //            .attr ("height", height);
+    // グラフ描画枠の変形
+    svg.select(".frame")
+       .transition()
+       .duration(event_time)
+       .attr({
+         'height': height
+       });
 
     var bar_svg;
     var box_circle_svg;
     var circle_svg;
     var base_radius = box_width/4;
-
-    var event_time = 700;
 
     // 半径の設定(見積もり円グラフ)
     var arc = function(outer_radius, inner_radius) {
@@ -69,10 +77,24 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       //   0: 初期表示
       //   1: 拡大円グラフからのReturn
 
+      // グラフ間のスペース調整
+      var xSpace = 0;
+      var ySpace = 0;
+      if ((id%4) != 0) {
+        xSpace = 10;
+      }
+
+      if (id < 4)  {
+        ySpace = 10;
+      }
+
+      // 開発者の予定工数もしくは実績工数が記入されていない場合
       if (getArraySum(prospect[id]) == 0 || getArraySum(result[id] == 0)) {
         svg.append('g')
           .attr('class', 'developer_'+id)
-          .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+          .attr("transform", function() {
+            return "translate("+(margin.left+(box_width/2)+box_width*(id%4)+xSpace)+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4)+ySpace)+")"
+          })
           .append('circle')
           .attr('class', 'none_data')
           .attr({
@@ -88,7 +110,8 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           .attr({
             'opacity': 1
           });
-      } else {
+      } else { // 開発者の実績工数と予定工数が記入されている場合
+        // 拡大円の設定
         var result_arc = function(base_radius, inner_radius) {
           return d3.svg.arc()
                    .outerRadius(function(d, i) {
@@ -102,9 +125,10 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                    .innerRadius(inner_radius);
         }
 
+        // 小円の設定
         svg.append("g")
           .attr("class", "developer_"+id)
-          .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")")
+          .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4)+xSpace)+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4)+ySpace)+")")
           .on("mouseover", function() {
             for (var j=0; j<developers.length; j++) {
               svg.selectAll(".developer_"+j)
@@ -113,7 +137,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                 .select(".prospect")
                 .style("fill", function(d,i) {
                   if (j == id) {
-                    return pale_color[i%pale_color.length];
+                    return faint_color[i%faint_color.length];
                   } else {
                     return low_faint_color[i%low_faint_color.length];
                   }
@@ -139,7 +163,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                 .data(trackers)
                 .select(".prospect")
                 .style("fill", function(d,i) {
-                  return pale_color[i%pale_color.length];
+                  return faint_color[i%faint_color.length];
                 });
 
               svg.selectAll(".developer_"+j)
@@ -161,33 +185,16 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             zoomPiChart(id);
             drawPiChart(id);
 
-            // 開発者情報の再表示
+            // 開発者名の削除
+            svg.selectAll('.dev_name')
+              .selectAll('text')
+              .transition()
+              .duration(event_time)
+              .attr({
+                'opacity': 0
+              });
+
             svg.selectAll(".dev_name")
-            .remove();
- 
-            for (var j=0; j<developers.length; j++) {
-              var swap_name = svg.append("g")
-                                .attr("class", "swap_name")
-                                .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(j%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(j/4))+")");
-
-              // 開発者名の表示
-              swap_name.append("text")
-                .attr("class", "dev_name")
-                .text(developers[j])
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("font-family", "sans-serif")
-                .attr("font-size", "10px")
-                .attr("text-anchor", "middle")
-                .attr("dominant-baseline", "middle")
-                .attr("fill", "#ffffff")
-                .attr("opacity", 1)
-                .transition()
-                .duration(event_time/2)
-                .attr("opacity", 0);
-              }
-
-            svg.selectAll(".swap_name")
               .transition()
               .delay(event_time)
               .remove();
@@ -212,7 +219,9 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                   .selectAll("path")
                   .transition()
                   .duration(event_time)
-                  .style("fill", "#ededed");
+                  .attr({
+                    'opacity': 0
+                  });
 
                 svg.selectAll(".developer_"+j)
                   .transition()
@@ -239,52 +248,57 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                           .attr("class", "pi");
 
           // 見積もり円グラフの作成
-          base_pi.append("path")
-            .attr("class", "prospect")
+          base_pi.append('path')
+            .attr({
+              'class': 'prospect',
+              'd': arc(base_radius, 0),
+              'fill': function(d,i) {
+                return faint_color[i%faint_color.length];
+              },
+              'opacity': 0
+            })
             .transition()
             .duration(event_time)
             .delay(emerge_after)
-            .each("start", function() {
-              d3.select(this)
-                .style("fill", "#ededed");
-            })
-            .attr("d", arc(base_radius, 0))
-            .style("fill", function(d,i) {
-              return pale_color[i%pale_color.length];
+            .attr({
+              'opacity': 1
             });
    
           // 実績円グラフの生成
-          base_pi.append("path")
-            .attr("class", "result")
+          base_pi.append('path')
+            .attr({
+              'class': 'result',
+              'd': result_arc(base_radius, 0),
+              'fill': function(d,i) {
+                return base_color[i%base_color.length];
+              },
+              'opacity': 0
+            })
             .transition()
             .duration(event_time)
             .delay(emerge_after)
-            .each("start", function() {
-              d3.select(this)
-                .style("fill", "#ededed");
-            })  
-            .attr("d", result_arc(base_radius, 0))
-            .style("fill", function(d,i) {
-              return base_color[i%base_color.length];
+            .attr({
+              'opacity': 1
             });
       }
 
       var dev_name = svg.append("g")
                        .attr("class", "dev_name")
-                       .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4))+")");
+                       .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(id%4)+xSpace)+", "+(margin.top+(box_height/2)+box_height*Math.floor(id/4)+ySpace)+")");
 
       // 開発者名の表示
       dev_name.append("text")
-        .attr("class", "dev_name")
         .text(developers[id])
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "10px")
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .attr("fill", "#ffffff")
-        .attr("opacity", 0)
+        .attr({
+          'x': 0,
+          'y': 0,
+          'font-family': 'sans-serif',
+          'font-size': '10px',
+          'text-anchor': 'middle',
+          'deominant-baseline': 'middle',
+          'fill': '#ffffff',
+          'opacity': 0
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
@@ -295,6 +309,17 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     // 円グラフのズームイベント
     //
     var zoomPiChart = function(developer_id) {
+      // グラフ間のスペース調整
+      var xSpace = 0;
+      var ySpace = 0;
+      if ((developer_id%4) != 0) {
+        xSpace = 10;
+      }
+
+      if (developer_id < 4)  {
+        ySpace = 10;
+      }
+
       // 拡大円グラフの基本クラス
       svg.append("g")
         .attr("class", "developer_"+developer_id)
@@ -304,9 +329,9 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         .duration(event_time)
         .each("start", function() {
           d3.select(this)
-            .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(developer_id%4))+", "+(margin.top+(box_height/2)+box_height*Math.floor(developer_id/4))+")");
+            .attr("transform", "translate("+(margin.left+(box_width/2)+box_width*(developer_id%4)+xSpace)+", "+(margin.top+(box_height/2)+box_height*Math.floor(developer_id/4)+ySpace)+")");
         })
-        .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")");
+        .attr("transform", "translate("+(width/2)+", "+(height/2)+")");
 
       // Zoomイベント用Piのクラス設定
       var zoom_event_pi = svg.selectAll(".developer_"+developer_id)
@@ -322,7 +347,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         .attr("class", "prospect")
         .attr("d", arc(base_radius, 0))
         .style("fill", function(d,i) {
-          return pale_color[i%pale_color.length];
+          return faint_color[i%faint_color.length];
         })
         .transition()
         .delay(event_time)
@@ -359,7 +384,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         .attr("class", "developer_"+developer_id)
         .append("g")
         .attr("class", "emerge_event_circle")
-        .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")");
+        .attr("transform", "translate("+(width/2)+", "+(height/2)+")");
 
       // 出現イベント用Piのクラス設定
       var emerge_event_pi = svg.selectAll(".developer_"+developer_id)
@@ -371,39 +396,38 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                       .attr("class", "pi");
      
       // 出現イベント用見積もり円グラフの作成
-      emerge_event_pi.append("path")
-        .attr("class", "prospect")
+      emerge_event_pi.append('path')
+        .attr({
+          'class': 'prospect',
+          'd': arc(2*base_radius, 0),
+          'fill': function(d,i) {
+            return faint_color[i%faint_color.length];
+          },
+          'opacity': 0
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
-        .each("start", function() {
-          svg.select(".developer_"+developer_id)
-            .selectAll(".pi")
-            .data(pie(prospect[developer_id]))
-            .select(".prospect")
-            .attr("d", arc(2*base_radius, 0))
-            .style("fill", "#ededed");
+        .attr({
+          'opacity': 1
         })
-        .style("fill", function(d,i) {
-          return pale_color[i%pale_color.length];
-        });
 
       // 出現イベント用実績円グラフの作成
       emerge_event_pi.append("path")
         .attr("class", "result")
+        .attr({
+          'class': 'result',
+          'd': result_arc(developer_id, 2*base_radius, 0),
+          'fill': function(d,i) {
+            return base_color[i%base_color.length];
+          },
+          'opacity': 0
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
-        .each("start", function() {
-          svg.select(".developer_"+developer_id)
-            .selectAll(".pi")
-            .data(pie(prospect[developer_id]))
-            .select(".result")
-            .attr("d", result_arc(developer_id, 2*base_radius, 0))
-            .style("fill", "#ededed");
-        })
-        .style("fill", function(d,i) {
-          return base_color[i%base_color.length];
+        .attr({
+          'opacity': 1
         });
 
       // 開発者クラスの削除 
@@ -425,7 +449,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       var base_pi = svg.selectAll(".developer_"+id)
                       .append("g")
                       .attr("class", "circle")
-                      .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")")
+                      .attr("transform", "translate("+(width/2)+", "+(height/2)+")")
                       .selectAll(".pi")
                       .data(pie(prospect[id]))
                       .enter()
@@ -436,7 +460,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       base_pi.append("path")
         .attr("class", "prospect")
         .style("fill", function(d,i) {
-          return pale_color[i%pale_color.length];
+          return faint_color[i%faint_color.length];
         })
         .transition()
         .delay(2*event_time)
@@ -491,7 +515,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             if (i != mouse_over) {
               return low_faint_color[i%low_faint_color.length];
             } else {
-              return pale_color[i%pale_color.length];
+              return faint_color[i%faint_color.length];
             }
           });
 
@@ -511,7 +535,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             .selectAll(".prospect")
             .attr("fill", function() {
               if (mouse_over == i) {
-                return pale_color[i%pale_color.length];
+                return faint_color[i%faint_color.length];
               } else {
                 return low_faint_color[i%low_faint_color.length];
               }
@@ -613,7 +637,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
        
         normal_pi.select(".prospect")
           .style("fill", function(d,i) {
-            return pale_color[i%pale_color.length];
+            return faint_color[i%faint_color.length];
           });
         
         normal_pi.select(".result")
@@ -627,7 +651,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             .selectAll(".tracker_"+i)
             .selectAll(".prospect")
             .attr("fill", function() {
-              return pale_color[i%pale_color.length];
+              return faint_color[i%faint_color.length];
             });
 
           svg.selectAll(".legend")
@@ -673,65 +697,61 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           .selectAll(".tracker_"+i)
           .append("rect")
           .attr("class", "prospect")
+          .attr({
+            'x': (width/2)+base_radius*4+30,
+            'y': (height/2)-base_radius*4+(i*30)+20,
+            'width': 20,
+            'height': 20,
+            'fill': faint_color[i%faint_color.length],
+            'opacity': 0
+          }) 
           .transition()
           .duration(event_time)
           .delay(event_time)
-          .each("start", function() {
-            d3.select(this)
-              .attr({
-                fill: "#ededed"
-              });
-          })
           .attr({
-            x: margin.left+600,
-            y: margin.top+100+(i*30),
-            width: 20,
-            height: 20,
-            fill: pale_color[i%pale_color.length]
+            'opacity': 1
           });
 
         svg.selectAll(".legend")
           .selectAll(".tracker_"+i)
           .append("rect")
           .attr("class", "result")
+          .attr({
+            'x': (width/2)+base_radius*4+30+2,
+            'y': (height/2)-base_radius*4+(i*30)+20+2,
+            'width': 16,
+            'height': 16,
+            'fill': base_color[i%base_color.length],
+            'opacity': 0
+          })
           .transition()
           .duration(event_time)
           .delay(event_time)
-          .each("start", function() {
-            d3.select(this)
-              .attr({
-                fill: "#ededed"
-              });
-          })
           .attr({
-            x: margin.left+600+2,
-            y: margin.top+100+(i*30)+2,
-            width: 16,
-            height: 16,
-            fill: base_color[i%base_color.length]
+            'opacity': 1
           });
 
         svg.selectAll(".legend")
           .selectAll(".tracker_"+i)
           .append("text")
           .attr("class", "label")
+          .text(trackers[i])
+          .attr({
+            'x': (width/2)+base_radius*4+30+25,
+            'y': (height/2)-base_radius*4+(i*30)+20+10,
+            'font-family': 'sans-serif',
+            'font-size': '20px',
+            'text-anchor': 'start',
+            'dominant-baseline': 'middle',
+            'fill': '#777777',
+            'opacity': 0
+          })
           .transition()
           .duration(event_time)
           .delay(event_time)
-          .each("start", function() {
-          d3.select(this)
-            .attr({
-              fill: "#ededed"
-            });
-          })
-          .text(trackers[i])
-          .attr("x", margin.left+600+25)
-          .attr("y", margin.top+100+(i*30)+10)
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "30px")
-          .attr("text-anchor", "start")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#777777");
+          .attr({
+            'opacity': 1
+          });
       }
     }
 
@@ -742,23 +762,23 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       svg.append("g")
         .attr("class", "developer_name")
         .append("text")
+        .text(developers[developer_id])
+        .attr({
+          'x': (width/2)+base_radius*4+30,
+          'y': (height/2)-base_radius*4,
+          'font-family': 'sans-serif',
+          'font-size': '30px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 0
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
-        .each("start", function() {
-        d3.select(this)
-          .attr({
-            fill: "#ededed"
-          });
-        })
-        .text(developers[developer_id])
-        .attr("x", margin.left+600)
-        .attr("y", margin.top+70+10)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "30px")
-        .attr("text-anchor", "start")
-        .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr({
+          'opacity': 1
+        });
     }
 
     //
@@ -771,58 +791,57 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
 
       return_button = svg.append("g")
                         .attr("class", "return_button")
-                        .attr("transform", "translate("+(margin.left)+", "+(margin.top)+")");
+                        .attr("transform", "translate("+((width/2)-(base_radius*4))+", "+((height/2)-(base_radius*4))+")");
 
       // マークの追加
-      svg.selectAll(".return_button")
-        .selectAll(".mark")
+      svg.selectAll('.return_button')
+        .selectAll('.mark')
         .data(mark_default_colors)
         .enter()
-        .append("g")
-        .attr("class", "mark")
-        .append("circle")
+        .append('g')
+        .attr({
+          'class': 'mark'
+        })
+        .append('circle')
+        .attr({
+          'cx': 10,
+          'cy': 10,
+          'r': 0,
+          'fill': function(d,i) {
+            return mark_default_colors[i%mark_default_colors.length];
+          },
+          'opacity': 1
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
-        .each("start", function() {
-          d3.select(this)
-            .attr({
-              cx: 10,
-              cy: 10,
-              r: 0,
-              fill: "#ededed"
-            });
-        })
         .attr({
-          r: function(d,i) {
+          'r': function(d,i) {
             return mark_radius[i];
-          },
-          fill: function(d,i) {
-            return mark_default_colors[i%mark_default_colors.length];
           }
         });
         
       // テキストの表示
-      svg.selectAll(".return_button")
-        .append("text")
-        .attr("class", "label")
+      svg.selectAll('.return_button')
+        .append('text')
+        .text("Return")
+        .attr({
+          'class': 'label',
+          'x': 25,
+          'y': 12,
+          'font-family': 'sans-serif',
+          'font-size': '15px',
+          'text-anchor': 'start',
+          'dominant-baseline': 'middle',
+          'fill': '#777777',
+          'opacity': 0
+        })
         .transition()
         .duration(event_time)
         .delay(event_time)
-        .each("start", function() {
-          d3.select(this)
-            .attr({
-              fill: "#ededed"
-            });
-        })
-        .text("Return")
-        .attr("x", 25)
-        .attr("y", 12)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "15px")
-        .attr("text-anchor", "start")
-        .attr("dominant-baseline", "middle")
-        .attr("fill", "#777777");
+        .attr({
+          'opacity': 1
+        });
 
       // マウスイベント
       svg.selectAll(".return_button")
@@ -853,7 +872,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           vanishPiChart(id);
 
           for (var j=0; j<developers.length; j++) {
-            drawBoxPiChart(j, 0, event_time+200);
+            drawBoxPiChart(j, 0, event_time);
           }
         });
     }; 
@@ -861,7 +880,6 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     //
     // 円グラフの削除
     //
-
     var vanishPiChart = function(developer_id) {
       var mark_event_colors = ['#db9a98', '#c0504d'];
       var mark_radius = [10, 8];
@@ -881,100 +899,123 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       }
 
       // イベント用円グラフの生成
-      var base_pi = svg.selectAll(".developer_"+developer_id)
-                      .append("g")
-                      .attr("class", "event_circle")
-                      .attr("transform", "translate("+(margin.left+(base_radius*4))+", "+(margin.top+(base_radius*4))+")")
-                      .selectAll(".pi")
+      var base_pi = svg.selectAll('.developer_'+developer_id)
+                      .append('g')
+                      .attr({
+                        'class': 'event_circle',
+                        'transform': 'translate('+(width/2)+', '+(height/2)+')'
+                      })
+                      .selectAll('.pi')
                       .data(pie(prospect[developer_id]))
                       .enter()
-                      .append("g")
-                      .attr("class", "pi");
+                      .append('g')
+                      .attr({
+                        'class': 'pi'
+                      });
      
       // イベント用見積もり円グラフの作成
-      base_pi.append("path")
-        .attr("class", "prospect")
-        .style("fill", function(d,i) {
-          return pale_color[i%pale_color.length];
-        })
-       .attr("d", arc(2*base_radius, 0));
+      base_pi.append('path')
+        .attr({
+          'class': 'prospect',
+          'd': arc(2*base_radius, 0),
+          'fill': function(d,i) {
+            return faint_color[i%faint_color.length];
+          },
+          'opacity': 1
+        });
 
       // イベント用実績円グラフの作成
-      base_pi.append("path")
-        .attr("class", "result")
-        .style("fill", function(d,i) {
-          return base_color[i%base_color.length];
-        })
-        .attr("d", result_arc(2*base_radius, 0));
+      base_pi.append('path')
+        .attr({
+          'class': 'result',
+          'd': result_arc(2*base_radius, 0),
+          'fill': function(d,i) {
+            return base_color[i%base_color.length];
+          },
+          'opacity': 1
+        });
  
       // 操作用円グラフの削除
-      svg.selectAll(".developer_"+developer_id)
-        .selectAll(".circle")
+      svg.selectAll('.developer_'+developer_id)
+        .selectAll('.circle')
         .remove();
 
       // イベント用円グラフの消滅
-      svg.selectAll(".developer_"+developer_id)
-        .selectAll(".event_circle")
-        .selectAll("path")
+      svg.selectAll('.developer_'+developer_id)
+        .selectAll('.event_circle')
+        .selectAll('path')
         .transition()
         .duration(event_time)
-        .style("fill", "#ededed");
+        .attr({
+          'opacity': 0
+        });
         
       // Returnボタン(マーク)の消滅
-      svg.selectAll(".return_button")
-        .selectAll(".dummy_mark")
+      svg.selectAll('.return_button')
+        .selectAll('.dummy_mark')
         .data(mark_event_colors)
         .enter()
-        .append("g")
-        .attr("class", "dummy_mark")
-        .append("circle")
+        .append('g')
+        .attr({
+          'class': 'dummy_mark'
+        })
+        .append('circle')
+        .attr({
+          'cx': 10,
+          'cy': 10,
+          'r': function(d,i) {
+            return mark_radius[i];
+          },
+          'fill': function(d,i) {
+            return mark_event_colors[i%mark_event_colors.length];
+          },
+          'opacity': 1
+        })
         .transition()
         .duration(event_time)
-        .each("start", function(d,i) {
-          d3.select(this)
-            .attr({
-              cx: 10,
-              cy: 10,
-              r: function() {
-               return mark_radius[i];
-              },
-              fill: function() {
-                return mark_event_colors[i%mark_event_colors.length];
-              }
-            });
+        .attr({
+          'opacity': 0
+        });
 
-          svg.selectAll(".return_button")
-            .selectAll(".mark")
-            .remove();
-        })
-        .attr("fill", "#ededed");
+      // Returnボタン(マーク)の消滅
+      svg.selectAll('.return_button')
+        .selectAll('.mark')
+        .remove();
 
       // Returnボタン(テキスト)の消滅
-      svg.selectAll(".return_button")
-        .select(".label")
+      svg.selectAll('.return_button')
+        .select('.label')
         .transition()
         .duration(event_time)
-        .attr("fill", "#ededed");
+        .attr({
+          'opacity': 0
+        });
 
       // 凡例の消滅
-      svg.selectAll(".legend")
-        .selectAll("rect")
+      svg.selectAll('.legend')
+        .selectAll('rect')
         .transition()
         .duration(event_time)
-        .attr("fill", "#ededed");
+        .attr({
+          'opacity': 0
+        });
 
-      svg.select(".legend")
-        .selectAll("text")
+      svg.select('.legend')
+        .selectAll('text')
         .transition()
         .duration(event_time)
-        .attr("fill", "#ededed");
+        .attr({
+          'opacity': 0
+        });
          
       // 開発者名の消滅
-      svg.select(".developer_name")
-        .select("text")
+      svg.select('.developer_name')
+        .select('text')
         .transition()
         .duration(event_time)
-        .attr("fill", "#ededed");
+        .attr({
+          'opacity': 0
+        });
 
       // returnボタンの削除
       svg.selectAll(".return_button")
@@ -1714,7 +1755,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
 
     // 初期画面表示
     for (var num=0; num<developers.length; num++) {
-      drawBoxPiChart(num, 0, 0);
+      drawBoxPiChart(num, 0, event_time);
     }
 
     /*************/
