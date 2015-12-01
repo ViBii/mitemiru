@@ -1180,7 +1180,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             .attr("opacity", 0);
         })
         .text(trackers[tracker_id])
-        .attr("x", bar_margin.left+(developers.length*60/2))
+        .attr("x", (width/2))
         .attr("y", bar_height-yScale(320)-35)
         .attr("font-family", "sans-serif")
         .attr("font-size", "20px")
@@ -1554,7 +1554,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         svg.select(".bar_chart")
           .append("g")
           .attr("class", "sort")
-          .attr("transform", "translate("+(2*margin.left+60*developers.length)+", "+(margin.top-55)+")");
+          .attr("transform", "translate("+((width/2)+100)+", "+(margin.top-55)+")");
 
         // テキストの表示
         svg.select(".bar_chart")
