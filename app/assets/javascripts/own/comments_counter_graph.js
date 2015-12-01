@@ -47,22 +47,29 @@ var create_comment_graph = function(nodes, links) {
 
     // SVG領域の設定
     var width = 1080;
-    var height = 480;
-    var margin = {top: 300, right: 100, bottom: 0, left: 350};
+    var margin = {top: 50, right: 0, bottom: 50, left: Math.max(50, (width/2)-developers.length*16-120)};
     var padding = {top: 100, right:0, bottom: 0, left: 100};
+    var height = Math.max(480, developers.length*31+margin.top+margin.bottom+padding.top);
+
+    // イベントの所要時間
+    var event_time = 700;
 
     // SVG領域の描画
     var svg = d3.select("#comments_counter_graph");
-    //var svg = d3.select('body')
-    //      .append('svg')
-    //      .attr({
-    //        'class': 'comment_graph',
-    //        'width': width,
-    //        'height': height
-    //      });
 
-    // イベントの所要時間
-    var event_time = 800;
+    svg.transition()
+      .duration(event_time)
+      .attr({
+        'height': height
+      });
+
+    // グラフ描画枠の変形
+    svg.select('.frame')
+      .transition()
+      .duration(event_time)
+      .attr({
+        'height': height
+      });
 
     // ソートのステータス
     var in_order = 0;

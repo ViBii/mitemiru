@@ -1069,7 +1069,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
       var bar_width = width-margin.left-margin.right;
       var bar_height = Math.min(480, (developers.length/4)*240);
 
-      var bar_margin = {top: margin.top, left: margin.left+50, right: margin.right, bottom: margin.bottom};
+      var bar_margin = {top: margin.top, left: Math.max(margin.left+50,(width/2)-developers.length*30), right: margin.right, bottom: margin.bottom};
 
       svg.append("g")
         .attr("class", "bar_chart")
@@ -1554,7 +1554,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         svg.select(".bar_chart")
           .append("g")
           .attr("class", "sort")
-          .attr("transform", "translate("+(2*margin.left+60*developers.length)+", "+(margin.top+60)+")");
+          .attr("transform", "translate("+(2*margin.left+60*developers.length)+", "+(margin.top-55)+")");
 
         // テキストの表示
         svg.select(".bar_chart")

@@ -16,13 +16,6 @@ var create_commit_graph = function(developers,commit_count){
 
     // SVG領域の描画
     var svg = d3.select("#commit_counter_graph");
-    //var svg = d3.select('body')
-    //      .append('svg')
-    //      .attr({
-    //        'class': 'commit_counter_graph',
-    //        'width': width,
-    //        'height': height
-    //      });
 
     // イベントの所要時間
     var event_time = 800;
