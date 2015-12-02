@@ -321,13 +321,15 @@ class ProjectsController < ApplicationController
   def edit_redmine
     @project = Project.find(params[:project_id])
     @ticket_repository = TicketRepository.find_by(:id => @project.ticket_repository_id)
-    @redmine_key = RedmineKey.find_by(:ticket_repository_id => @ticket_repository)
+    user_redmine_keys = current_user.redmine_keys
+    @redmine_key = user_redmine_keys.find_by(:ticket_repository_id => @ticket_repository)
   end
 
   def edit_github
     @project = Project.find(params[:project_id])
     @version_repository = VersionRepository.find_by(:id => @project.version_repository_id)
-    @github_key = GithubKey.find_by(:version_repository_id => @version_repository)
+    user_github_keys = current_user.github_keys
+    @github_key = user_github_keys.find_by(:version_repository_id => @version_repository)
   end
 
   def auth_redmine
