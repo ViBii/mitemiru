@@ -9,9 +9,11 @@ var commitAjax = function() {
       d3.select("#commit_counter_graph")
           .append('text')
           .attr({
-              'x':"470",
-              'y':"400",
-              'font-size': '20px'
+            'x': 540,
+            'y': 240,
+            'font-size': '20px',
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
           })
           .text('データの取得に失敗しました');
     },
@@ -35,11 +37,13 @@ var costAjax = function() {
       d3.select("#productivity_graph")
           .append('text')
           .attr({
-              'x':"470",
-              'y':"400",
-              'font-size': '20px'
-            })
-            .text('データの取得に失敗しました');
+            'x': 540,
+            'y': 240,
+            'font-size': '20px',
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
+          })
+          .text('データの取得に失敗しました');
       //commentAjax();
     },
     success: function(data) {
@@ -62,11 +66,13 @@ var commentAjax = function() {
       d3.select("#comments_counter_graph")
           .append('text')
           .attr({
-              'x':"470",
-              'y':"400",
-              'font-size': '20px'
+            'x': 540,
+            'y': 240,
+            'font-size': '20px',
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
           })
-            .text('データの取得に失敗しました');
+          .text('データの取得に失敗しました');
       removeLoading();
     },
     success: function(comment_data) {

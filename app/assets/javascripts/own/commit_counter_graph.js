@@ -10,25 +10,18 @@ var create_commit_graph = function(developers,commit_count){
     var faint_color = '#749ccb';
 
     // SVG領域の設定
-    var width = 960;
-    var height = 540;
-    var margin = {top: 300, right: 100, bottom: 0, left: 150};
+    var width = 1080;
+    var height = 480;
+    var margin = {top: 50, right: 0, bottom: 0, left: 0};
 
     // SVG領域の描画
     var svg = d3.select("#commit_counter_graph");
-    //var svg = d3.select('body')
-    //      .append('svg')
-    //      .attr({
-    //        'class': 'commit_counter_graph',
-    //        'width': width,
-    //        'height': height
-    //      });
 
     // イベントの所要時間
     var event_time = 800;
 
     // 棒の描画エリア
-    var bar_start_x = 350;
+    var bar_start_x = Math.max(100, (width/2)-developers.length*30-100);
 
     // 棒の最大の高さ
     var bar_max_height = 300;
