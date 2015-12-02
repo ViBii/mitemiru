@@ -18,21 +18,21 @@ class ProjectsController < ApplicationController
     github_project_name = params[:github_project_name]
     github_repo         = params[:github_repo]
 
-    # Redmineホスト名の整形
-    if redmine_url.match(/https:\/\//)
-      redmine_url.slice!(/https:\/\//)
-    elsif redmine_url.match(/http:\/\//)
-      redmine_url.slice!(/http:\/\//)
-    end
-    /\/projects\// =~ redmine_url
-    redmine_host = $`
-    redmine_project_name = $'
-    if redmine_project_name.match(/\//)
-      redmine_url.slice!(/\//)
-    end
-
     # Validate
     if params['redmine_url'].present?
+      # Redmineホスト名の整形
+      if redmine_url.match(/https:\/\//)
+        redmine_url.slice!(/https:\/\//)
+      elsif redmine_url.match(/http:\/\//)
+        redmine_url.slice!(/http:\/\//)
+      end
+      /\/projects\// =~ redmine_url
+      redmine_host = $`
+      redmine_project_name = $'
+      if redmine_project_name.match(/\//)
+        redmine_url.slice!(/\//)
+      end
+
       begin
         req = RestClient::Request.execute method: :get,
           url:      'https://' + redmine_host + '/projects/' + redmine_project_name + '/memberships.json',
