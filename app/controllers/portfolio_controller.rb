@@ -6,6 +6,7 @@ class PortfolioController < ApplicationController
       projects << project if ApplicationController.helpers.show_project?(current_user, project)
     end
     @projects = projects
+    redirect_to '/projects/new' if projects.blank?
   end
 
   def productivity_ajax
