@@ -20,6 +20,7 @@ class ProjectsController < ApplicationController
 
     # Validate
     if params['redmine_url'].present?
+      begin
       # Redmineホスト名の整形
       if redmine_url.match(/https:\/\//)
         redmine_url.slice!(/https:\/\//)
@@ -33,11 +34,10 @@ class ProjectsController < ApplicationController
         redmine_url.slice!(/\//)
       end
 
-      begin
-        req = RestClient::Request.execute method: :get,
-          url:      'https://' + redmine_host + '/projects/' + redmine_project_name + '/memberships.json',
-          user:     params['redmine_login_id'],
-          password: params['redmine_password_digest']
+      req = RestClient::Request.execute method: :get,
+        url:      'https://' + redmine_host + '/users.xml?',
+        user:     params['redmine_login_id'],
+        password: params['redmine_password_digest']
       rescue
         redmine_host = UNAUTH
         redmine_project_name = UNAUTH
