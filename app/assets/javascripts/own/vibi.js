@@ -13,6 +13,12 @@ function jump(action, method) {
 }
 
 Vibi.load = function(e) {
+  $(function(){
+    setTimeout(function(){
+      $('.alert').fadeOut("slow");
+    }, 1500);
+  });
+
   if(gon.controller === "projects") {
     $('.new_project_button').click(function() {
       dispLoading("処理中...");
