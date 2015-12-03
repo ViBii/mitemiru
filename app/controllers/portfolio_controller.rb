@@ -6,7 +6,7 @@ class PortfolioController < ApplicationController
       projects << project if ApplicationController.helpers.show_project?(current_user, project)
     end
     @projects = projects
-    redirect_to '/projects/new', notice: 'まずはじめにプロジェクト登録しましょう' if projects.blank?
+    redirect_to '/projects/new', notice: NO_PROJECT if projects.blank?
   end
 
   def setting
@@ -14,7 +14,7 @@ class PortfolioController < ApplicationController
     Project.all.each do |project|
       projects << project if ApplicationController.helpers.show_project?(current_user, project)
     end
-    redirect_to '/projects/new', notice: 'まずはじめにプロジェクト登録しましょう' if projects.blank?
+    redirect_to '/projects/new', notice: NO_PROJECT if projects.blank?
   end
 
   def productivity_ajax
@@ -149,7 +149,7 @@ class PortfolioController < ApplicationController
 
       # 各対象開発者情報の統計
       for developer in membership_json do
-        if developer['project']['id'] == redmine_project_id then
+        if developer['project']['id'] == redmine_project_id && developer['user'] then
           redmine_developers.push(developer['user']['name'])
 
           roop_issues_Arr = []
@@ -260,7 +260,7 @@ class PortfolioController < ApplicationController
       # 各開発者のコミット数リスト
       commit_array = []
 
-      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
+      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
 
       all_developer_commits.each do |contributor|
         developers_array.push(contributor['author']['login'])
@@ -311,7 +311,7 @@ class PortfolioController < ApplicationController
       show_developers = []
       contributors.each do |contributor|
         contributor_data = JSON.parse(RestClient::Request.execute method: :get,
-                                      url: 'https://api.github.com/users/' + contributor['login'],
+                                      url: 'api.github.com/users/' + contributor['login'],
                                       user: login_id,
                                       password: password)
          if developers_email.include?(contributor_data['email'])

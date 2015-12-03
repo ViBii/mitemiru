@@ -35,7 +35,7 @@ class ProjectsController < ApplicationController
       end
 
       req = RestClient::Request.execute method: :get,
-        url:      'https://' + redmine_host + '/users.xml?',
+        url:      redmine_host + '/users.xml?',
         user:     params['redmine_login_id'],
         password: params['redmine_password_digest']
       rescue
@@ -50,7 +50,7 @@ class ProjectsController < ApplicationController
     if params['github_project_name'].present? && params['github_repo'].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'https://api.github.com/orgs/' + params['github_project_name'] + '/members',
+          url:      'api.github.com/orgs/' + params['github_project_name'] + '/members',
           user:     params['github_login_id'],
           password: params['github_password_digest']
       rescue
@@ -233,7 +233,7 @@ class ProjectsController < ApplicationController
         end
         redmine_developer_id_list.each do |redmine_developer_id|
           redmine_developer_info = RestClient::Request.execute method: :get,
-            url:      'https://' + data[:redmine_host] + "/users/#{redmine_developer_id}.json?include=memberships,groups",
+            url:      data[:redmine_host] + "/users/#{redmine_developer_id}.json?include=memberships,groups",
             user:     data[:redmine_login_id],
             password: data[:redmine_password_digest]
           redmine_developer_info = JSON.parse(redmine_developer_info)
@@ -264,7 +264,7 @@ class ProjectsController < ApplicationController
         # developers
         # assign_logs
         developer_list = RestClient::Request.execute method: :get,
-          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
         github_developers = JSON.parse(developer_list)
@@ -275,7 +275,7 @@ class ProjectsController < ApplicationController
         end
         github_developer_list.each do |github_developer|
           github_developer_info = RestClient::Request.execute method: :get,
-            url: 'https://api.github.com/users/' + github_developer,
+            url: 'api.github.com/users/' + github_developer,
             user:     data[:github_login_id],
             password: data[:github_password_digest]
           github_developer_info = JSON.parse(github_developer_info)
@@ -345,7 +345,7 @@ class ProjectsController < ApplicationController
     if data[:redmine_host].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'https://' + data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
+          url:      data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
           user:     data[:redmine_login_id],
           password: data[:redmine_password_digest]
       rescue
@@ -419,7 +419,7 @@ class ProjectsController < ApplicationController
     if data[:github_project_name].present? && data[:github_repo].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
       rescue
