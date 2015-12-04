@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :projects
   has_and_belongs_to_many :roles
   has_and_belongs_to_many :redmine_keys
   has_and_belongs_to_many :github_keys
