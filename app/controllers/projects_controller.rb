@@ -264,7 +264,7 @@ class ProjectsController < ApplicationController
         # developers
         # assign_logs
         developer_list = RestClient::Request.execute method: :get,
-          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
         github_developers = JSON.parse(developer_list)
@@ -275,7 +275,7 @@ class ProjectsController < ApplicationController
         end
         github_developer_list.each do |github_developer|
           github_developer_info = RestClient::Request.execute method: :get,
-            url: 'api.github.com/users/' + github_developer,
+            url: 'https://api.github.com/users/' + github_developer,
             user:     data[:github_login_id],
             password: data[:github_password_digest]
           github_developer_info = JSON.parse(github_developer_info)
