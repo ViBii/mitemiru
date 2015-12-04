@@ -1,4 +1,4 @@
-Rails.application.config.assets.version = '1.7'
+Rails.application.config.assets.version = '1.8'
 
 Rails.application.config.assets.precompile += %w( loading.gif )
 
