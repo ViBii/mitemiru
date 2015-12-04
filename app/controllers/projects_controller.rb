@@ -141,6 +141,7 @@ class ProjectsController < ApplicationController
             project_name: data[:redmine_project_name]
           )
           ticket_repository.save
+          ticket_repository_id = TicketRepository.last.id
         end
 
         # redmine_keys
@@ -168,6 +169,7 @@ class ProjectsController < ApplicationController
             project_name: data[:github_project_name]
           )
           version_repository.save
+          version_repository_id = VersionRepository.last.id
         end
 
         # github_keys
