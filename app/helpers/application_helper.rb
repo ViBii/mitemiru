@@ -2,14 +2,14 @@ module ApplicationHelper
   # TODO: テスト記述しないと...
 
   def auth_git(project_id)
-    project = Project.where(:id => project_id)
-    return true if project.first.version_repository_id.present?
+    project = Project.find_by(id: project_id)
+    return true if project.version_repository_id.present?
     false
   end
 
   def auth_red(project_id)
-    project = Project.where(:id => project_id)
-    return true if project.first.ticket_repository_id.present?
+    project = Project.find_by(id: project_id)
+    return true if project.ticket_repository_id.present?
     false
   end
 
