@@ -345,7 +345,7 @@ class ProjectsController < ApplicationController
     if data[:redmine_host].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
+          url:      data[:redmine_host] + '/users.xml?',
           user:     data[:redmine_login_id],
           password: data[:redmine_password_digest]
       rescue
