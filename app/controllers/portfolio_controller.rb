@@ -387,11 +387,18 @@ class PortfolioController < ApplicationController
         developers_array.push(member['login'])
       end
 
-      puts developers_array.to_s
-      puts
+      #ファイル拡張子セット
+      file_extension = Hash.new
+
+      #開発者名と編集回数セット
+      developer_edit = Hash.new
+
+      #拡張子種類のarray
+      keys_array = []
 
       #各開発者のcommit情報の取得
       for developer_name in developers_array do
+
         #全てのsha情報を保存するarray
         commit_sha = []
 
@@ -400,10 +407,54 @@ class PortfolioController < ApplicationController
 
         commits_arr = Octokit.commits(githubRepo,'master',:author => developer_name)
 
-        puts developer_name + '      ' +commits_arr.length.to_s
-        puts
+        #parents属性の長さは1のコミット情報のshaを洗い出す
+        for commit in commits_arr do
+
+          #parentsの長さは2以上の場合、他の人のコミットをマージする可能性がある
+          if commit['parents'].length < 2 then
+            commit_sha.push(commit['sha'])
+          end
+        end
+
+        #各shaに対するコミットの中身から編集したファイルの拡張子を集計、計算する
+        for sha in commit_sha do
+          one_commit_detail = Octokit.commit(githubRepo,sha)
+
+          one_commit_detail['files'].each do |file|
+            file_name = file['filename']
+
+            #拡張子を洗い出す処理
+            if file_name.index('.') != nil then
+              extension = file_name.slice(file_name.rindex('.')..-1)
+            else
+              extension = file_name
+            end
+
+            if keys_array.include?(extension) then
+              file_extension[extension] = file_extension[extension] + 1
+              puts '+1!' + file_extension[extension].to_s
+            else
+              file_extension[extension] = 1
+            end
+
+            keys_array = file_extension.keys
+
+          end
+
+        end
+
+        developer_edit[developer_name] = file_extension.values
+
+        #hashのkeyを保存するけど、keyに対する値全部0に変更
+        file_extension.each{|key, value|
+          value = 0
+        }
 
       end
+
+      puts developer_edit.to_a
+      puts
+
     end
   end
 end
