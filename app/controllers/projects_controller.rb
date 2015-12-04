@@ -196,8 +196,8 @@ class ProjectsController < ApplicationController
       end
 
       # projects
-      if Project.where(name: data[:name]).present?
-        same_project = Project.where(name: data[:name]).first
+      if Project.where(name: data[:name], user_id: current_user.id).present?
+        same_project = Project.where(name: data[:name], user_id: current_user.id).first
         same_project.update(
           :id                    => same_project.id,
           :version_repository_id => version_repository_id,
