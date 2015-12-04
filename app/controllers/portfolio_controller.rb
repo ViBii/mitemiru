@@ -357,4 +357,39 @@ class PortfolioController < ApplicationController
       render :json => speaker_data
     end
   end
+
+  def skills_ajax
+    if request.xhr?
+      projectId   = params['project_id']
+
+      #repo設定
+      @version_repo_id = Project.find(projectId)[:version_repository_id]
+      githubRepo = VersionRepository.find(@version_repo_id)[:project_name] + '/' + VersionRepository.find(@version_repo_id)[:repository_name]
+
+      #システム利用者github認証
+      githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
+      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
+
+      #認証を取る
+      Octokit.configure do |c|
+        c.login = githubUserName
+        c.password = githubUserPW
+      end
+
+      #チームメンバの取得
+      developer_list = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/orgs/' + VersionRepository.find(@version_repo_id)[:project_name] + '/members', user: githubUserName, password: githubUserPW)
+      # 開発者リスト
+      developers_array = []
+
+      developer_list.each do |member|
+        developers_array.push(member['login'])
+      end
+
+      #各開発者のcommit情報の取得
+      for developer_name in developers_array do
+        commit_sha = []
+        developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/ViBii/mitemiru/commits?author=' + developer_name, user: githubUserName, password: githubUserPW)
+      end
+    end
+  end
 end
