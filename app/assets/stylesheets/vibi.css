@@ -53,7 +53,7 @@ body {
   text-align: center;
   padding-top: 100px;
   width: 100px;
-  background-image: url("loading.gif");
+  background-image: url("/images/loading.gif");
   background-position: center top;
   background-repeat: no-repeat;
   margin: 0 auto;
