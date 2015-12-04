@@ -50,7 +50,7 @@ class ProjectsController < ApplicationController
     if params['github_project_name'].present? && params['github_repo'].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'api.github.com/orgs/' + params['github_project_name'] + '/members',
+          url:      'https://api.github.com/orgs/' + params['github_project_name'] + '/members',
           user:     params['github_login_id'],
           password: params['github_password_digest']
       rescue

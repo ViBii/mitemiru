@@ -260,7 +260,7 @@ class PortfolioController < ApplicationController
       # 各開発者のコミット数リスト
       commit_array = []
 
-      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
+      all_developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/' + githubRepo + '/stats/contributors', user: githubUserName, password: githubUserPW)
 
       all_developer_commits.each do |contributor|
         developers_array.push(contributor['author']['login'])
@@ -311,7 +311,7 @@ class PortfolioController < ApplicationController
       show_developers = []
       contributors.each do |contributor|
         contributor_data = JSON.parse(RestClient::Request.execute method: :get,
-                                      url: 'api.github.com/users/' + contributor['login'],
+                                      url: 'https://api.github.com/users/' + contributor['login'],
                                       user: login_id,
                                       password: password)
          if developers_email.include?(contributor_data['email'])
