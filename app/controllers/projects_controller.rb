@@ -517,7 +517,7 @@ class ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to @project, notice: 'プロジェクトを変更しました' }
+        format.html { redirect_to @project, notice: 'プロジェクト情報を変更しました' }
         format.json { render :show, status: :ok, location: @project }
       else
         format.html { render :edit }
@@ -529,7 +529,7 @@ class ProjectsController < ApplicationController
   def destroy
     @project.destroy
     respond_to do |format|
-      format.html { redirect_to projects_url, notice: 'プロジェクトを削除しました' }
+      format.html { redirect_to projects_url, notice: 'プロジェクト情報を削除しました' }
       format.json { head :no_content }
     end
   end
@@ -543,10 +543,7 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :name,
-      :version_repository_id,
-      :ticket_repository_id,
-      :project_start_date,
-      :project_end_date,
+      :project_start_date
     )
   end
 end
