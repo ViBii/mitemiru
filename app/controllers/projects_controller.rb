@@ -336,43 +336,56 @@ class ProjectsController < ApplicationController
   def auth_redmine
     data = {
       name:                    params['name'],
-      redmine_host:            params['redmine_host'],
-      redmine_project_name:    params['redmine_project_name'],
+      redmine_url:             params['redmine_url'],
       redmine_login_id:        params['redmine_login_id'],
       redmine_password_digest: params['redmine_password_digest']
     }
 
-    if data[:redmine_host].present?
+    # Validate
+    if data[:redmine_url].present?
       begin
-        req = RestClient::Request.execute method: :get,
-          url:      data[:redmine_host] + '/users.xml?',
-          user:     data[:redmine_login_id],
-          password: data[:redmine_password_digest]
+      # Redmineホスト名の整形
+      if data[:redmine_url].match(/https:\/\//)
+        data[:redmine_url].slice!(/https:\/\//)
+      elsif data[:redmine_url].match(/http:\/\//)
+        data[:redmine_url].slice!(/http:\/\//)
+      end
+      /\/projects\// =~ data[:redmine_url]
+      redmine_host = $`
+      redmine_project_name = $'
+      if redmine_project_name.match(/\//)
+        redmine_url.slice!(/\//)
+      end
+
+      req = RestClient::Request.execute method: :get,
+        url:      redmine_host + '/users.xml?',
+        user:     params['redmine_login_id'],
+        password: params['redmine_password_digest']
       rescue
-        data[:redmine_host] = UNAUTH
-        data[:redmine_project_name] = UNAUTH
+        redmine_host = UNAUTH
+        redmine_project_name = UNAUTH
       end
     else
-      data[:redmine_host] = UNAUTH
-      data[:redmine_project_name] = UNAUTH
+      redmine_host = UNAUTH
+      redmine_project_name = UNAUTH
     end
 
-    if data[:redmine_project_name] != UNAUTH
+    if redmine_project_name != UNAUTH
       # ticket_repositories
-      unless TicketRepository.exists?(host_name: data[:redmine_host], project_name: data[:redmine_project_name])
+      unless TicketRepository.exists?(host_name: redmine_host, project_name: redmine_project_name)
         ticket_repository = TicketRepository.new(
-          host_name: data[:redmine_host],
-          project_name: data[:redmine_project_name]
+          host_name: redmine_host,
+          project_name: redmine_project_name
         )
         ticket_repository.save
       end
 
       # TODO: 開発者関連も登録する必要あり
       # redmine_keys
-      if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
+      if TicketRepository.where(host_name: redmine_host, project_name: redmine_project_name).select(:id).present?
         ticket_repository_id = TicketRepository.where(
-          host_name: data[:redmine_host],
-          project_name: data[:redmine_project_name]).pluck(:id).first
+          host_name: redmine_host,
+          project_name: redmine_project_name).pluck(:id).first
       else
         ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
       end
@@ -419,7 +432,7 @@ class ProjectsController < ApplicationController
     if data[:github_project_name].present? && data[:github_repo].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
       rescue
