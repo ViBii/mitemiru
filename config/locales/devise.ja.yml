@@ -26,8 +26,8 @@ ja:
         remember_me: "ログインを記憶"
     models:
       assign_log: "所属情報"
-      version_repository: "Redmine情報"
-      ticket_repository: "GitHub情報"
+      version_repository: "GitHub情報"
+      ticket_repository: "Redmine情報"
       role: "ユーザー権限情報"
       redmine_key: "Redmine認証情報"
       github_key: "GitHub認証情報"
