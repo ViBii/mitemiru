@@ -203,14 +203,16 @@ class ProjectsController < ApplicationController
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date])
+          :project_start_date    => Date.parse(data[:project_start_date]),
+          :user_id               => current_user.id
         )
       else
         project = Project.new(
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date])
+          :project_start_date    => Date.parse(data[:project_start_date]),
+          :user_id               => current_user.id
         )
         project.save
       end
@@ -543,7 +545,8 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :name,
-      :project_start_date
+      :project_start_date,
+      :user_id
     )
   end
 end
