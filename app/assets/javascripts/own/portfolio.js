@@ -85,6 +85,24 @@ var commentAjax = function() {
   });
 }
 
+var skillAjax = function() {
+    comment_req = $.ajax({
+        type: 'post',
+        url: '/portfolio/skills_ajax',
+        data: {
+            project_id: $('#project_info_id').val()
+        },
+        error: function(){
+            removeLoading();
+        },
+        success: function(comment_data) {
+        }
+    })
+        .done(function(comment_data) {
+            removeLoading();
+        });
+}
+
 var dispLoading = function(msg){
   var dispMsg = "";
 

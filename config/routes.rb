@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post 'portfolio/productivity_ajax'
   post 'portfolio/commits_ajax'
   post 'portfolio/comments_ajax'
+  post 'portfolio/skills_ajax'
 
   get 'datasamples/index'
 

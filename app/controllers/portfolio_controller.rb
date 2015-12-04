@@ -376,6 +376,8 @@ class PortfolioController < ApplicationController
         c.password = githubUserPW
       end
 
+      Octokit.auto_paginate = true
+
       #チームメンバの取得
       developer_list = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/orgs/' + VersionRepository.find(@version_repo_id)[:project_name] + '/members', user: githubUserName, password: githubUserPW)
       # 開発者リスト
@@ -385,10 +387,22 @@ class PortfolioController < ApplicationController
         developers_array.push(member['login'])
       end
 
+      puts developers_array.to_s
+      puts
+
       #各開発者のcommit情報の取得
       for developer_name in developers_array do
+        #全てのsha情報を保存するarray
         commit_sha = []
-        developer_commits = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/repos/ViBii/mitemiru/commits?author=' + developer_name, user: githubUserName, password: githubUserPW)
+
+        #全てのコミット情報を保存するarray
+        commits_arr = []
+
+        commits_arr = Octokit.commits(githubRepo,'master',:author => developer_name)
+
+        puts developer_name + '      ' +commits_arr.length.to_s
+        puts
+
       end
     end
   end
