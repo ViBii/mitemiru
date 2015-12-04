@@ -5,7 +5,7 @@ gem 'rails', '4.2.3'
 
 # DB
 gem 'mysql2', '~> 0.3.20'
-gem 'rails_12factor'
+gem 'rails_12factor', group: :production
 
 # SCSS
 gem 'sass-rails', '~> 5.0'

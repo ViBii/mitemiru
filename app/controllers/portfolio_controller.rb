@@ -6,6 +6,15 @@ class PortfolioController < ApplicationController
       projects << project if ApplicationController.helpers.show_project?(current_user, project)
     end
     @projects = projects
+    redirect_to '/projects/new', notice: NO_PROJECT if projects.blank?
+  end
+
+  def setting
+    projects = []
+    Project.all.each do |project|
+      projects << project if ApplicationController.helpers.show_project?(current_user, project)
+    end
+    redirect_to '/projects/new', notice: NO_PROJECT if projects.blank?
   end
 
   def productivity_ajax
@@ -140,7 +149,7 @@ class PortfolioController < ApplicationController
 
       # 各対象開発者情報の統計
       for developer in membership_json do
-        if developer['project']['id'] == redmine_project_id then
+        if developer['project']['id'] == redmine_project_id && developer['user'] then
           redmine_developers.push(developer['user']['name'])
 
           roop_issues_Arr = []
