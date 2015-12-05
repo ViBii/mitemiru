@@ -427,16 +427,18 @@ class PortfolioController < ApplicationController
             if file_name.index('.') != nil then
               extension = file_name.slice(file_name.rindex('.')..-1)
             else
+              #pathの中に、.がない場合
               extension = file_name
             end
 
+            #Hashのkeyに既に存在している場合、編集回数+1。存在していない場合、新しいkeyを追加し、回数を1から
             if keys_array.include?(extension) then
               file_extension[extension] = file_extension[extension] + 1
-              puts '+1!' + file_extension[extension].to_s
             else
               file_extension[extension] = 1
             end
 
+            #新しいkeyを追加してから、key listを更新する
             keys_array = file_extension.keys
 
           end
@@ -447,13 +449,24 @@ class PortfolioController < ApplicationController
 
         #hashのkeyを保存するけど、keyに対する値全部0に変更
         file_extension.each{|key, value|
-          value = 0
+          file_extension[key] = 0
         }
 
       end
 
-      puts developer_edit.to_a
+      developer_edit.each{|key, value|
+        if developer_edit[key].length < keys_array.length  then
+          for num in 1..(keys_array.length - developer_edit[key].length) do
+            developer_edit[key].push(0)
+          end
+        end
+      }
+
+      puts file_extension.keys.to_s
       puts
+      developer_edit.each{|key, value|
+        puts key + ' : ' + value.to_s
+      }
 
     end
   end
