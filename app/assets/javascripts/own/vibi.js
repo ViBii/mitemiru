@@ -1,5 +1,8 @@
 var Vibi = Vibi || {};
 var gon = gon || {};
+var commitReq;
+var costReq;
+var commentReq;
 
 function jump(action, method) {
   var form = document.createElement('form');
@@ -43,7 +46,6 @@ Vibi.load = function(e) {
   if(gon.controller === 'portfolio'){
     if(gon.action === "index") {
       $('#selectProjectBtn').click(function() {
-        dispLoading("処理中...");
 
         //前回実行したグラフの削除
         $("svg").empty();
