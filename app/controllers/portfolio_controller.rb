@@ -462,12 +462,6 @@ class PortfolioController < ApplicationController
         end
       }
 
-      puts file_extension.keys.to_s
-      puts
-      developer_edit.each{|key, value|
-        puts key + ' : ' + value.to_s
-      }
-
       finalStr = "{\"developers\":" + developers_array.to_s + ",\"extensions\":" + keys_array.to_s + ",\"developers_edit\":" + developer_edit.values.to_s + "}"
 
       puts finalStr
