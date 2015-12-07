@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151026101239) do
+ActiveRecord::Schema.define(version: 20151204081514) do
 
   create_table "assign_logs", force: :cascade do |t|
     t.integer  "developer_id",      limit: 4
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 20151026101239) do
     t.datetime "project_end_date"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
+    t.integer  "user_id",               limit: 4
   end
 
   create_table "redmine_keys", force: :cascade do |t|

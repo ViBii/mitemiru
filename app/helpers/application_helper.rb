@@ -15,16 +15,7 @@ module ApplicationHelper
 
   def show_project?(user, project)
     show_project = nil
-    if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
-      show_project = true if project.version_repository_id.blank?
-    end
-    if user.github_keys.where(version_repository_id: project.version_repository_id).present?
-      show_project = true if project.ticket_repository_id.blank?
-    end
-    if user.redmine_keys.where(ticket_repository_id: project.ticket_repository_id).present?
-      show_project = true if user.github_keys.where(version_repository_id: project.version_repository_id).present?
-    end
-    show_project = false if show_project.blank?
+    show_project = project.user_id == user.id ? true : false
     return show_project
   end
 

@@ -78,7 +78,7 @@ class DevelopersController < ApplicationController
   def update
     respond_to do |format|
       if @developer.update(developer_params)
-        format.html { redirect_to @developer, notice: 'Developer was successfully updated.' }
+        format.html { redirect_to @developer, notice: '開発者情報を変更しました' }
         format.json { render :show, status: :ok, location: @developer }
       else
         format.html { render :edit }
@@ -92,22 +92,22 @@ class DevelopersController < ApplicationController
   def destroy
     @developer.destroy
     respond_to do |format|
-      format.html { redirect_to developers_url, notice: 'Developer was successfully destroyed.' }
+      format.html { redirect_to developers_url, notice: '開発者情報を削除しました' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_developer
-      @developer = Developer.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_developer
+    @developer = Developer.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def developer_params
-      params.require(:developer).permit(
-        :name,
-        :email
-      )
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def developer_params
+    params.require(:developer).permit(
+      :name,
+      :email
+    )
+  end
 end

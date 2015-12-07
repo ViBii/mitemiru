@@ -141,6 +141,7 @@ class ProjectsController < ApplicationController
             project_name: data[:redmine_project_name]
           )
           ticket_repository.save
+          ticket_repository_id = TicketRepository.last.id
         end
 
         # redmine_keys
@@ -168,6 +169,7 @@ class ProjectsController < ApplicationController
             project_name: data[:github_project_name]
           )
           version_repository.save
+          version_repository_id = VersionRepository.last.id
         end
 
         # github_keys
@@ -196,21 +198,23 @@ class ProjectsController < ApplicationController
       end
 
       # projects
-      if Project.where(name: data[:name]).present?
-        same_project = Project.where(name: data[:name]).first
+      if Project.where(name: data[:name], user_id: current_user.id).present?
+        same_project = Project.where(name: data[:name], user_id: current_user.id).first
         same_project.update(
           :id                    => same_project.id,
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date])
+          :project_start_date    => Date.parse(data[:project_start_date]),
+          :user_id               => current_user.id
         )
       else
         project = Project.new(
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date])
+          :project_start_date    => Date.parse(data[:project_start_date]),
+          :user_id               => current_user.id
         )
         project.save
       end
@@ -264,7 +268,7 @@ class ProjectsController < ApplicationController
         # developers
         # assign_logs
         developer_list = RestClient::Request.execute method: :get,
-          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
         github_developers = JSON.parse(developer_list)
@@ -275,7 +279,7 @@ class ProjectsController < ApplicationController
         end
         github_developer_list.each do |github_developer|
           github_developer_info = RestClient::Request.execute method: :get,
-            url: 'api.github.com/users/' + github_developer,
+            url: 'https://api.github.com/users/' + github_developer,
             user:     data[:github_login_id],
             password: data[:github_password_digest]
           github_developer_info = JSON.parse(github_developer_info)
@@ -336,43 +340,56 @@ class ProjectsController < ApplicationController
   def auth_redmine
     data = {
       name:                    params['name'],
-      redmine_host:            params['redmine_host'],
-      redmine_project_name:    params['redmine_project_name'],
+      redmine_url:             params['redmine_url'],
       redmine_login_id:        params['redmine_login_id'],
       redmine_password_digest: params['redmine_password_digest']
     }
 
-    if data[:redmine_host].present?
+    # Validate
+    if data[:redmine_url].present?
       begin
-        req = RestClient::Request.execute method: :get,
-          url:      data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
-          user:     data[:redmine_login_id],
-          password: data[:redmine_password_digest]
+      # Redmineホスト名の整形
+      if data[:redmine_url].match(/https:\/\//)
+        data[:redmine_url].slice!(/https:\/\//)
+      elsif data[:redmine_url].match(/http:\/\//)
+        data[:redmine_url].slice!(/http:\/\//)
+      end
+      /\/projects\// =~ data[:redmine_url]
+      redmine_host = $`
+      redmine_project_name = $'
+      if redmine_project_name.match(/\//)
+        redmine_url.slice!(/\//)
+      end
+
+      req = RestClient::Request.execute method: :get,
+        url:      redmine_host + '/users.xml?',
+        user:     params['redmine_login_id'],
+        password: params['redmine_password_digest']
       rescue
-        data[:redmine_host] = UNAUTH
-        data[:redmine_project_name] = UNAUTH
+        redmine_host = UNAUTH
+        redmine_project_name = UNAUTH
       end
     else
-      data[:redmine_host] = UNAUTH
-      data[:redmine_project_name] = UNAUTH
+      redmine_host = UNAUTH
+      redmine_project_name = UNAUTH
     end
 
-    if data[:redmine_project_name] != UNAUTH
+    if redmine_project_name != UNAUTH
       # ticket_repositories
-      unless TicketRepository.exists?(host_name: data[:redmine_host], project_name: data[:redmine_project_name])
+      unless TicketRepository.exists?(host_name: redmine_host, project_name: redmine_project_name)
         ticket_repository = TicketRepository.new(
-          host_name: data[:redmine_host],
-          project_name: data[:redmine_project_name]
+          host_name: redmine_host,
+          project_name: redmine_project_name
         )
         ticket_repository.save
       end
 
       # TODO: 開発者関連も登録する必要あり
       # redmine_keys
-      if TicketRepository.where(host_name: data[:redmine_host], project_name: data[:redmine_project_name]).select(:id).present?
+      if TicketRepository.where(host_name: redmine_host, project_name: redmine_project_name).select(:id).present?
         ticket_repository_id = TicketRepository.where(
-          host_name: data[:redmine_host],
-          project_name: data[:redmine_project_name]).pluck(:id).first
+          host_name: redmine_host,
+          project_name: redmine_project_name).pluck(:id).first
       else
         ticket_repository_id = TicketRepository.last.present? ? TicketRepository.last.id + 1 : 1
       end
@@ -419,7 +436,7 @@ class ProjectsController < ApplicationController
     if data[:github_project_name].present? && data[:github_repo].present?
       begin
         req = RestClient::Request.execute method: :get,
-          url:      'api.github.com/orgs/' + data[:github_project_name] + '/members',
+          url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
           user:     data[:github_login_id],
           password: data[:github_password_digest]
       rescue
@@ -504,7 +521,7 @@ class ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to @project, notice: 'プロジェクトを変更しました' }
+        format.html { redirect_to @project, notice: 'プロジェクト情報を変更しました' }
         format.json { render :show, status: :ok, location: @project }
       else
         format.html { render :edit }
@@ -516,7 +533,7 @@ class ProjectsController < ApplicationController
   def destroy
     @project.destroy
     respond_to do |format|
-      format.html { redirect_to projects_url, notice: 'プロジェクトを削除しました' }
+      format.html { redirect_to projects_url, notice: 'プロジェクト情報を削除しました' }
       format.json { head :no_content }
     end
   end
@@ -530,10 +547,8 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :name,
-      :version_repository_id,
-      :ticket_repository_id,
       :project_start_date,
-      :project_end_date,
+      :user_id
     )
   end
 end

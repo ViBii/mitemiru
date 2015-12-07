@@ -17585,10 +17585,10 @@ var commentAjax = function() {
       removeLoading();
     },
     success: function(comment_data) {
-      console.log(comment_data);
     }
   })
   .done(function(comment_data) {
+    console.log(comment_data);
     create_comment_graph(comment_data.speakers,comment_data.comments);
     removeLoading();
   });
@@ -19403,19 +19403,19 @@ Vibi.load = function(e) {
   });
 
   if(gon.controller === "projects") {
+    datetimepickerJapanese();
+    $('.date').datepicker({
+      format: "yyyy/mm/dd",
+      language: 'ja',
+      autoclose: true,
+      orientation: "bottom",
+      todayHighlight: true
+    });
+
     $('.new_project_button').click(function() {
       dispLoading("処理中...");
     });
     if(gon.action === "new") {
-      datetimepickerJapanese();
-
-      $('.date').datepicker({
-        format: "yyyy/mm/dd",
-        language: 'ja',
-        autoclose: true,
-        orientation: "bottom",
-        todayHighlight: true
-      });
     }else if(gon.action === "confirm"){
       removeLoading();
     }else if(gon.action === "index"){
