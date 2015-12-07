@@ -25,17 +25,15 @@ ja:
         password_confirmation: "確認用パスワード"
         remember_me: "ログインを記憶"
     models:
-      assign_log: "所属情報"
-      version_repository: "GitHub情報"
-      ticket_repository: "Redmine情報"
-      role: "ユーザー権限情報"
+      assign_log: "所属履歴情報"
+      version_repository: "GitHubリポジトリ情報"
+      ticket_repository: "Redmineリポジトリ情報"
       redmine_key: "Redmine認証情報"
       github_key: "GitHub認証情報"
-      redmine_authority: "Redmine認証権限情報"
-      github_authority: "GitHub認証権限情報"
       project: "プロジェクト情報"
       developer: "開発者情報"
-      user: "ユーザー"
+      user: "ユーザー情報"
+      role: "ユーザー権限情報"
   devise:
     confirmations:
       new:
