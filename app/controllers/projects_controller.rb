@@ -384,7 +384,6 @@ class ProjectsController < ApplicationController
         ticket_repository.save
       end
 
-      # TODO: 開発者関連も登録する必要あり
       # redmine_keys
       if TicketRepository.where(host_name: redmine_host, project_name: redmine_project_name).select(:id).present?
         ticket_repository_id = TicketRepository.where(
@@ -414,6 +413,46 @@ class ProjectsController < ApplicationController
           :ticket_repository_id => ticket_repository_id,
       )
 
+      # developers
+      # assign_logs
+      developer_list = RestClient::Request.execute method: :get,
+        url:      data[:redmine_host] + '/projects/' + data[:redmine_project_name] + '/memberships.json',
+        user:     data[:redmine_login_id],
+        password: data[:redmine_password_digest]
+      redmine_developers = JSON.parse(developer_list)
+      developers = redmine_developers["memberships"]
+      redmine_developer_id_list = []
+
+      developers.each do |developer|
+        redmine_developer_id_list << developer['user']['id']
+      end
+      redmine_developer_id_list.each do |redmine_developer_id|
+        redmine_developer_info = RestClient::Request.execute method: :get,
+          url:      data[:redmine_host] + "/users/#{redmine_developer_id}.json?include=memberships,groups",
+        user:     data[:redmine_login_id],
+          password: data[:redmine_password_digest]
+        redmine_developer_info = JSON.parse(redmine_developer_info)
+
+        unless Developer.exists?(email: redmine_developer_info['user']['mail'])
+          developer = Developer.new(
+            :name  => redmine_developer_info['user']['login'],
+            :email => redmine_developer_info['user']['mail']
+          )
+          developer.save
+        end
+
+        developer = Developer.where(email: redmine_developer_info['user']['mail']).first
+        project = Project.where(name: data[:name]).first
+        unless AssignLog.exists?(developer_id: developer.id, project_id: project.id)
+          assign_log = AssignLog.new(
+            :developer_id      => developer.id,
+            :project_id        => project.id,
+            :assign_start_date => nil,
+            :assign_end_date   => nil
+          )
+          assign_log.save
+        end
+      end
       respond_to do |format|
         format.html { redirect_to projects_path, notice: UPDATE_PROJECT_MESSAGE }
       end
@@ -458,7 +497,6 @@ class ProjectsController < ApplicationController
         version_repository.save
       end
 
-      # TODO: 開発者関連も登録する必要あり
       # github_keys
       if VersionRepository.where(project_name: data[:github_project_name], repository_name: data[:github_repo]).select(:id).present?
         version_repository_id = VersionRepository.where(
@@ -487,6 +525,45 @@ class ProjectsController < ApplicationController
           :version_repository_id => version_repository_id,
       )
 
+      # developers
+      # assign_logs
+      developer_list = RestClient::Request.execute method: :get,
+        url:      'https://api.github.com/orgs/' + data[:github_project_name] + '/members',
+        user:     data[:github_login_id],
+        password: data[:github_password_digest]
+      github_developers = JSON.parse(developer_list)
+      github_developer_list = []
+
+      github_developers.each do |github_developer|
+        github_developer_list << github_developer['login']
+      end
+      github_developer_list.each do |github_developer|
+        github_developer_info = RestClient::Request.execute method: :get,
+          url: 'https://api.github.com/users/' + github_developer,
+          user:     data[:github_login_id],
+          password: data[:github_password_digest]
+        github_developer_info = JSON.parse(github_developer_info)
+
+        unless Developer.exists?(email: github_developer_info['email'])
+          developer = Developer.new(
+            :name  => github_developer_info['login'],
+            :email => github_developer_info['email']
+          )
+          developer.save
+        end
+
+        developer = Developer.where(email: github_developer_info['email']).first
+        project = Project.where(name: data[:name]).first
+        unless AssignLog.exists?(developer_id: developer.id, project_id: project.id)
+          assign_log = AssignLog.new(
+            :developer_id      => developer.id,
+            :project_id        => project.id,
+            :assign_start_date => nil,
+            :assign_end_date   => nil
+          )
+          assign_log.save
+        end
+      end
       respond_to do |format|
         format.html { redirect_to projects_path, notice: UPDATE_PROJECT_MESSAGE }
       end
