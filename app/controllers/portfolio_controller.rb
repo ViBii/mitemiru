@@ -468,6 +468,12 @@ class PortfolioController < ApplicationController
         puts key + ' : ' + value.to_s
       }
 
+      finalStr = "{\"developers\":" + developers_array.to_s + ",\"extensions\":" + keys_array.to_s + ",\"developers_edit\":" + developer_edit.values.to_s + "}"
+
+      puts finalStr
+
+      render :json => JSON.parse(finalStr)
+
     end
   end
 end
