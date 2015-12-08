@@ -357,4 +357,117 @@ class PortfolioController < ApplicationController
       render :json => speaker_data
     end
   end
+
+  def skills_ajax
+    if request.xhr?
+      projectId   = params['project_id']
+
+      #repo設定
+      @version_repo_id = Project.find(projectId)[:version_repository_id]
+      githubRepo = VersionRepository.find(@version_repo_id)[:project_name] + '/' + VersionRepository.find(@version_repo_id)[:repository_name]
+
+      #システム利用者github認証
+      githubUserName = GithubKey.where(version_repository_id: @version_repo_id).pluck(:login_id).first
+      githubUserPW = RedmineKey.decrypt(GithubKey.where(version_repository_id: @version_repo_id).pluck(:password_digest).first)
+
+      #認証を取る
+      Octokit.configure do |c|
+        c.login = githubUserName
+        c.password = githubUserPW
+      end
+
+      Octokit.auto_paginate = true
+
+      #チームメンバの取得
+      developer_list = JSON.parse(RestClient::Request.execute method: :get, url: 'https://api.github.com/orgs/' + VersionRepository.find(@version_repo_id)[:project_name] + '/members', user: githubUserName, password: githubUserPW)
+      # 開発者リスト
+      developers_array = []
+
+      developer_list.each do |member|
+        developers_array.push(member['login'])
+      end
+
+      #ファイル拡張子セット
+      file_extension = Hash.new
+
+      #開発者名と編集回数セット
+      developer_edit = Hash.new
+
+      #拡張子種類のarray
+      keys_array = []
+
+      #各開発者のcommit情報の取得
+      for developer_name in developers_array do
+
+        #全てのsha情報を保存するarray
+        commit_sha = []
+
+        #全てのコミット情報を保存するarray
+        commits_arr = []
+
+        commits_arr = Octokit.commits(githubRepo,'master',:author => developer_name)
+
+        #parents属性の長さは1のコミット情報のshaを洗い出す
+        for commit in commits_arr do
+
+          #parentsの長さは2以上の場合、他の人のコミットをマージする可能性がある
+          if commit['parents'].length < 2 then
+            commit_sha.push(commit['sha'])
+          end
+        end
+
+        #各shaに対するコミットの中身から編集したファイルの拡張子を集計、計算する
+        for sha in commit_sha do
+          one_commit_detail = Octokit.commit(githubRepo,sha)
+
+          one_commit_detail['files'].each do |file|
+            file_name = file['filename']
+
+            #拡張子を洗い出す処理
+            if file_name.index('.') != nil then
+              extension = file_name.slice(file_name.rindex('.')..-1)
+            else
+              #pathの中に、.がない場合
+              extension = file_name
+            end
+
+            #Hashのkeyに既に存在している場合、編集回数+1。存在していない場合、新しいkeyを追加し、回数を1から
+            if keys_array.include?(extension) then
+              file_extension[extension] = file_extension[extension] + 1
+            else
+              file_extension[extension] = 1
+            end
+
+            #新しいkeyを追加してから、key listを更新する
+            keys_array = file_extension.keys
+
+          end
+
+        end
+
+        developer_edit[developer_name] = file_extension.values
+
+        #hashのkeyを保存するけど、keyに対する値全部0に変更
+        file_extension.each{|key, value|
+          file_extension[key] = 0
+        }
+
+      end
+
+      developer_edit.each{|key, value|
+        if developer_edit[key].length < keys_array.length  then
+          for num in 1..(keys_array.length - developer_edit[key].length) do
+            developer_edit[key].push(0)
+          end
+        end
+      }
+
+      finalStr = "{\"developers\":" + developers_array.to_s + ",\"extensions\":" + keys_array.to_s + ",\"developers_edit\":" + developer_edit.values.to_s + "}"
+
+      puts finalStr
+
+      render :json => JSON.parse(finalStr)
+
+    end
+  end
 end
