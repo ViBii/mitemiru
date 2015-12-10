@@ -608,9 +608,9 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           .attr("transform", "translate(2,0)")
           .attr("text-anchor", "start");
 
-        // 生産性
+        // 効率
         info_list.append("text")
-          .text("生産性:")
+          .text("効率:")
           .attr("transform", "translate(-2, 20)")
           .attr("text-anchor", "end");
 
@@ -1052,7 +1052,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
     // 棒グラフの描画
     //
     var drawBarChart = function(tracker_id) {
-      // 生産性の集計
+      // 効率の集計
       var productivity = [];
       for (var i=0; i<developers.length; i++) {
         for (var j=0; j<trackers.length; j++) {
@@ -1200,7 +1200,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
             .attr("fill", "#777777")
             .attr("opacity", 0);
         })
-        .text("生産性")
+        .text("効率(%)")
         .attr("x", bar_margin.left-100)
         .attr("y", bar_height-yScale(150))
         .attr("font-family", "sans-serif")
@@ -1362,7 +1362,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                   })
                   .attr("opacity", 1);
 
-        // 生産性の数値表示
+        // 効率の数値表示
         svg.selectAll(".bar_chart")
           .selectAll(".bar_figure")
           .data(productivity)
@@ -1517,7 +1517,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
         var button_base_color = ['#4f81bd', '#c0504d'];
         var button_pale_color = ['#99b6d9', '#db9a98'];
         var button_radius = [10, 8];
-        var order = ['開発者の登録順', '生産性順'];
+        var order = ['開発者の登録順', '効率順'];
         var in_order = 0;
 
         /* ソート済みのデータの準備 */
@@ -1531,7 +1531,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
           swp_developers.push(developers[i]);
         }
 
-        // 生産性のソート
+        // 効率のソート
         sort_productivity.sort(function(a,b) {
           if (a<b) return -1;
           if (a>b) return 1;
@@ -1667,7 +1667,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                   return bar_margin.left+i*60;
                 });
 
-              // 生産性数値のソート
+              // 効率数値のソート
               svg.select(".bar_chart")
                 .selectAll(".bar_figure")
                 .data(productivity)
@@ -1677,7 +1677,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                   return bar_margin.left+i*60+20;
                 });
             }
-            // 生産性順
+            // 効率順
             else if (in_order == 1) {
               // 開発者ラベルのソート
               svg.select(".bar_chart")
@@ -1707,7 +1707,7 @@ var create_productivity_graph = function(developers, trackers, prospectArr, resu
                   }
                 });
 
-              // 生産性数値のソート
+              // 効率のソート
               svg.select(".bar_chart")
                 .selectAll(".bar_figure")
                 .data(developers)
