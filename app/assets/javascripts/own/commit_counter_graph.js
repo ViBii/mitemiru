@@ -68,7 +68,7 @@ var create_commit_graph = function(developers,commit_count){
               'fill': '#777777',
               'opacity': 0
             })
-            .text('コミット数');
+            .text('コミット数(回)');
         })
         .attr({
           'opacity': 1

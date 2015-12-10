@@ -64,11 +64,46 @@ Vibi.load = function(e) {
             'opacity':0.5
           });
 
+        //コミットメトリクス説明文の再作成
+        d3.select("#commit_counter_graph")
+            .append('text')
+            .attr({
+                'id': 'commit_explanation',
+                'x': 540,
+                'y': 460,
+                'font-size': '20px',
+                'text-anchor': 'middle'
+            })
+            .text('チーム内の開発者のコミット回数を表すグラフ（単位：回）');
+
+        //効率メトリクスタイトルの再作成
+        d3.select("#productivity_graph")
+            .append('text')
+            .attr({
+                'id': 'productivity_title',
+                'x': 540,
+                'y': 30,
+                'font-size': '20px',
+                'text-anchor': 'middle'
+            })
+            .text('開発者全員効率一覧');
+        //効率メトリクス説明文の再作成
+        d3.select("#productivity_graph")
+            .append('text')
+            .attr({
+                'id': 'productivity_explanation',
+                'x': 540,
+                'y': 60,
+                'font-size': '20px',
+                'text-anchor': 'middle'
+            })
+            .text('開発者効率円グラフ');
+
         //グラフの生成
         commitAjax();
         costAjax();
-        commentAjax();
-        skillAjax();
+        //commentAjax();
+        //skillAjax();
       });
     }
   }
