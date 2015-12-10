@@ -65,10 +65,9 @@ Vibi.load = function(e) {
           });
 
         //グラフの生成
-        // 一時コメント
-        //commitAjax();
-        //costAjax();
-        //commentAjax();
+        commitAjax();
+        costAjax();
+        commentAjax();
         skillAjax();
       });
     }

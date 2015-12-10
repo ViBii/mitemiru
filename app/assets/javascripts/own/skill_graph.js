@@ -1,14 +1,7 @@
-var create_skill_graph = function() {
-  var developers = ["Altairzym", "mikio-ikoma", "mitemiru-reviewer", "ryoki1118", "sjc1209", "yaginuuu"];
-  var extensions = [".rb", ".js", ".erb", ".css", "Gemfile", ".sample", ".lock", ".coffee", ".env", ".swp", ".png", ".tsv", ".generators", ".name", ".rakeTasks", ".xml", ".iml", ".txt", ".csv", ".tmp", ".tmp2", ".scss", ".yml", ".pdf", ".json", ".gif", ".gitignore", ".md", "Rakefile", ".keep", ".jbuilder", "bin/bundle", "bin/rails", "bin/rake", "bin/setup", "bin/spring", ".ru", ".rake", ".html", ".otf", ".eot", ".svg", ".woff", ".ttf", ".woff2", ".ico", ".jpg", ".rspec"];
-  var developers_edit = [[121, 83, 65, 4, 4, 3, 3, 4, 1, 1, 3, 1, 1, 1, 1, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [112, 113, 111, 2, 2, 0, 3, 11, 0, 10, 0, 0, 0, 0, 0, 0, 0, 5, 2, 4, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [473, 135, 251, 29, 20, 3, 18, 13, 1, 0, 111, 1, 1, 1, 1, 8, 1, 4, 0, 0, 0, 6, 36, 11, 13, 14, 10, 11, 2, 21, 12, 2, 2, 2, 2, 2, 2, 2, 6, 2, 4, 4, 6, 6, 4, 2, 6, 1]];
-
-    /*
-    var developers = developers;
-    var trackers = trackers;
-    var prospect = prospectArr;
-    var result = resultArr;
-    */
+var create_skill_graph = function(developers_data, extensions_data, developers_edit_data) {
+  var developers = developers_data;
+  var extensions = extensions_data;
+  var developers_edit = developers_edit_data;
 
     // Chart colors
     var base_color = ['#4f81bd', '#c0504d', '#9bbb59', '#8064a2', '#4bacc6', '#f79646'];
