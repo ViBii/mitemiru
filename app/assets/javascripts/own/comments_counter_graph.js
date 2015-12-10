@@ -104,7 +104,7 @@ var create_comment_graph = function(nodes, links) {
       svg.select('.heat_map')
         .append('text')
         .attr('class', 'title')
-        .text('コメント数の送受信数')
+        .text('コメント数の送受信数(回)')
         .attr({
           'x': padding.left+developers.length*31+40,
           'y': padding.top-50,
