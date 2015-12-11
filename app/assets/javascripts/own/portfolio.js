@@ -22,8 +22,8 @@ var commitAjax = function() {
   })
   .done(function(commit_data) {
     create_commit_graph(commit_data.developers,commit_data.commit_count);
-    //costAjax();
   });
+  removeLoading();
 }
 
 var costAjax = function() {
@@ -44,15 +44,14 @@ var costAjax = function() {
             'dominant-baseline': 'middle'
           })
           .text('データの取得に失敗しました');
-      //commentAjax();
     },
     success: function(data) {
     }
   })
   .done(function(data) {
     create_productivity_graph(data.developers, data.trackers, data.prospect, data.result);
-    //commentAjax();
   });
+  removeLoading();
 }
 
 var commentAjax = function() {
@@ -83,24 +82,37 @@ var commentAjax = function() {
     create_comment_graph(comment_data.speakers,comment_data.comments);
     removeLoading();
   });
+  removeLoading();
 }
 
 var skillAjax = function() {
-    comment_req = $.ajax({
+    skill_req = $.ajax({
         type: 'post',
         url: '/portfolio/skills_ajax',
         data: {
             project_id: $('#project_info_id').val()
         },
         error: function(){
-            removeLoading();
+          d3.select("#skill_graph")
+            .append('text')
+            .attr({
+              'x': 540,
+              'y': 240,
+              'font-size': '20px',
+              'text-anchor': 'middle',
+              'dominant-baseline': 'middle'
+            })
+            .text('データの取得に失敗しました');
+
+          removeLoading();
         },
-        success: function(comment_data) {
+        success: function(skill_data) {
         }
     })
-        .done(function(comment_data) {
-            removeLoading();
-        });
+    .done(function(skill_data) {
+      create_skill_graph(skill_data.developers, skill_data.extensions, skill_data.developers_edit);
+      removeLoading();
+    });
 }
 
 var dispLoading = function(msg){
