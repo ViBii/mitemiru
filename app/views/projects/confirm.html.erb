@@ -9,7 +9,13 @@
 <%= form_tag '/projects' do %>
   <h4>プロジェクト名: <%= @confirm_data[:name] %><h4>
   <br>
-  <h4>RedmineURL: <%= @confirm_data[:redmine_host] + '/' + @confirm_data[:redmine_project_name] %></h4>
+  <h4>RedmineURL:
+    <% if @confirm_data[:redmine_host] == UNAUTH %>
+      <%= UNAUTH %>
+    <% else %>
+      <%= @confirm_data[:redmine_host] + '/' + @confirm_data[:redmine_project_name] %>
+    <% end %>
+  </h4>
   <br>
   <h4>GitHubプロジェクト名: <%= @confirm_data[:github_project_name] %></h4>
   <br>
