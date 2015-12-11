@@ -71,7 +71,7 @@ Vibi.load = function(e) {
                 'id': 'commit_explanation',
                 'x': 540,
                 'y': 460,
-                'font-size': '20px',
+                    'font-size': '15px',
                 'text-anchor': 'middle'
             })
             .text('チーム内の開発者のコミット回数を表すグラフ（単位：回）');
@@ -87,23 +87,34 @@ Vibi.load = function(e) {
                 'text-anchor': 'middle'
             })
             .text('開発者全員効率一覧');
-        //効率メトリクス説明文の再作成
+        //効率メトリクス説明文1の再作成
         d3.select("#productivity_graph")
             .append('text')
             .attr({
-                'id': 'productivity_explanation',
+                'id': 'productivity_explanation1',
                 'x': 540,
                 'y': 60,
-                'font-size': '20px',
+                'font-size': '15px',
                 'text-anchor': 'middle'
             })
-            .text('開発者効率円グラフ');
+            .text('円の半径で、実績作業時間と予定作業時間の関係を示す。円のある部分を選択すると、そのトラッカーに対する開発者全員の生産性が表示できる。');
 
+        //効率メトリクス説明文2の再作成
+        d3.select("#productivity_graph")
+            .append('text')
+            .attr({
+                'id': 'productivity_explanation2',
+                'x': 540,
+                'y': 80,
+                'font-size': '15px',
+                'text-anchor': 'middle'
+            })
+            .text('「return」ボタンを押すと、円グラフリストに戻る。');
         //グラフの生成
         commitAjax();
         costAjax();
-        //commentAjax();
-        //skillAjax();
+        commentAjax();
+        skillAjax();
       });
     }
   }
