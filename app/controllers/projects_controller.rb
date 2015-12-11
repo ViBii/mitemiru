@@ -18,6 +18,13 @@ class ProjectsController < ApplicationController
     github_project_name = params[:github_project_name]
     github_repo         = params[:github_repo]
 
+    cookies[:name] = params[:name]
+    cookies[:redmine_url]  = params[:redmine_url]
+    cookies[:redmine_login_id] = params[:redmine_login_id]
+    cookies[:github_project_name] = params[:github_project_name]
+    cookies[:github_repo]  = params[:github_repo]
+    cookies[:github_login_id] = params[:github_login_id]
+
     # Validate
     if params['redmine_url'].present?
       begin
@@ -63,7 +70,7 @@ class ProjectsController < ApplicationController
     end
 
     validate_text = ""
-    if params['name'].blank? || params['project_start_date'].blank?
+    if params['name'].blank?
       validate_text += VALIDATE_PROJECT_NAME + "　"
     end
     if redmine_project_name == UNAUTH && github_project_name == UNAUTH
@@ -92,6 +99,12 @@ class ProjectsController < ApplicationController
   end
 
   def create
+    cookies.delete :name
+    cookies.delete :redmine_url
+    cookies.delete :redmine_login_id
+    cookies.delete :github_project_name
+    cookies.delete :github_repo
+    cookies.delete :github_login_id
     # 以下の順序で登録
     # ticket_repositories
     # redmine_keys
@@ -205,7 +218,7 @@ class ProjectsController < ApplicationController
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date]),
+          # :project_start_date    => Date.parse(data[:project_start_date]),
           :user_id               => current_user.id
         )
       else
@@ -213,7 +226,7 @@ class ProjectsController < ApplicationController
           :version_repository_id => version_repository_id,
           :ticket_repository_id  => ticket_repository_id,
           :name                  => data[:name],
-          :project_start_date    => Date.parse(data[:project_start_date]),
+          # :project_start_date    => Date.parse(data[:project_start_date]),
           :user_id               => current_user.id
         )
         project.save
