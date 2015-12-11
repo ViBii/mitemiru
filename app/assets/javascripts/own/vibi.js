@@ -70,7 +70,7 @@ Vibi.load = function(e) {
             .attr({
                 'id': 'commit_explanation',
                 'x': 540,
-                'y': 460,
+                'y': 30,
                     'font-size': '15px',
                 'text-anchor': 'middle'
             })
