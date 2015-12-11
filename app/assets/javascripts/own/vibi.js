@@ -82,11 +82,11 @@ Vibi.load = function(e) {
             .attr({
                 'id': 'productivity_explanation1',
                 'x': 540,
-                'y': 40,
+                'y': 30,
                 'font-size': '15px',
                 'text-anchor': 'middle'
             })
-            .text('見積り作業時間/実績作業時間で各開発者の効率を算出している。');
+            .text('このグラフは作業効率を表すグラフである。作業効率は以下の数式で計算している：見積り作業時間/実績作業時間');
 
         //効率メトリクス説明文2の再作成
         d3.select("#productivity_graph")
@@ -94,11 +94,11 @@ Vibi.load = function(e) {
             .attr({
                 'id': 'productivity_explanation2',
                 'x': 540,
-                'y': 60,
+                'y': 50,
                 'font-size': '15px',
                 'text-anchor': 'middle'
             })
-            .text('棒グラフの棒をクリックすると、該当開発者の円グラフに遷移する。「return」ボタンを押すと、円グラフリストに戻る。');
+            .text('グラフの中の元素をクリックし、画面が遷移できる。');
         //グラフの生成
         commitAjax();
         costAjax();
