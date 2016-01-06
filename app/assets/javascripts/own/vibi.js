@@ -70,7 +70,7 @@ Vibi.load = function(e) {
         commitAjax();
         costAjax();
         commentAjax();
-        skillAjax();
+        // skillAjax();
       });
     }
   }
