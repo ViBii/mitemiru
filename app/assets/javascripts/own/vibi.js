@@ -66,6 +66,41 @@ Vibi.load = function(e) {
             'opacity':0.5
           });
 
+        //コミットメトリクス説明文の再作成
+        d3.select("#commit_counter_graph")
+            .append('text')
+            .attr({
+                'id': 'commit_explanation',
+                'x': 540,
+                'y': 30,
+                    'font-size': '15px',
+                'text-anchor': 'middle'
+            })
+            .text('チーム内の開発者のコミット回数を表すグラフ（単位：回）');
+
+        //効率メトリクス説明文1の再作成
+        d3.select("#productivity_graph")
+            .append('text')
+            .attr({
+                'id': 'productivity_explanation1',
+                'x': 540,
+                'y': 30,
+                'font-size': '15px',
+                'text-anchor': 'middle'
+            })
+            .text('このグラフは作業効率を表すグラフである。作業効率は以下の数式で計算している：見積り作業時間/実績作業時間');
+
+        //効率メトリクス説明文2の再作成
+        d3.select("#productivity_graph")
+            .append('text')
+            .attr({
+                'id': 'productivity_explanation2',
+                'x': 540,
+                'y': 50,
+                'font-size': '15px',
+                'text-anchor': 'middle'
+            })
+            .text('グラフの中の元素をクリックし、画面が遷移できる。');
         //グラフの生成
         commitAjax();
         costAjax();

@@ -58,3 +58,41 @@ body {
   background-repeat: no-repeat;
   margin: 0 auto;
 }
+
+#commit_explanation {display:none; text-decoration:none}
+#commit_counter_graph:hover #commit_explanation{
+    display:block;
+    position:absolute;
+    bottom:0;
+    left:0;
+    color:#FFF;
+    width:554px;
+    background:#000;
+    filter:alpha(opacity=60);
+    -moz-opacity:0.5;opacity: 0.5;
+}
+
+#productivity_explanation1 {display:none; text-decoration:none}
+#productivity_explanation2 {display:none; text-decoration:none}
+#productivity_graph:hover #productivity_explanation1{
+    display:block;
+    position:absolute;
+    bottom:0;
+    left:0;
+    color:#FFF;
+    width:554px;
+    background:#000;
+    filter:alpha(opacity=60);
+    -moz-opacity:0.5;opacity: 0.5;
+}
+#productivity_graph:hover #productivity_explanation2{
+    display:block;
+    position:absolute;
+    bottom:0;
+    left:0;
+    color:#FFF;
+    width:554px;
+    background:#000;
+    filter:alpha(opacity=60);
+    -moz-opacity:0.5;opacity: 0.5;
+}
